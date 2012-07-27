@@ -1,0 +1,944 @@
+forms.txt          For Vim version 7.3              Last change: 2012 July 19
+
+Author:      Richard Emberson 
+Version:     1.0
+Title:       Forms Library
+Homepage:    TODO
+
+For Vim instructions on installing this 'txt' file, enter:
+    :help add-local-help
+
+==============================================================================
+0. Contents                                       *forms* *forms-contents*
+
+  0. Content                                 |forms-contents|
+  1. Introduction                            |forms-intro|
+  2. Installation                            |forms-install|
+      2.1 Download                               |forms-download|
+      2.2 Dependency                             |forms-dependency|
+      2.3 Directory layout                       |forms-directory-layout|
+  3. Options                                 |forms-options|
+      3.1 Window Dump 
+      3.1 Log File
+      3.1 Gui Font
+  4. Mappings                                |forms-mappings|
+  5. Fonts                                   |forms-fonts|
+  6. Colors                                  |forms-colors|
+  7. Highlights                              |forms-highlights|
+  8. Supported Platforms                     |forms-platforms|
+    8.1 Linux Xterm & Vim
+    8.2 Linux GVim
+    8.3 Mac GVim
+    8.4 Windows GVim
+  9. Glyphs                                  |forms-glyphs|
+  10. Examples                               |forms-examples|
+  11. FAQ                                    |forms-faq|
+    11.1 User                                |forms-faq-user|
+    11.2 Developer                           |forms-faq-developer|
+  12. Release notes                          |forms-release-notes|
+  13. Todo List                              |forms-todo|
+  14. Questions                              |forms-questions|
+
+==============================================================================
+1. Introduction                                               *forms-intro*
+
+{Forms} is a Vim TUI (Text User Interface) library. It allows for the creation
+and display of text-based forms in both console Vim and GVim. Many of the
+standard GUI widget types are supported by {Forms} such as labels, buttons,
+menus and layout constructs. It supports navigation, selection and input with 
+a keyboard, as well as, navigation and selection with a mouse.
+
+A user can always stop a form with no side effects by entering <Esc>.
+This is basically a "panic button"; the user wants out.
+If the user is a couple of sub-forms deep in a presentation, each <Esc> 
+entered pops the user out of the current form only.
+Developers should be aware that a user might not take any of the actions
+offered by a form and simply enter <Esc>. Such user action, <Esc>  
+to exit {Forms}, should NOT be prevented by a forms developer.
+
+The behavior of a form created with the {Forms} library differs from that of a
+GUI form. Generally, a GUI form can be displayed and moved about anywhere on
+the screen. On the other hand, a TUI form has to reside within the Vim/GVim
+window; it can not be moved outside of the text area. In addition, when a form
+is being displayed, it captures all user input, keyboard and mouse in that
+window, so that there is no access to the underlying text until the form is
+closed. In that sense, all {Forms} forms are like modal GUI forms.
+
+Because a form must fit within a text window, it is sometimes the case that
+the form's height and/or width is greater than that of the hosting window.
+Form developer should be aware of this and strive to make their forms
+smaller than expected window sizes. One approach is to break a large form
+into a number of sub-forms.
+In case a form is too big, an information form is displayed to the user
+stating that fact along with a suggested size to enlarge the window to
+so that the form will fit. If the window is too small even to display
+the information form, an error message is output (via a thrown exception).
+
+Why create {Forms}? I was working on a Scala project and wanted to use
+Envim, a Vim plugin that allows one to run an ENSIME (Scala IDE support) 
+process as a backend.
+After using Envim a little, learning its code base, extending it and
+offering the extensions to it author, I wondered how I might integrate
+ENSIME's refactoring capabilities with Vim/Envim. If one had only a
+couple of such capabilities, then make a unique key mapping per capability
+might be an option. But, once one get 10 to 15 such refactoring capabilities,
+10 to 15 key maps is rather less attractive. Whats more, some refactoring
+operations takes one or more input parameters. So, my solution, was to
+use or create a Vim forms library. Searching the Vim site I found nothing
+that approached what I could call a forms library, so I built one.
+Now, after I get this released, I will go back to Envim and add refactoring
+capabilities. Then, I will go back to may original Scala project.
+
+==============================================================================
+2. Installation                                              *forms-install*
+
+2.1 Download                                                *forms-download*
+
+A zip snapshot of the {Forms} library can be downloaded 
+from www.vim.org, ....  TODO
+
+In your Vim home, normally $HOME/.vim in Unix, unzip/untar the file: >
+    # cd $HOME/.vim
+    # unzip forms.zip
+    
+On a Windows system, vim home is normally $HOME/vimfiles. >
+    TODO how to unpack on Windows?
+
+{Forms} is also available via git: http://github.com/....  TODO
+One can download a release from github and extract content.
+
+If as a developer, one wants fixes as they appear, one can clone the 
+github {Forms} repository and, as updates appear, copy the files
+over to you Vim home location.
+
+Vim has a number of third-party plugin managers. If you are using one
+you can configure it to automatically download and install {Forms}.
+TODO how to use VAM plugin manager
+
+2.2 Dependency                                                *forms-dependency*
+
+{Forms} depends upon the {Self} Libaray, a prototype-based object system: >
+    http://www.vim.org/scripts/script.php?script_id=3072
+<
+or >
+    https://github.com/megaannum/self
+<
+
+2.3 Directory layout                                  *forms-directory-layout*
+
+After unpacking the {Forms} directory layout should look like: >
+    $HOME/.vim/
+      autoload/
+        forms.vim
+        forms/
+          menu.vim
+          dialog/...
+          examples/...
+      doc/forms.vim
+      plugin/forms.vim
+< 
+If a plugin manager is used, files/directories will be wherever the
+plugin manager is configured to install things.
+
+Here the {autoload} directory contains the basic {Forms} code in {forms.vim}
+as well as a {forms} sub-directory. The {forms} sub-directory contains
+the file {menu.vim} which has he the TUI menu and popup code that parallels 
+the GVim menu and popup capability. In addition, there is is the {dialog}
+sub-directory that contains dialogs forms used both by the menu/popup code
+and the demonstration form. In the {examples} sub-directory is the
+demonstration form and various example dialog forms.
+
+The {doc} directory contains this documentation txt file {forms.txt}.
+
+The {plugin} directory contains a {forms.vim} file that contains mapping
+for launching the demonstration form as well as the menu and popup
+forms.
+
+==============================================================================
+3. Options                                                 *forms-options*
+
+The {Forms} library has a small number of configuration options. If a user
+wished to tailor the configuration, the option should be defined prior to
+loading the {Forms} library code.
+
+Window Dump ~
+
+When a form is displayed it is possible to take a window snapshot placing
+the text into a file. To do this the user enters <C-W>. Normally, 
+control-w is a precursor to a second character (such as  ^W^W to
+switch buffers) but since a form grabs all input, we are free to use it
+for this purpose.
+There are two options that control this behavior.
+The first enables/disables the section of code that generates the 
+window dump and the second set the name of the dump file.
+
+Enable window dump: >
+    let g:forms_window_dump_enabled = g:self#IS_TRUE
+Disable window dump: >
+    let g:forms_window_dump_enabled = g:self#IS_FALSE
+
+The default setting if true (1), window dumps are enabled.
+(note that: g:self#IS_TRUE == 1 and g:self#IS_FALSE == 0 are
+variables defined in the {Self} library)
+
+Set window dump file name: >
+    let g:forms_window_dump_file = "some_file_name"
+
+The default value for the dump file name is "VIM_WINDOW".
+
+Log File~
+
+The logging capabilities of the {Forms} library is rather unsophisticated
+and should really only be enabled by developers. To enable logging
+requires both its enabling and one must uncomment and/or create new log
+statements (thats right, currently all log statements are commented out).
+
+To enable logging the following should be defined: >
+    let g:forms_log_enabled = g:self#IS_TRUE
+and to disable logging: >
+    let g:forms_log_enabled = g:self#IS_FALSE
+
+To set the log file name: >
+    let g:forms_log_file = "some_file_name"
+
+The default value for the log file name is "FORMS_LOG".
+
+Gui Font~
+
+Many of the specialty "coding" fonts discussed out on the web have a 
+drawback when displaying a {Forms} TUI. Specifically, they are not fixed 
+width nor do they accurately implement the UTF-8 box drawing and block 
+characters. Understandably, for most font designers it appears that making 
+pretty fonts is more important than implementing all of the UTF-8 
+special characters - and, I guess, one can not blame them.
+It is a requirement for full {Forms} functionality to use an appropriate font.
+There may be other fonts, but it has been found that the font: >
+    Fixed 20
+works in GVim. With that in mind, there an option that allows one to 
+set the font to use when using {Forms} with GVim. >
+
+    if ! exists("g:forms_gui_font")
+      let g:forms_gui_font="Fixed 20"
+    endif
+<
+If not set previously, the default font is the fixed width font of size 20.
+
+When a form is run, it saves the current font and then changes to the
+font given by 'g:forms_gui_font'. When the form stops running it resets
+the font to the original one.
+
+I'd be interested in hearing if other fonts also work with GVim, where
+by work I mean that, for instance, slider, boxes, and inset/outset
+frames display correctly.
+
+Font handling is different when using Vim. With GVim, one can set and
+change the font to use dynamically, when GVim is running.
+With Vim in an Xterm, it is the Xterm's font that is used by Vim.
+See below |forms-fonts| for more information.
+
+==============================================================================
+4. Mappings                                                    *forms-mappings*
+
+The {Forms} mappings are in the {plugin/forms.vim} file. >
+
+Strictly speaking, the {Forms} library is a library and, so, there ought not
+be any mappings. But, while developing {Forms} a number of examples were
+created which, it turns out, were critical for uncovering bugs, missing
+features in the implementation and usage issues. Two of the examples
+might have general appeal, the menu and popup forms that mirror the
+capability (and copy some of the support code of) the GVim menu and popup.
+While power users will disdain the {Forms} menu and popup examples
+as superfluous, covering Vim commands that are know by heart, so to
+power users disdain the GVim menu/popup - so, the power user is not
+the target user.  Rather, the same users that find the GVim menu/popup
+useful will find the {Forms} menu/popup equally useful.
+Here are the mappings for the menu and popup: >
+    nmap <Leader>m :call forms#menu#MakeMenu('n')<CR>
+    vmap <Leader>m :call forms#menu#MakeMenu('v')<CR>
+    nmap <Leader>p :call forms#menu#MakePopUp('n')<CR>
+    vmap <Leader>p :call forms#menu#MakePopUp('v')<CR>
+<
+It should be noted that there are normal and visual mode mappings. 
+That is because some capabilities of the menu/popup are enabled/disabled
+depending upon mode, as well as, which command to ultimately execute
+may depend upon mode.
+
+There is also a mapping which launches a form that links to some 40 {Forms}
+demonstration forms. The demonstration forms range from a simple box
+drawing example to a file browser and color chooser: >
+    nmap <Leader>d :call forms#example#demo#Make()<CR>
+
+If any of the demonstration forms do not display or function as one might
+expect on your platform, then drop me a line - thanks.
+
+One will observe that these mappings use the characters: 'm' 'p' and 'd'.
+While the demo mapping can/should ultimately be commented out by
+all but {Forms} developers, at least for the non-power user, having
+a short, easy to remember, mnemonic mapping for menu and popup is certainly 
+reasonable.
+
+==============================================================================
+5. Fonts                                                       *forms-fonts*
+
+The {Forms} library, in order to display correctly, requires the use of a
+fixed width font that accurately implements the UTF-8 box drawing and block
+characters.
+
+For console-base Vim running in an Xterm, the font used by Vim is the font
+used by the Xterm. Running on my Linux systems I found the following
+works to launch an Xterm appropriately configured: >
+    /usr/bin/xterm -g 80x30 -bg lightgrey -sl 1000 +si -fn \
+       '-misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*'
+<
+Here, focus on the font used, fixed width, size 20 supporting ISO-10646,
+the Universal Character Set (UCS) defined by the International Standard
+ISO/IEC 10646 (https://en.wikipedia.org/wiki/Universal_Character_Set),
+This font is available via a yum-install (at least on Fedora 17).
+
+If one uses a font that is not fixed width, things simply do not line up.
+If one user a font that does not support the box drawing and block
+characters, then, since Vim draws an empty space when a character for a given
+font does not exist, many features will not be displayed.
+
+These are multi-byte characters, so you have to use a version of Vim
+that is complied with multi-byte support.
+
+While in places the {Forms} code will attempt to use standard ASCII
+characters when there is no UTF-8 support, the result is just so 
+poor, that after a while I stopped trying to find "fixes" for the low-end.
+For example, tell me how one get an 8 point resolution per character
+cell in Sliders using just ASCII or a reasonable looking drop shadow - it 
+can not be done.
+
+==============================================================================
+6. Colors                                                   *forms-colors*
+
+The {Forms} library running in Vim is designed to use 256 colors.
+In one's {.vimrc} one should have: >
+    set t_Co=256
+
+To see if your environment supports 256 colors see: >
+    http://vim.wikia.com/wiki/256_colors_in_vim
+
+On Linux the standard Xterm supports 256 colors.
+For a comparison of different X-Window terminal emulators see: >
+    https://en.wikipedia.org/wiki/Comparison_of_terminal_emulators
+
+I do not know if, out of the box, Vim running on Mac or Windows supports
+265 colors. Feedback would be welcome.
+
+==============================================================================
+7. Highlights                                             *forms-highlights*
+
+The {Forms} library uses match-based highlighting as the mechanism for
+producing foreground and background colors as well as providing visual
+feedback; syntax-base highlighting is not used. The patterns used in
+generating the match are positional, that is, the pattern defines a region
+to be highlighted. A highlight match is created using |matchadd()| where
+the returned match Id is then associated with a particular Glyph.
+The highlight is removed by calling |matchdelete()| with the match Id.
+When a form is finished being displayed as part of the delete process,
+all highlights are removed.
+
+For additional information about positional match pattern see the line and 
+virtual column pattern atoms: >
+    |/\%l| |/\%>l| |/\%<l| |/\%v| |/\%>v| and |/\%<v|
+Virtual column patterns are used because {Forms} uses multi-byte characters.
+
+Currently, all highlight colors defined in the {Forms} library where
+chosen to be compatible with a Vim session where the background is a
+light grey (specifically, the Xterm background color 'lightgrey') and a
+foreground color of black. There are some 17 highlights defined.
+A user may experiment and change the colors used by the defined highlights.
+
+It would be a "good thing" if the {Forms} library had default highlights
+defined for both 'dark' and 'light' backgrounds (see |'background'|) and,
+also, a simple means for users to redefine the highlight colors to
+reflect their own color scheme. Advice as to how I might create such
+a {Forms} highlight extension system would be welcome. It should be
+noted that there are relationships between some of the highlights
+defined. For example, a drop shadow highlight, inset and outset highlights
+ought to bear some relationship to the colors used for the background and,
+in addition, the {ReverseHi} uses the same 'ctermbg'/'guibg' as the background
+highlight.
+
+==============================================================================
+8. Supported Platforms                                   *forms-platforms*
+
+The {Forms} library ought to work on any platform where Vim has 256 colors
+(or full RGB as with GVim) and a fixed width UTF-8 font which implements
+the box drawing and block characters in a reasonable manner.
+
+8.1 Linux Xterm & Vim ~
+
+{Forms} was developed and extensively tested on a Linux Xterm platform.
+As long as the Xterm is using the correct font, such as >
+    -misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*
+and has 256 color support and such support is declared in the {.vimrc}
+file >
+    set t_Co=256
+then, there ought not be a problem.
+
+8.2 Linux GVim ~
+
+Some testing has been done on the Linux GVim platform and all of the
+demonstration forms seem to work as expected.
+
+8.3 Mac GVim ~
+
+No testing has been done on the Mac GVim configure. Feedback is welcome.
+
+8.4 Windows GVim ~
+
+No testing has been done on the Windows GVim configure. Feedback is welcome.
+
+==============================================================================
+9. Glyphs                                                    *forms-glyphs*
+
+Many of the ideas used in developing {Forms} are derived from Mark Linton's
+{InterViews} C++ library which was developed at Stanford University and
+Silicon Graphics and the Java port of {InterViews} called {Biscotti} which was
+developed at Fujitsu Research Labs. For performance reasons, some limitations
+were taken with Vim {Forms}. Specifically, Glyph size and location in the
+window are static; there in no pick traversal; the size-request and allocation
+process does not support minimum/maximum ranges - only the 'natural' value;
+clipping rectangles are not supported; and, generally, a glyph can only appear
+in one position in a tree of glyphs. The character nature of the underlying
+Vim text-based editor imposed additional limitations such as the draw
+traversal did not permit transforming size or rotation; resolution is at the
+character level rather than pixel; and colors were drawn per character with
+variation based only upon background versus foreground.
+
+Out of the box, Vim's Dictionary, Functions and Dictionary function have
+no notion of class or object inheritance. The {Forms} library is built
+upon the Vim {Self} library which provides a prototype-base object
+inheritance framework ({Self.vim} is the {Forms} library's sole dependency).
+
+At the base of the Glyph inheritance tree is the Glyph (forms#Glyph) which
+has the Self Object Prototype as its prototype. The Glyph prototype has
+method that define the behavior of all derived Glyph types as well as
+inheriting the Self Object's methods. When the term {Glyph} is used, much
+of the time it refers to an object that is based upon the Glyph Prototype.
+
+Some Glyphs are primarily involved with controlling the layout and display 
+of the Glyph tree in a window, some are informational while others are
+designed to interact with the user (i.e., accept user input).
+
+    Glyph ~
+        Base Object from which all other {Forms} Glyphs inherit.
+        There are four direct, sub-types of Glyph. They are all in a sense
+        container Glyphs, nodes in a Glyph tree, that contain other Glyphs.
+
+    Leaf ~
+        A {Leaf} is a "container" Glyph that contains no children, they
+        are leaf nodes in a Glyph tree. 
+
+        NullGlyph ~
+            Does nothing - no size, no display.
+        HLine ~
+            Horizontal "line" of a given background character (default '').
+            Height is 1 character.
+        VLine ~
+            Vertical "line" of a given background character (default '').
+            Width is 1 character.
+        Area ~
+            A region of a given background character (default '').
+        HSpace ~
+            A region of a given horizontal size drawing a 
+            background character (default '').
+        VSpace ~
+            A region of a given vertical size drawing a 
+            background character (default '').
+        Label ~
+            A (horizontal) text label.
+        VLabel ~
+            A vertical text label.
+        Text ~
+            Multiple lines of text.
+        CheckBox ~
+            A checkbox "[X]" or "[ ]".
+        RadioButton ~
+            A radiobutton "(*)" or "( )" can belong to a button group.
+        FixedLengthField ~
+            A line editor with fixed number of characters.
+        VariableLengthField ~
+            A line editor with a variable number of characters.
+        TextEditor ~
+            Simple multi-line text editor.
+        TextBlock ~
+            Similar to Text but all lines must be the same length.
+        SelectList ~
+            A list of selections.
+        PopDownList ~
+            A pop down list of selections in a menu.
+        HSlider ~
+            A horizontal slider.
+        VSlider ~
+            A vertical slider.
+
+    Mono  ~
+        A Glyph that contains a single child, its body Glyph. Most Mono
+        Glyphs implement a single behavior and delegate all others to its
+        child. 
+
+        Box ~
+            Draws a box around child.
+        Border ~
+            Draws a border of a character around child (default ' ').
+        DropShadow ~
+            Draws a drop shadow (a primitive 3D effect).
+        Frame ~
+            Draws inset/outset frame (a primitive 3D effect).
+        Background ~
+            Draws a background for child Glyphs 
+            (default character ' ', uses highlight "BackgroundHi")
+        MinWidth ~
+            Child appears to have a width of at least given size.
+        MinHeight ~
+            Child appears to have a height of at least given size.
+        MinSize ~
+            Child appears to have a width and height of at least given size.
+        HAlign ~
+            Align child horizontally (default Left)
+        VAlign ~
+            Align child vertically (default Top)
+        HVAlign ~
+            Align child horizontally and vertically (default Left and Top)
+        Button ~
+            A button with an associated action.
+        ToggleButton ~
+            A toggle button with a select state.
+        Viewer ~
+            Event handling Glyph that maps events forwarding them to the
+            child Glyph with current focus and manages redraws.
+        Form ~
+            A top-level Viewer and the top Glyph in any Glyph tree 
+            application. Forms also manage the preparation for displaying
+            their child Glyphs and the cleanup/redraw of the original window
+            content when the Form is finished.
+
+    Poly ~
+        A Poly Glyph has any number of child Glyphs stored in a list.
+        Polymorphic methods such as draw() or requestSize() are called
+        on child Glyphs by traversing the list sequentially.
+
+        HPoly ~
+          Child Glyphs are draw horizontally. 
+          Provides for a common vertical alignment policy which can be 
+          overridden on a per child basis.
+        VPoly ~
+          Child Glyphs are draw vertically..
+          Provides for a common horizontal alignment policy which can be 
+          overridden on a per child basis.
+        Deck ~
+          A single Child Glyph is drawn based upon which is selected - like
+          a deck of cards. In a sense, they are draw in the Z-axis but only
+          the top Glyph appears.
+          Provides for a common horizontal and vertical alignment policy.
+        FixedLayout ~
+          Child Glyphs have a fixed (x,y) position within the FixedLayout
+          Glyph. It is up to the developer to make sure that the child Glyphs
+          do not overlap.
+        MenuBar ~
+          Child Glyphs (labels for Menus) are draw at the top of the window. 
+        Menu ~
+          A vertical display of menu items.
+
+    Grid ~
+        A table of child Glyphs with rows and columns.
+
+        Grid ~
+          Single object of type Grid. Allows for common row-based or
+          column-base alignment policy which can be overridden on a
+          cell basis.
+
+
+    Events ~
+        There are two types of input events. The first type is simply the
+        Character or Number returned by calling Vim's {getchar()} function.
+        These are called "character" events. A {Viewer} examine all such
+        character events and map some of them into the second type of event
+        supported by {Forms}, a Dictionary object or object event that must
+        have a 'type' key whose value is one of a set of allowed names. As an
+        example, a <LeftMouse> Number returned by {getchar()} is converted
+        into a Dictionary event object of type 'NewFocus' where the Dictionary
+        also has entries for the line and column (v:mouse_line and
+        v:mouse_column). Some object events are generated by the {Forms}
+        runtime system. An example of such an object event is a ReSize event
+        which is generated when a Glyph actually changes its size (normally, a
+        very rare occurrence). More common runtime generated event objects are
+        the Cancel and Submit events which are, generally, generated by a
+        "close" and an "accept" button.
+
+        A user interacts with a form by sending events to the form. Such 
+        events are generated by the keyboard and mouse. Events are
+        read by the {Viewer} with current focus, mapped by that {Viewer}
+        and then forwarded to the Viewer's child Glyph that has focus.
+        If a {Viewer} has no child Glyphs that accept focus, then all events
+        are ignored (except the <Esc> character which will pop the user out
+        of the current Viewer/Form).
+
+        If a Glyph consumes an input event, it might require redrawing (such
+        as adding a character to an editor). In this case, the Glyph registers
+        itself with a viewer-redraw-list and when control is returned to the
+        {Viewer}, the Glyph is redrawn.
+
+        Sometimes a Glyph will consume an event and an action will be
+        triggered. For example, a left mouse click or keyboard <CR> entry
+        on a button will cause the action associated with that button to
+        execute.
+
+    Defining a new Glyph ~
+        A new Glyph variant is created by cloning an existing Glyph and then
+        tailoring its methods or adding new methods/attributes. Once this
+        new variant is defined additional instances of it can be created by
+        simply cloning it.
+
+        The clone() method takes an optional argument, a String that defines
+        its type name. As a rule of thumb, if the new object being created is
+        a clone from of an object that itself was cloned with a type name
+        argument, then the developer may add clone with a new type name.
+        Generally, this is done if the new object variant has well defined
+        characteristics and usages making it potentially the prototype object
+        of many objects. On the other hand, if the new object only make minor
+        modifications in the methods/attributes of its prototype and/or will
+        only be used locally and not have general applicability, then cloning
+        without defining a new type (without passing into the clone() method a
+        new type name) is a reasonable approach.
+
+        An additional point concerning cloning and type name, objects created
+        with a type name are expected to exist before and after any particular
+        form is generated, used, and deleted; while object created via clone
+        without a type name have a life time that only spans that of the form
+        in which they are used.
+
+    Life Cycle ~
+        Initializing ~
+          After a Glyph is cloned, it is initialized. For most of the {Forms}
+          library, Glyphs have a "constructor", and associated function that
+          takes a Dictionary of attributes and returns a newly cloned and
+          initialized object. As an example, the Label Glyph has the following
+          function >
+             function! forms#newLabel(attrs)
+               return forms#loadLabelPrototype().clone().init(a:attrs)
+             endfunction
+<
+          The Label prototype is cloned and the clone is then initialized.
+            
+        Tree ~
+          For any Glyph to be useful it must be placed into a Glyph tree
+          and that tree ultimately used as the body of Form.
+            
+        Form ~
+	  The Form holding the Glyph is started by calling its 'run()' method.
+	  This method will return a Dictionary of Glyph tag/values if the Form
+	  had a Submit button that was invoked. The Form might instead, simply
+	  execute a Vim command and the 'run()' method returns nothing
+	  (actually, it will return 0). If the Form had a Cancel or Close
+	  button that was pushed or the user typed <Esc>, then, again, nothing
+	  is returned.
+            
+        Size, Drawing and Allocation ~
+	  The first thing that happens to a Glyph in a running Form is for the
+	  Glyph's 'requestSize()' method to be called. The Glyph is telling
+	  the Form how big it would like to be; number of characters of width
+	  and height. Bubbling up the Glyph tree is the total size request for
+	  the Form. This is then used to position the form in the window and
+	  for the initial, top-down draw traversal.  During this traversal,
+	  all Glyphs are given their allocation which is the line/column
+	  position as well as their allowed width/height.  All (well, most)
+	  Glyphs should save this allocation as it will be needed for other
+	  operations (such as, when a Glyph is asked to redraw itself or,
+	  Glyphs with focus, are asked to render their hotspot).
+            
+        Cancel or Submit ~
+          A Form is finished by selecting a Close/Cancel or Submit button.
+          Circumstance will dictate the names of the button (its up to the 
+	  developer to provide them). 
+          
+          When a Form is to finish with no side effects, a Close/Cancel button
+          issues a {Cancel} event.  The active Form then stops running and
+          control is returned to either a parent Form or, if there is no
+          parent Form, control is returned to the code that originally
+          launched the Form. When a Form stops because of a {Cancel} event,
+          the Form returns nothing (by default 0).  At this point, the
+          launching code should respond to the user's desire to do nothing in
+          an appropriate manner.
+
+          When a Form stops because a {Submit} event was generated (by a
+          Submit/Accept/Do-Action button or action), then the Form returns a
+          Dictionary that holds Glyph tag/value pairs generated by walking the
+          Form Glyph tree. This will hold all data and selections entered by
+          the user on the Form. It is for the launching code to extract the
+          desired data and take whatever action is appropriate.  Developers
+          should remember that if a Glyph is not given a tag-name at
+          initialization, then one is automatically generated and an
+          automatically generated tag-name will certainly be different each
+          time the Form is run. So, it behoves the developer to pick their own
+          meaningful tag-names for Glyphs that will return "application" data.
+
+	  Finally, a user can always enter <Esc> to stop running a Form.
+	  Remember, a Form is a Viewer. If focus is in the Form's Viewer and
+	  not a child Viewer of the Form, then entering <Esc> is the same as
+	  pressing Close/Cancel button. Most of the time this will be the
+	  case; a Form will only have one Viewer - itself. But if a Form has
+	  one or more child Viewers, then entering <Esc> when focus is in a
+	  child Viewer will simply pop the user out to the next higher
+	  enclosing Viewer. If the Form has 4 nested Viewers and focus is in
+	  the bottom most Viewer, it will take entering <Esc> four times to
+	  exist the Form.
+          
+        Delete ~
+          After a Form stops running, it and all of its child Glyphs are
+          deleted freeing up memory. One side effect of this is that if the
+          user tries to re-invoke the Form, the Form has to be allocated and
+          initialized all over again. For many Forms this is not much of an
+          issue. But for Forms that are large, complex and/or deeply nested
+          there is be a noticeable delay in re-rendering the Form. The example
+          menu Form is an example of a Form that a user might wish to use over
+          again in a given Vim session and it is certainly large, complex and
+          deeply nested. So, to make its re-display faster, a developer at
+          Form initialization can instruct the Form not to delete itself and
+          its child Glyphs. Of course, the developer must have some global
+          variable that references the Form after its is initially created,
+          but after that, it can simply be re-run in order for it to be
+          re-displayed.
+
+I understand that all of this discussion about Glyphs is far to deep for the
+general user but much too shallow for a developer. Writing detailed developer
+documentation is an example of a Catch22 situation. I will await feedback. 
+
+==============================================================================
+10. Examples                                              *forms-examples*
+
+The {Forms} library comes with three example Forms.
+
+The first example Form is the demo form {forms#example#demo#Make()} which.
+post-installation, is mapped to <Leader>d. This form has some 40 buttons that
+launches sub-example Forms. These sub-example Forms range from simple Forms
+that display some capability, such as the various box drawing characters or a
+Label, through Forms containing editors or various button types, all the way
+to high-end Forms such as a File Browser, Color Chooser and Pallet Designer.
+The code for some of the dialog-like example Forms is located in the
+'autoload/forms/dialog' directory. The code for the rest is in the
+'autoload/forms/example' directory.
+
+The other two example forms are a {Forms} version of the GVim standard menus
+and popup menus. The code is located in 'autoload/forms/menu.vim'.
+
+==============================================================================
+11. FAQ                                                         *forms-faq*
+  11.1 User                                                *forms-faq-user*
+>
+    Q: How to exit a Form?
+<
+    A: Entering <Esc> will exit the current form. If you were in a sub-Form
+       you will pop up the its parent Form.
+>
+    Q: How do I use a button/editor/slider/... Glyph?
+<
+    A: Entering <C-H> or clicking the right mouse button, <RightMouse>, on any
+       Glyph will bring up context sensitive information for the Glyph. This 
+       will include both general usage information and Form specific 
+       information.
+
+  11.2 Developer                                      *forms-faq-developer*
+>
+    Q: After changing some {Forms} code, in order to see the changes I have
+       to exit Vim, restart Vim and run my Form again; simply sourcing the
+       autoload/forms.vim file has no effect. How can I reload with out
+       exiting Vim.
+<
+    A: There is a {Forms} function called 'forms#reload()'. This will call
+       the {Self} library function that lets one reload an autoloaded 
+       function by deleting the function (See the code for more details).
+       If you are going to do this a lot, you might define a key mapping like: >
+         map <Leader>fr :call forms#reload()<CR>
+<
+>
+    Q: Whats the variable 'g:self#IN_DEVELOPMENT_MODE' do?
+<
+    A: While developing the {Forms} library, one very, very often wants to
+       reload the code to test a new feature. On the other hand, user will
+       never want to or need to reload the code. So, there is a Boolean
+       variable that controls who/when the {Forms} library can be reloaded.
+       If you want to develop {Forms} code, consider setting the variable to
+       true in your .vimrc prior loading the {Self} library: >
+         let g:self#IN_DEVELOPMENT_MODE = g:self#IS_TRUE
+<
+       The default setting is to false.
+>
+    Q: Writing out a glyph.
+<
+    A: A Glyph is a Dictionary. It has references to its prototype and its
+       prototype's prototype, etc., so string(glyph) can produce a page full
+       of text (one very long line).
+>
+    Q: What does the "Show Selection" button do when context sensitive help
+       is displayed?
+<
+    A: The Glyphs in a Form are tree. The "Show Selection" button shows those
+       Glyphs in the tree whose allocation includes the point of the mouse
+       click; from Form down to the leaf glyph.
+>
+    Q: Then can a given Glyph appear more than once in a Glyph tree?
+<
+    A: This has to do with the allocation (line,column,width,height) a Glyph
+       is given and caches when it is initially drawn. Most Glyphs will 
+       used this allocation in other methods. As an example, when a Glyph
+       is requested to draw its hotspot, it uses information from this
+       allocation to know where to draw. Also, in most situations a Glyph's
+       'draw()' method is only call directory by the enclosing Viewer once;
+       it is its 'redraw()' then that is subsequently called and this method
+       the calls the 'draw()' method using the cached allocation.
+       So, only Glyphs that never use their allocations in other methods
+       can be used at more than one node in a Glyph tree. Thus, Glyphs that
+       can accept focus can never be used more than once.  Some Glyphs 
+       that can appear multiple times are, for example, the HSpace, VSpace. 
+       HLine and VLine  Glyphs.
+>
+    Q: I know where a Glyph will be drawn if it is aligned top, left, right or
+       bottom. But, where will it be drawn if it is to be centered?
+<
+    A: In placing Glyph in the center of a space there can be a rounding
+       error. This also occurs in GUIs but there the size of the pixel makes
+       it hard to see. For a TUI, the resolution is one character
+       width/height. So, if one is centering horizontally, if n is the width
+       of the Glyph and m is the width of the space its to appear in (m>n)
+       then if (m-n) is divisible by 2, then the Glyph can be truly centered.
+       If not, it will be one character off true center.
+>
+    Q: How do I call an object's prototype's method?
+<
+    A: The short answer is that there is no safe, builtin way; one must
+       create a calling "convention" and make sure that a developer who might
+       wish to extend your objects understands the "convention".
+       Consider three object: 'A', 'B', and 'C' where 'B' is A's prototype and
+       'C' is B's prototype. >
+            A._prototype == B
+            B._prototype == C
+<
+       Object 'C' has a method that both objects 'B' and 'A' will override. >
+            function! C.m() dict
+              " do something
+            endfunction
+
+            function! B.m() dict
+              " do something
+              " call C's method 'm'
+            endfunction
+
+            function! A.m() dict
+              " do something
+              " call B's method 'm'
+            endfunction
+<
+       Naively for object 'A' to call object's B's method one might do the
+       following: >
+            function! A.m() dict
+              " do something
+              call self._prototype.m()
+            endfunction
+<
+       But, this does not work, 
+       To make things clearer, lets re-write A's method: >
+            function! A.m() dict
+              " do something
+              let p = self._prototype
+              call p.m()
+            endfunction
+<
+       What is the object that's calling the method? Its 'p' (B) not 'A'.
+       So, the 'self' that appears in B's method body using A's code
+       will, in fact, be 'B' not 'A'.
+       So, lets try another approach and use Vim's 'call()' function so
+       A's method is now: >
+            function! A.m() dict
+              " do something
+              let p = self._prototype
+              call call(p.m, [], self)
+            endfunction
+<
+       Well, with this approach, 'A' will be the 'self' object in B's method,
+       but there is a problem. Let us say, that B's method uses this same
+       approach: >
+            function! B.m() dict
+              " do something
+              let p = self._prototype
+              call call(p.m, [], self)
+            endfunction
+<
+       What is the 'self' object in B's method? Its 'A'. So, taking the 'self' 
+       object's prototype, 'self._prototype', which is to say, taking
+       A's prototype and calling its method ....  one will get a function 
+       call recursion error. A's prototype is once again 'B', so we'd be calling
+       B's method passing in 'A' as the 'self' object once again.
+       Vim's 'call()' function is not enough.
+       What is needed is additional information: What is the self objects
+       current ancestor prototype that is being called. With that information
+       the correct next method could be called with the added information of
+       the ancestor's prototype. This could chain all the way up to the
+       base object prototype defined in the {Self} library.
+       One approach is to attach to the original 'self' object, 'A' its
+       "current ancestor" which is pushed and popped off 'A' as 'A'
+       calls up the parent method chain. This would involve save/restoring
+       the value in each method and, to be safe, try-finally blocks.
+       Another approach is to write the method where the last argument
+       is optional and, if present, it is the "current prototype". This 
+       is the approach I used (though I am certainly not happy with it) >
+            function! C.m(...) dict
+              " do something
+            endfunction
+            function! B.m(...) dict
+              " do something
+	      " call C's method passing in either B's prototype
+	      " or the prototype of the optional argument 
+              let p = (a:0 > 1) ? a:1._prototype : self._prototype
+              call call(p.m, [p], self)
+            endfunction
+
+            function! A.m() dict
+              " do something
+	      " call B's method passing in A's prototype
+              let p = self._prototype
+              call call(p.m, [p], self)
+            endfunction
+>
+
+==============================================================================
+12. Release notes                                      *forms-release-notes*
+    1.0 Release Note: ~
+
+    This is the initial release of the {Forms} library.
+
+==============================================================================
+13. Todo List                                                   *forms-todo*
+    * InterViews supported Glyhps that were Figures, that is line, circle,
+      squares, all the normal figure drawing features. One of the novel
+      features of InterViews was the integration of the widget-hierarchy
+      with the figure-hierarchy. Though, I don't know how useful figures 
+      would be in the {Forms} library.
+    * Create a ViewPort Glyph. Having a ViewPort Glyph means that one either
+      clips what is drawn in the ViewPort as its being drawn or one draws
+      complete "strokes" to a secondary buffer and then do a copy of a 
+      square of the secondary buffer to the screen. Both are possible, what
+      is hard to see how to do is the clipping of highlight areas with
+      either of those two approaches. A ViewPort would give one scrollable
+      sub-windows which would certainly be useful.
+    * Have the MenuBar support more than one instance of the same mnemonic 
+      at the same time - just as Menus do.
+
+==============================================================================
+14. Questions                                               *forms-questions*
+>
+    Q: Don't seem to be able to get <S-Tab> to work with Vim-linux.
+<
+>
+    Q: Entering <C-H> will give context information, but only about the
+       Glyph with focus. How to get the "application" level context to
+       display.
+<
+
+==============================================================================
+
+ vim:tw=78:ts=8:noet:ft=help:fo+=t:norl:noet:
