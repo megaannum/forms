@@ -110,7 +110,7 @@ if ! exists("g:forms_log_file") || g:self#IN_DEVELOPMENT_MODE
   let g:forms_log_file = "FORMS_LOG"
 endif
 if ! exists("g:forms_log_enabled") || g:self#IN_DEVELOPMENT_MODE
-  let g:forms_log_enabled = g:self#IS_TRUE
+  let g:forms_log_enabled = g:self#IS_FALSE
 endif
 
 function! forms#log(msg) 
