@@ -56,7 +56,9 @@ capabilities. Then, I will go back to may original Scala project.
 ## Download
 
 A zip snapshot of the Forms library can be downloaded 
-from www.vim.org, ....  TODO
+from 
+
+    www.vim.org, ....  TODO
 
 In your Vim home, normally $HOME/.vim in Unix, unzip/untar the file:
 
@@ -67,7 +69,10 @@ On a Windows system, vim home is normally $HOME/vimfiles.
 
     TODO how to unpack on Windows?
 
-Forms is also available via git: http://github.com/....  TODO
+Forms is also available via git: 
+
+    http://github.com/megaannum/forms
+
 One can download a release from github and extract content.
 
 If as a developer, one wants fixes as they appear, one can clone the 
@@ -174,6 +179,7 @@ As long as the Xterm is using the correct font, such as
 For console-base Vim running in an Xterm, the font used by Vim is the font
 used by the Xterm. Running on my Linux systems I found the following
 works to launch an Xterm appropriately configured:
+
     /usr/bin/xterm -g 80x30 -bg lightgrey -sl 1000 +si -fn \
        '-misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*'
 
