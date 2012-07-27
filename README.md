@@ -58,7 +58,7 @@ capabilities. Then, I will go back to may original Scala project.
 A zip snapshot of the Forms library can be downloaded 
 from 
 
-    www.vim.org, ....  TODO
+    http://www.vim.org/scripts/script.php?script_id=4149
 
 In your Vim home, normally $HOME/.vim in Unix, unzip/untar the file:
 
