@@ -15810,6 +15810,142 @@ function! forms#DrawVBoxes(name, allocation, children_request_size)
 endfunction
 
 " ------------------------------------------------------------ 
+" forms#DrawBoxes: {{{2
+"  Draw a grid of boxes with upper-left corner at allocation
+"    line/column with column widths and row heights
+"  parameters:
+"    name          : name of box drawing character set
+"    allocation    : line and column
+"    column_widths : list of column widths
+"    row_heights   : list of row heights
+" ------------------------------------------------------------ 
+function! forms#DrawBoxes(name, allocation, column_widths, row_heights)
+"silent call forms#log("forms#DrawBoxes: TOP")
+  let a = a:allocation
+  let l = a.line
+  let c = a.column
+  "let w = a.width
+  "let h = a.height
+  let col_ws = a:column_widths
+  let row_hs = a:row_heights
+
+  let boxcharset = forms#LookupBoxDrawingCharacterSet(a:name)
+  let dr = boxcharset[0]
+  let uh = boxcharset[1]
+  let dl = boxcharset[2]
+  let rv = boxcharset[3]
+  let ul = boxcharset[4]
+  let lh = boxcharset[5]
+  let ur = boxcharset[6]
+  let lv = boxcharset[7]
+
+  let hd = forms#LookupDownAndHorizontal(a:name)
+  let hu = forms#LookupUpAndHorizontal(a:name)
+  let vl = forms#LookupVerticalAndLeft(a:name)
+  let vr = forms#LookupVerticalAndRight(a:name)
+  let vh = forms#LookupVerticalAndHorizontal(a:name)
+
+  " outer loop: row 0 to nos_row-1
+  " inner loop: col 0 to nos_col-1
+
+  let nos_row = len(row_hs)
+  let nos_col = len(col_ws)
+
+  let y = l
+  let rcnt = 0
+  while rcnt < nos_row
+    let h = row_hs[rcnt]
+
+    let x = c
+    let ccnt = 0
+    while ccnt < nos_col
+      let w = col_ws[ccnt]
+
+      " draw upper left corner
+      if rcnt == 0
+        if ccnt == 0
+          call forms#SetCharAt(dr, y, x)
+        else
+          call forms#SetCharAt(hd, y, x)
+        endif
+      else
+        if ccnt == 0
+          call forms#SetCharAt(vr, y, x)
+        else
+          call forms#SetCharAt(vh, y, x)
+        endif
+      endif
+
+      " draw top 
+      let cnt = 1
+      while cnt < w+1
+        call forms#SetCharAt(uh, y, x+cnt)
+
+        let cnt += 1
+      endwhile
+
+      " draw upper right corner
+      if ccnt == nos_col-1
+        if rcnt == 0
+          call forms#SetCharAt(dl, y, x+w+1)
+        else
+          call forms#SetCharAt(vl, y, x+w+1)
+        endif
+      endif
+
+      " draw left side
+      let cnt = 1
+      while cnt < h+1
+        call forms#SetCharAt(lv, y+cnt, x)
+
+        let cnt += 1
+      endwhile
+      " call forms#SetCharAt(rv, ly+cnt, c+w-1)
+
+      " draw right side
+      if ccnt == nos_col-1
+        let cnt = 1
+        while cnt < h+1
+          call forms#SetCharAt(lv, y+cnt, x+w+1)
+
+          let cnt += 1
+        endwhile
+      endif
+
+      " draw lower left corner
+      if rcnt == nos_row-1
+        if ccnt == 0
+          call forms#SetCharAt(ur, y+h+1, x)
+        else
+          call forms#SetCharAt(hu, y+h+1, x)
+        endif
+      endif
+
+      " draw bottom 
+      if rcnt == nos_row-1
+        let cnt = 1
+        while cnt < w+1
+          call forms#SetCharAt(uh, y+h+1, x+cnt)
+
+          let cnt += 1
+        endwhile
+      endif
+
+      " draw lower right corner
+      if rcnt == nos_row-1 && ccnt == nos_col-1
+        call forms#SetCharAt(ul, y+h+1, x+w+1)
+      endif
+
+      let x += w+1
+      let ccnt += 1
+    endwhile
+
+    let y += h+1
+    let rcnt += 1
+  endwhile
+endfunction
+
+" ------------------------------------------------------------ 
 " forms#DrawFrame: {{{2
 "  Draw a frame with upper-left corner at allocation
 "    line/column, width and height 
