@@ -503,7 +503,7 @@ endif
                                       \ 'alignment': 'T' })
   "....................
   if ! a:with_pallet
-    let title = forms#newLabel({'text': "Color Choose"})
+    let title = forms#newLabel({'text': "Color Chooser"})
     let topvpoly = forms#newVPoly({ 'children': [
                                         \ title, 
                                         \ hpoly, 
