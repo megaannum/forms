@@ -1,7 +1,7 @@
 forms.txt          For Vim version 7.3              Last change: 2012 July 19
 
 Author:      Richard Emberson 
-Version:     1.0
+Version:     1.0.2
 Title:       Forms Library
 Homepage:    TODO
 
