@@ -92,7 +92,8 @@ or
 
 ## Directory layout
 
-After unpacking the Forms directory layout should look like: >
+After unpacking the Forms directory layout should look like:
+
     $HOME/.vim/
       autoload/
         forms.vim
