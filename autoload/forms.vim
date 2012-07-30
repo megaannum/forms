@@ -795,517 +795,322 @@ endfunction
 "  parameters: NONE
 "-------------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
-  if exists("s:FU")
-    unlet s:FU
+  if exists("g:forms_Util")
+    unlet g:forms_Util
   endif
 endif
-function! s:Util()
-  if !exists("s:FU")
-    let s:FU = { }
-    let s:FU.__nullGlyph = forms#newNullGlyph({})
-    let s:FU.__emptyAction = forms#newAction({})
+if !exists("g:forms_Util")
+  let g:forms_Util = { }
+  " ------------------------------------------------------------ 
+  " g:forms_Util.nullGlyph {{{2
+  "  Gets a null glyph; no actions, size or rendering.
+  "  parameters: NONE
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.nullGlyph() dict
+    if ! exists("g:forms_Util.__nullGlyph")
+      let g:forms_Util.__nullGlyph = forms#newNullGlyph({})
+    endif
+    return g:forms_Util.__nullGlyph
+  endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().nullGlyph {{{2
-    "  Gets a null glyph; no actions, size or rendering.
-    "  parameters: NONE
-    " ------------------------------------------------------------ 
-    function! s:FU.nullGlyph() dict
-      return s:FU.__nullGlyph
-    endfunction
+  " ------------------------------------------------------------ 
+  " g:forms_Util.emptyAction {{{2
+  "  Gets action that does nothing
+  "  parameters: NONE
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.emptyAction() dict
+    if ! exists("g:forms_Util.__emptyAction")
+      let g:forms_Util.__emptyAction = forms#newAction({})
+    endif
+    return g:forms_Util.__emptyAction
+  endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().emptyAction {{{2
-    "  Gets action that does nothing
-    "  parameters: NONE
-    " ------------------------------------------------------------ 
-    function! s:FU.emptyAction() dict
-      return s:FU.__emptyAction
-    endfunction
-
-    " ------------------------------------------------------------ 
-    " s:Util().checkHAlignment {{{2
-    "   Checks if halignment parameter is a valid horizontal
-    "     alignment value.  Either 
-    "       float: 0 <= halignment <= 1.0
-    "       character: 'L' 'C' or 'R'
-    "     If the parameter is not valid, and exception is thrown.
-    "  parameters:
-    "   halignment : attribute value being checked
-    "   name       : name of component requesting check
-    " ------------------------------------------------------------ 
-    function! s:FU.checkHAlignment(halignment, name) dict
-      if type(a:halignment) == g:self#FLOAT_TYPE
-        if a:halignment < 0.0
-          throw "" . a:name . ": alignment float value < 0.0: " . a:halignment
-        elseif  a:halignment > 1.0
-          throw "" . a:name . ": alignment float value > 1.0: " . a:halignment
-        endif
-      elseif type(a:halignment) == g:self#STRING_TYPE
-        if a:halignment != "L" && a:halignment != "C" && a:halignment != "R" 
-          throw "" . a:name . ": halignment string value != L or C or R: " . a:halignment
-        endif
-      else
-        throw "" . a:name . ": bad halignment type: " . a:halignment
+  " ------------------------------------------------------------ 
+  " g:forms_Util.checkHAlignment {{{2
+  "   Checks if halignment parameter is a valid horizontal
+  "     alignment value.  Either 
+  "       float: 0 <= halignment <= 1.0
+  "       character: 'L' 'C' or 'R'
+  "     If the parameter is not valid, and exception is thrown.
+  "  parameters:
+  "   halignment : attribute value being checked
+  "   name       : name of component requesting check
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.checkHAlignment(halignment, name) dict
+    if type(a:halignment) == g:self#FLOAT_TYPE
+      if a:halignment < 0.0
+        throw "" . a:name . ": alignment float value < 0.0: " . a:halignment
+      elseif  a:halignment > 1.0
+        throw "" . a:name . ": alignment float value > 1.0: " . a:halignment
       endif
-    endfunction
-
-    " ------------------------------------------------------------ 
-    " s:Util().checkVAlignment {{{2
-    "   Checks if valignment parameter is a valid vertical
-    "     alignment value.  Either 
-    "       float: 0 <= valignment <= 1.0
-    "       character: 'T' 'C' or 'B'
-    "     If the parameter is not valid, and exception is thrown.
-    "  parameters:
-    "   valignment : attribute value being checked
-    "   name       : name of component requesting check
-    " ------------------------------------------------------------ 
-    function! s:FU.checkVAlignment(valignment, name) dict
-      if type(a:valignment) == g:self#FLOAT_TYPE
-        if a:valignment < 0.0
-          throw "" . a:name . ": alignment float value < 0.0: " . a:valignment
-        elseif  a:valignment > 1.0
-          throw "" . a:name . ": alignment float value > 1.0: " . a:valignment
-        endif
-      elseif type(a:valignment) == g:self#STRING_TYPE
-        if a:valignment != "T" && a:valignment != "C" && a:valignment != "B" 
-          throw "" . a:name . ": valignment string value != T or C or B: " . a:valignment
-        endif
-      else
-        throw "" . a:name . ": bad valignment type: " . a:valignment
+    elseif type(a:halignment) == g:self#STRING_TYPE
+      if a:halignment != "L" && a:halignment != "C" && a:halignment != "R" 
+        throw "" . a:name . ": halignment string value != L or C or R: " . a:halignment
       endif
-    endfunction
+    else
+      throw "" . a:name . ": bad halignment type: " . a:halignment
+    endif
+  endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().drawHLine {{{2
-    "   Draw a horizontal line
-    "  parameters:
-    "   rect       : list of [line, column, size]
-    "   char       : character used to draw line 
-    " ------------------------------------------------------------ 
-    function! s:FU.drawHLine(rect, char) dict
+  " ------------------------------------------------------------ 
+  " g:forms_Util.checkVAlignment {{{2
+  "   Checks if valignment parameter is a valid vertical
+  "     alignment value.  Either 
+  "       float: 0 <= valignment <= 1.0
+  "       character: 'T' 'C' or 'B'
+  "     If the parameter is not valid, and exception is thrown.
+  "  parameters:
+  "   valignment : attribute value being checked
+  "   name       : name of component requesting check
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.checkVAlignment(valignment, name) dict
+    if type(a:valignment) == g:self#FLOAT_TYPE
+      if a:valignment < 0.0
+        throw "" . a:name . ": alignment float value < 0.0: " . a:valignment
+      elseif  a:valignment > 1.0
+        throw "" . a:name . ": alignment float value > 1.0: " . a:valignment
+      endif
+    elseif type(a:valignment) == g:self#STRING_TYPE
+      if a:valignment != "T" && a:valignment != "C" && a:valignment != "B" 
+        throw "" . a:name . ": valignment string value != T or C or B: " . a:valignment
+      endif
+    else
+      throw "" . a:name . ": bad valignment type: " . a:valignment
+    endif
+  endfunction
+
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawHLine {{{2
+  "   Draw a horizontal line
+  "  parameters:
+  "   rect       : list of [line, column, size]
+  "   char       : character used to draw line 
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawHLine(rect, char) dict
 "call forms#log("Util.drawHLine " .  string(a:rect) . ", char=" . a:char)
-      let [line, column, size] = a:rect
-      if size == 1
-        call forms#SetCharAt(a:char, line, column)
-      else
-        let str = repeat(a:char, size)
-        call forms#SetStringAt(str, line, column)
-      endif
-    endfunction
+    let [line, column, size] = a:rect
+    if size == 1
+      call forms#SetCharAt(a:char, line, column)
+    else
+      let str = repeat(a:char, size)
+      call forms#SetStringAt(str, line, column)
+    endif
+  endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().drawVLine {{{2
-    "   Draw a vertical line
-    "  parameters:
-    "   rect       : list of [line, column, size]
-    "   char       : character used to draw line 
-    " ------------------------------------------------------------ 
-    function! s:FU.drawVLine(rect, char) dict
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawVLine {{{2
+  "   Draw a vertical line
+  "  parameters:
+  "   rect       : list of [line, column, size]
+  "   char       : character used to draw line 
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawVLine(rect, char) dict
 "call forms#log("Util.drawVLine " .  string(a:rect) . ", char=" . a:char)
-      let [line, column, size] = a:rect
-      if size == 1
-        call forms#SetCharAt(a:char, line, column)
-      else
-        let cnt = 0
-        while cnt < size
-          call forms#SetCharAt(a:char, line+cnt, column)
+    let [line, column, size] = a:rect
+    if size == 1
+      call forms#SetCharAt(a:char, line, column)
+    else
+      let cnt = 0
+      while cnt < size
+        call forms#SetCharAt(a:char, line+cnt, column)
 
-          let cnt += 1
-        endwhile
-      endif
-    endfunction
+        let cnt += 1
+      endwhile
+    endif
+  endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().drawRect {{{2
-    "   Draw a rectangular region
-    "     This is called bye drawHVAlign to draw the potentially
-    "     eight different alignment regions:
-    "       tl  tc  tr
-    "       cl      cr
-    "       bl  bc  br
-    "  parameters:
-    "   rect       : list of [line, column, width, height]
-    "   char       : character used to draw line 
-    " ------------------------------------------------------------ 
-    function! s:FU.drawRect(rect, char) dict
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawRect {{{2
+  "   Draw a rectangular region
+  "     This is called bye drawHVAlign to draw the potentially
+  "     eight different alignment regions:
+  "       tl  tc  tr
+  "       cl      cr
+  "       bl  bc  br
+  "  parameters:
+  "   rect       : list of [line, column, width, height]
+  "   char       : character used to draw line 
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawRect(rect, char) dict
 " call forms#log("Util.drawRect " .  string(a:rect) . ", char=" . a:char)
-      if a:char != ''
-        let [line, column, width, height] = a:rect
-        if line != -1 && column != -1 && width != -1 && height != -1
+    if a:char != ''
+      let [line, column, width, height] = a:rect
+      if line != -1 && column != -1 && width != -1 && height != -1
 
-          if height == 1
-            if width == 1
-              call forms#SetCharAt(a:char, line, column)
-            else
-              call forms#SetHCharsAt(a:char, width, line, column)
-            endif
+        if height == 1
+          if width == 1
+            call forms#SetCharAt(a:char, line, column)
           else
-            if width == 1
-              " TODO use forms#SetVCharsAt
-              let cnt = 0
-              while cnt < height
-                call forms#SetCharAt(a:char, line+cnt, column)
-
-                let cnt += 1
-              endwhile
-            else
-              " TODO use forms#SetVCharsAt
-              let cnt = 0
-              while cnt < height
-                call forms#SetHCharsAt(a:char, width, line+cnt, column)
-
-                let cnt += 1
-              endwhile
-            endif
+            call forms#SetHCharsAt(a:char, width, line, column)
           endif
-        endif
-      endif
-    endfunction
-
-    " ------------------------------------------------------------ 
-    " s:Util().vAlign {{{2
-    "   Return the vertical alignment offset from line for child 
-    "  parameters:
-    "   vinfo       : list of [line, height, childheight]
-    "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
-    " ------------------------------------------------------------ 
-    function! s:FU.vAlign(vinfo, alignment) dict
-" call forms#log("Util.vAlign " .  string(a:vinfo) . ", " . a:alignment)
-      let line = a:vinfo.line
-      let height = a:vinfo.height
-      let childheight = a:vinfo.childheight
-
-      if height <= childheight
-        return line
-      else 
-        let m = height - childheight
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          return line+f
-        elseif a:alignment == "T"
-          return line
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          return line+f
-        elseif a:alignment == "B"
-          return line+m
         else
-          throw "Util.vAlign: bad alignment: " . a:alignment
-        endif
-      endif
-    endfunction
-
-    " ------------------------------------------------------------ 
-    " s:Util().hAlign {{{2
-    "   Return the horizontal alignment offset from column for child 
-    "  parameters:
-    "   vinfo       : list of [column, width, childwidth]
-    "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
-    " ------------------------------------------------------------ 
-    function! s:FU.hAlign(hinfo, alignment) dict
-" call forms#log("Util.hAlign " .  string(a:hinfo) . ", " . a:alignment)
-      let column = a:hinfo.column
-      let width = a:hinfo.width
-      let childwidth = a:hinfo.childwidth
-
-      if width <= childwidth
-        return column
-      else 
-        let m = width - childwidth
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          return column+f
-        elseif a:alignment == "L"
-          return column
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          return column+f
-        elseif a:alignment == "R"
-          return column+m
-        else
-          throw "Util.hAlign: bad alignment: " . a:alignment
-        endif
-      endif
-    endfunction
-
-
-    " ------------------------------------------------------------ 
-    " s:Util().drawVAlign {{{2
-    "   Draw a glyph vertically aligned 
-    "  parameters:
-    "   glyph       : glyph to be aligned and drawn
-    "   allocation  : dictionary of { 'line', 'column', 'height', 'childwidth', 'childheight' }
-    "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
-    "   char        : character to fill alignment spaces
-    " ------------------------------------------------------------ 
-    function! s:FU.drawVAlign(glyph, allocation, alignment, char) dict
-" call forms#log("Util.drawVAlign " .  string(a:allocation) . ", " . a:alignment)
-      let line = a:allocation.line
-      let column = a:allocation.column
-      let height = a:allocation.height
-      let childwidth = a:allocation.childwidth
-      let childheight = a:allocation.childheight
-
-      let char = a:char
-
-      if height <= childheight
-        " draw body as is
-        call a:glyph.draw({
-                          \ 'line': line,
-                          \ 'column': column,
-                          \ 'width': childwidth,
-                          \ 'height': childheight
-                          \ })
-
-      elseif childwidth == 1
-        let m = height - childheight
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          if char != '' 
-            let b = m - f
-            if f > 0
-              let cnt = 0
-              while cnt < f
-                " TODO not utf8
-                " call cursor(a:line+cnt, a:col)
-                " execute "normal " . "r" . char . ""
-                call forms#SetCharAt(char, a:line+cnt, a:col)
-
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              let cnt = 0
-              while cnt < b
-                " TODO not utf8
-                " call cursor(a:line+childheight+f+cnt, a:col)
-                " execute "normal " . "r" . char . ""
-                call forms#SetCharAt(char, a:line+childheight+f+cnt, a:col)
-
-                let cnt += 1
-              endwhile
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line+f,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "T"
-          if char != '' 
+          if width == 1
+            " TODO use forms#SetVCharsAt
             let cnt = 0
-            while cnt < m
-              " TODO not utf8
-              " call cursor(a:line+childheight+cnt, a:col)
-              " execute "normal " . "r" . char . ""
-              call forms#SetCharAt(char, a:line+childheight+cnt, a:col)
+            while cnt < height
+              call forms#SetCharAt(a:char, line+cnt, column)
+
+              let cnt += 1
+            endwhile
+          else
+            " TODO use forms#SetVCharsAt
+            let cnt = 0
+            while cnt < height
+              call forms#SetHCharsAt(a:char, width, line+cnt, column)
 
               let cnt += 1
             endwhile
           endif
+        endif
+      endif
+    endif
+  endfunction
 
-          call a:glyph.draw({
-                            \ 'line': line,
-                            \ 'column': column,
-                            \ 'width': childwidth,
-                            \ 'height': childheight
-                            \ })
+  " ------------------------------------------------------------ 
+  " g:forms_Util.vAlign {{{2
+  "   Return the vertical alignment offset from line for child 
+  "  parameters:
+  "   vinfo       : list of [line, height, childheight]
+  "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.vAlign(vinfo, alignment) dict
+" call forms#log("Util.vAlign " .  string(a:vinfo) . ", " . a:alignment)
+    let line = a:vinfo.line
+    let height = a:vinfo.height
+    let childheight = a:vinfo.childheight
 
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          if char != '' 
-            let b = m - f
-            if f > 0
-              let cnt = 0
-              while cnt < f
-                " TODO not utf8
-                " call cursor(a:line+cnt, a:col)
-                " execute "normal " . "r" . char . ""
-                call forms#SetCharAt(char, a:line+cnt, a:col)
+    if height <= childheight
+      return line
+    else 
+      let m = height - childheight
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
+        return line+f
+      elseif a:alignment == "T"
+        return line
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        return line+f
+      elseif a:alignment == "B"
+        return line+m
+      else
+        throw "Util.vAlign: bad alignment: " . a:alignment
+      endif
+    endif
+  endfunction
 
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              let cnt = 0
-              while cnt < b
-                " TODO not utf8
-                "call cursor(a:line+childheight+f+cnt, a:colf)
-                "execute "normal " . "r" . char . ""
-                call forms#SetCharAt(char, a:line+childheight+f+cnt, a:col)
+  " ------------------------------------------------------------ 
+  " g:forms_Util.hAlign {{{2
+  "   Return the horizontal alignment offset from column for child 
+  "  parameters:
+  "   vinfo       : list of [column, width, childwidth]
+  "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.hAlign(hinfo, alignment) dict
+" call forms#log("Util.hAlign " .  string(a:hinfo) . ", " . a:alignment)
+    let column = a:hinfo.column
+    let width = a:hinfo.width
+    let childwidth = a:hinfo.childwidth
 
-                let cnt += 1
-              endwhile
-            endif
-          endif
+    if width <= childwidth
+      return column
+    else 
+      let m = width - childwidth
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
+        return column+f
+      elseif a:alignment == "L"
+        return column
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        return column+f
+      elseif a:alignment == "R"
+        return column+m
+      else
+        throw "Util.hAlign: bad alignment: " . a:alignment
+      endif
+    endif
+  endfunction
 
-          call a:glyph.draw({
-                              \ 'line': line+f,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
 
-        elseif a:alignment == "B"
-          if char != '' 
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawVAlign {{{2
+  "   Draw a glyph vertically aligned 
+  "  parameters:
+  "   glyph       : glyph to be aligned and drawn
+  "   allocation  : dictionary of { 'line', 'column', 'height', 'childwidth', 'childheight' }
+  "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
+  "   char        : character to fill alignment spaces
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawVAlign(glyph, allocation, alignment, char) dict
+" call forms#log("Util.drawVAlign " .  string(a:allocation) . ", " . a:alignment)
+    let line = a:allocation.line
+    let column = a:allocation.column
+    let height = a:allocation.height
+    let childwidth = a:allocation.childwidth
+    let childheight = a:allocation.childheight
+
+    let char = a:char
+
+    if height <= childheight
+      " draw body as is
+      call a:glyph.draw({
+                        \ 'line': line,
+                        \ 'column': column,
+                        \ 'width': childwidth,
+                        \ 'height': childheight
+                        \ })
+
+    elseif childwidth == 1
+      let m = height - childheight
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
+        if char != '' 
+          let b = m - f
+          if f > 0
             let cnt = 0
-            while cnt < m
+            while cnt < f
               " TODO not utf8
-              " call cursor(a:line_cnt, a:col)
+              " call cursor(a:line+cnt, a:col)
               " execute "normal " . "r" . char . ""
               call forms#SetCharAt(char, a:line+cnt, a:col)
 
               let cnt += 1
             endwhile
           endif
-
-          call a:glyph.draw({
-                              \ 'line': line+m,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        else
-          throw "VAlign.draw: bad alignment: " . a:alignment
-        endif
-
-      else " childwidth > 1
-        let m = height - childheight
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          if char != '' 
-            let b = m - f
-            if f > 0
-              let cnt = 0
-              while cnt < f
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, childwidth, a:line+cnt, a:col)
-
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              let cnt = 0
-              while cnt < b
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, childwidth, a:line+childheight+f+cnt, a:col)
-
-                let cnt += 1
-              endwhile
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line+f,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "T"
-          if char != '' 
-            " also do visual method
+          if b > 0
             let cnt = 0
-            while cnt < m
-              " TODO use forms#SetVCharsAt
-              call forms#SetHCharsAt(char, childwidth, a:line+childheight+cnt, a:col)
+            while cnt < b
+              " TODO not utf8
+              " call cursor(a:line+childheight+f+cnt, a:col)
+              " execute "normal " . "r" . char . ""
+              call forms#SetCharAt(char, a:line+childheight+f+cnt, a:col)
 
               let cnt += 1
             endwhile
           endif
+        endif
 
-          call a:glyph.draw({
-                            \ 'line': line,
+        call a:glyph.draw({
+                            \ 'line': line+f,
                             \ 'column': column,
                             \ 'width': childwidth,
                             \ 'height': childheight
                             \ })
 
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          if char != '' 
-            let b = m - f
-            if f > 0
-              " also do visual method
-              let cnt = 0
-              while cnt < f
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, childwidth, a:line+cnt, a:col)
+      elseif a:alignment == "T"
+        if char != '' 
+          let cnt = 0
+          while cnt < m
+            " TODO not utf8
+            " call cursor(a:line+childheight+cnt, a:col)
+            " execute "normal " . "r" . char . ""
+            call forms#SetCharAt(char, a:line+childheight+cnt, a:col)
 
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              " also do visual method
-              let cnt = 0
-              while cnt < b
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, childwidth, a:line+childheight+f+cnt, a:col)
-
-                let cnt += 1
-              endwhile
-            endif
-          endif
-          
-          call a:glyph.draw({
-                              \ 'line': line+f,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "B"
-          if char != '' 
-            " also do visual method
-            let cnt = 0
-            while cnt < m
-              " TODO use forms#SetVCharsAt
-              call forms#SetHCharsAt(char, childwidth, a:line++cnt, a:col)
-
-              let cnt += 1
-            endwhile
-          endif
-          
-          call a:glyph.draw({
-                              \ 'line': line+m,
-                              \ 'column': column,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        else
-          throw "Util.drawVAlign: bad alignment: " . a:alignment
+            let cnt += 1
+          endwhile
         endif
-      endif
-    endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().drawVAlign {{{2
-    "   Draw a glyph horizontally aligned 
-    "  parameters:
-    "   glyph       : glyph to be aligned and drawn
-    "   allocation  : dictionary of { 'line', 'column', 'width', 'childwidth', 'childheight' }
-    "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
-    "   char        : character to fill alignment spaces
-    " ------------------------------------------------------------ 
-    function! s:FU.drawHAlign(glyph, allocation, alignment, char) dict
-" call forms#log("Util.drawHAlign " .  string(a:allocation) . ", " . a:alignment)
-      let line = a:allocation.line
-      let column = a:allocation.column
-      let width = a:allocation.width
-      let childwidth = a:allocation.childwidth
-      let childheight = a:allocation.childheight
-
-      let char = a:char
-
-      if width <= childwidth
-        " draw glyph as is
         call a:glyph.draw({
                           \ 'line': line,
                           \ 'column': column,
@@ -1313,487 +1118,682 @@ function! s:Util()
                           \ 'height': childheight
                           \ })
 
-      elseif childheight == 1
-        let m = width - childwidth
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          if char != '' 
-            let b = m - f
-            if f > 0
-              call forms#SetHCharsAt(char, f, line, column)
-            endif
-            if b > 0
-              call forms#SetHCharsAt(char, b, line, column+childwidth+f)
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + f,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "L"
-          if char != '' 
-            call forms#SetHCharsAt(char, m, line, column+childwidth)
-          endif
-
-          call a:glyph.draw({
-                          \ 'line': line,
-                          \ 'column': column,
-                          \ 'width': childwidth,
-                          \ 'height': childheight
-                          \ })
-
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          if char != '' 
-            let b = m - f
-            if f > 0
-              call forms#SetHCharsAt(char, f, line, column)
-            endif
-            if b > 0
-              call forms#SetHCharsAt(char, b, line, column+childwidth+f)
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + f,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "R"
-          if char != '' 
-            call forms#SetHCharsAt(char, m, line, column)
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + m,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        else
-          throw "HAlign.draw: bad alignment: " . a:alignment
-        endif
-
-      else " childheight > 1
-        let m = width - childwidth
-        if type(a:alignment) == g:self#FLOAT_TYPE
-          let f = float2nr(m * a:alignment)
-          if char != '' 
-            let b = m - f
-            if f > 0
-              let cnt = 0
-              while cnt < childheight
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, f, line+cnt, column)
-
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              let cnt = 0
-              while cnt < childheight
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, b, line+cnt, column+childwidth+f)
-
-                let cnt += 1
-              endwhile
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + f,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "L"
-          if char != '' 
-            " also do visual method
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        if char != '' 
+          let b = m - f
+          if f > 0
             let cnt = 0
-            while cnt < childheight
-              " TODO use forms#SetVCharsAt
-              call forms#SetHCharsAt(char, m, line+cnt, column+childwidth)
+            while cnt < f
+              " TODO not utf8
+              " call cursor(a:line+cnt, a:col)
+              " execute "normal " . "r" . char . ""
+              call forms#SetCharAt(char, a:line+cnt, a:col)
 
               let cnt += 1
             endwhile
           endif
-
-          call a:glyph.draw({
-                          \ 'line': line,
-                          \ 'column': column,
-                          \ 'width': childwidth,
-                          \ 'height': childheight
-                          \ })
-
-        elseif a:alignment == "C"
-          let f = (m+1)/2
-          if char != '' 
-            let b = m - f
-            if f > 0
-              " also do visual method
-              let cnt = 0
-              while cnt < childheight
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, f, line+cnt, column)
-
-                let cnt += 1
-              endwhile
-            endif
-            if b > 0
-              " also do visual method
-              let cnt = 0
-              while cnt < childheight
-                " TODO use forms#SetVCharsAt
-                call forms#SetHCharsAt(char, b, line+cnt, column+childwidth+f)
-
-                let cnt += 1
-              endwhile
-            endif
-          endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + f,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        elseif a:alignment == "R"
-          if char != '' 
-            " also do visual method
+          if b > 0
             let cnt = 0
-            while cnt < childheight
-              " TODO use forms#SetVCharsAt
-              call forms#SetHCharsAt(char, m, line+cnt, column)
+            while cnt < b
+              " TODO not utf8
+              "call cursor(a:line+childheight+f+cnt, a:colf)
+              "execute "normal " . "r" . char . ""
+              call forms#SetCharAt(char, a:line+childheight+f+cnt, a:col)
 
               let cnt += 1
             endwhile
           endif
-
-          call a:glyph.draw({
-                              \ 'line': line,
-                              \ 'column': column + m,
-                              \ 'width': childwidth,
-                              \ 'height': childheight
-                              \ })
-
-        else
-          throw "drawHAlign: bad alignment: " . a:alignment
         endif
-      endif
-    endfunction
 
-    " ------------------------------------------------------------ 
-    " s:Util().drawHVAlign {{{2
-    "   Draw a glyph both vertically and horizontally aligned 
-    "  parameters:
-    "   glyph       : glyph to be aligned and drawn
-    "   allocation  : dictionary of { 'line', 'column', 'width', 'height', 'childwidth', 'childheight' }
-    "   halignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
-    "   valignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
-    "   char        : character to fill alignment spaces
-    " ------------------------------------------------------------ 
-    function! s:FU.drawHVAlign(glyph, allocation, halignment, valignment, char) dict
-" call forms#log("Util.drawHVAlign " .  string(a:allocation) . ", ha=" . a:halignment . ", va=" . a:valignment)
-      let line = a:allocation.line
-      let column = a:allocation.column
-      let width = a:allocation.width
-      let height = a:allocation.height
-      let childwidth = a:allocation.childwidth
-      let childheight = a:allocation.childheight
-
-      let halignment = a:halignment
-      let valignment = a:valignment
-      let char = a:char
-
-      if height <= childheight && width <= childwidth
-        " currently do not clip to size, so draw body as is
         call a:glyph.draw({
-                            \ 'line': line,
+                            \ 'line': line+f,
+                            \ 'column': column,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "B"
+        if char != '' 
+          let cnt = 0
+          while cnt < m
+            " TODO not utf8
+            " call cursor(a:line_cnt, a:col)
+            " execute "normal " . "r" . char . ""
+            call forms#SetCharAt(char, a:line+cnt, a:col)
+
+            let cnt += 1
+          endwhile
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line+m,
                             \ 'column': column,
                             \ 'width': childwidth,
                             \ 'height': childheight
                             \ })
 
       else
+        throw "VAlign.draw: bad alignment: " . a:alignment
+      endif
 
-          if char != ''
-            " [line, col, width, height]
-            let l:tl = [-1, -1, -1, -1]
-            let l:tc = [-1, -1, -1, -1]
-            let l:tr = [-1, -1, -1, -1]
-            let l:cl = [-1, -1, -1, -1]
-            " cc is the body glyph
-            let l:cr = [-1, -1, -1, -1]
-            let l:bl = [-1, -1, -1, -1]
-            let l:bc = [-1, -1, -1, -1]
-            let l:br = [-1, -1, -1, -1]
-          endif
-
-          if height <= childheight 
-            " width > childwidth
-            let wdiff = width - childwidth
-            let line_child = 0
-
-            if type(halignment) == g:self#FLOAT_TYPE
-              let l = float2nr(wdiff * halignment)
-              let column_child = l
-              if char != ''
-                let r = wdiff - l
-                let l:cl = [line, column, l, childheight]
-                let l:cr = [line, column+childwidth+l, r, childheight]
-              endif
-
-            elseif halignment == "L"
-              let column_child = 0
-              let l:cr = [line, column+childwidth, wdiff, childheight]
-
-            elseif halignment == "C"
-              let l = (wdiff+1)/2
-              let column_child = l
-              if char != ''
-                let r = wdiff - l
-                let l:cl = [line, column, l, childheight]
-                let l:cr = [line, column+childwidth+l, r, childheight]
-              endif
-
-            elseif halignment == "R"
-              let column_child = wdiff
-              if char != ''
-                let l:cl = [line, column, wdiff, childheight]
-              endif
-
-            else
-              throw "drawHVAlign: bad halignment: " . halignment
-            endif
-
-          elseif width <= childwidth
-            " height > childheight
-            let hdiff = height - childheight
-            let column_child = 0
-
-            if type(valignment) == g:self#FLOAT_TYPE
-  " call forms#log("drawHVAlign .valignment")
-              let t = float2nr(hdiff * valignment)
-              let line_child = t
-              if char != ''
-                let b = hdiff - l
-                let l:tc = [line, column, childwidth, t]
-                let l:bc = [line+childheight+t, column, childwidth, b]
-              endif
-
-            elseif valignment == "T"
-  " call forms#log("drawHVAlign .T")
-              let line_child = 0
-              if char != ''
-                let l:bc = [line+childheight, column, childwidth, hdiff]
-              endif
-
-            elseif valignment == "C"
-  " call forms#log("drawHVAlign .C")
-              let t = (hdiff+1)/2
-              let line_child = t
-              if char != ''
-                let b = hdiff - t
-                let l:tc = [line, column, childwidth, t]
-                let l:bc = [line+childheight+t, column, childwidth, b]
-              endif
-
-            elseif valignment == "B"
-  " call forms#log("drawHVAlign .B")
-              let line_child = hdiff
-              if char != ''
-                let l:tc = [line, column, childwidth, hdiff]
-              endif
-
-            else
-              throw "drawHVAlign: bad valignment: " . valignment
-            endif
-
-          else
-            " height > childheight
-            " width > childwidth
-
-            let wdiff = width - childwidth
-            let hdiff = height - childheight
-            if type(valignment) == g:self#FLOAT_TYPE
-              if valignment == 0
-                let vp = 'T'
-              elseif valignment == 1
-                let vp = 'B'
-              else
-                let vp = 'C'
-                let t = float2nr(wdiff * valignment)
-              endif
-            else
-              let vp = valignment
-              if vp == 'C'
-                let t = (hdiff+1)/2
-              endif
-            endif
-            if type(halignment) == g:self#FLOAT_TYPE
-              if halignment == 0
-                let hp = 'L'
-              elseif halignment == 1
-                let hp = 'R'
-              else
-                let hp = 'C'
-                let l = float2nr(hdiff * halignment)
-              endif
-            else
-              let hp = halignment
-              if hp == 'C'
-                let l = (wdiff+1)/2
-              endif
-            endif
-
-            if vp == 'T'
-              let line_child = 0
-              if hp == 'L'
-                let column_child = 0
-                if char != ''
-                  let l:cr = [line, column+childwidth, wdiff, childheight]
-                  let l:bc = [line+childheight, column, childwidth, hdiff]
-                  let l:br = [line+childheight, column+childwidth, wdiff, hdiff]
-                endif
-
-              elseif hp == 'C'
-                let r = wdiff - l
-                let column_child = l
-                if char != ''
-                  let l:cl = [line, column, l, childheight]
-                  let l:bl = [line+childheight, column, l, hdiff]
-                  let l:bc = [line+childheight, column+l, childwidth, hdiff]
-                  let l:br = [line+childheight, column+childwidth+l, r, hdiff]
-                  let l:cr = [line, column+childwidth+l, r, childheight]
-                endif
-
-              elseif hp == 'R'
-                let column_child = wdiff
-                if char != ''
-                  let l:cl = [line, column, wdiff, childheight]
-                  let l:bl = [line+childheight, column, wdiff, hdiff]
-                  let l:bc = [line+childheight, column+wdiff, childwidth, hdiff]
-                endif
-
-              else
-                throw "drawHVAlign: bad halignment: " . hp
-              endif
-
-            elseif vp == 'C'
-              let b = hdiff - t
-              let line_child = t
-              if hp == 'L'
-                let column_child = 0
-                if char != ''
-                  let l:tc = [line, column, childwidth, t]
-                  let l:tr = [line, column+childwidth, wdiff, t]
-                  let l:cr = [line+t, column+childwidth, wdiff, childheight]
-                  let l:br = [line+childheight+t, column+childwidth, wdiff, b]
-                  let l:bc = [line+childheight+t, column, childwidth, b]
-                endif
-
-              elseif hp == 'C'
-                let column_child = l
-                if char != ''
-                  let r = wdiff - l
-                  let l:tl = [line, column, l, t]
-                  let l:tc = [line, column+l, childwidth, t]
-                  let l:tr = [line, column+l+childwidth, r, t]
-                  let l:cr = [line+t, column+l+childwidth, r, childheight]
-                  let l:br = [line+childheight+t, column+childwidth+l, r, b]
-                  let l:bc = [line+childheight+t, column+l, childwidth, b]
-                  let l:bl = [line+childheight+t, column, l, b]
-                  let l:cl = [line+t, column, l, childheight]
-                endif
-
-              elseif hp == 'R'
-                let column_child = wdiff
-                if char != ''
-                  let l:tl = [line, column, wdiff, t]
-                  let l:cl = [line+t, column, wdiff, childheight]
-                  let l:bl = [line+childheight+t, column, wdiff, b]
-                  let l:tc = [line, column+wdiff, childwidth, t]
-                  let l:bc = [line+childheight+t, column+wdiff, childwidth, b]
-                endif
-
-              else
-                throw "drawHVAlign: bad halignment: " . hp
-              endif
-
-            elseif vp == 'B'
-              let line_child = hdiff
-              if hp == 'L'
-                let column_child = 0
-                if char != ''
-                  let l:tc = [line, column, childwidth, hdiff]
-                  let l:tr = [line, column+childwidth, wdiff, hdiff]
-                  let l:cr = [line+hdiff, column+childwidth, wdiff, childheight]
-                endif
-
-              elseif hp == 'C'
-                let column_child = l
-                if char != ''
-                  let r = wdiff - l
-                  let l:tl = [line, column, l, hdiff]
-                  let l:tc = [line, column+l, childwidth, hdiff]
-                  let l:tr = [line, column+l+childwidth, r, hdiff]
-                  let l:cl = [line+hdiff, column, l, childheight]
-                  let l:cr = [line+hdiff, column+l+childwidth, r, childheight]
-                endif
-
-              elseif hp == 'R'
-                let column_child = wdiff
-                if char != ''
-                  let l:tl = [line, column, wdiff, hdiff]
-                  let l:tc = [line, column+wdiff, childwidth, hdiff]
-                  let l:cl = [line+hdiff, column, wdiff, childheight]
-                endif
-
-              else
-                throw "drawHVAlign: bad halignment: " . hp
-              endif
-
-            else
-              throw "drawHVAlign: bad valignment: " . vp
-            endif
-            
-          endif
-"  call forms#log("drawHVAlign line_child=". line_child . ", column_child=" . column_child)
-
+    else " childwidth > 1
+      let m = height - childheight
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
         if char != '' 
-          " [line, column, width, height]
-          call s:Util().drawRect(l:tl, char)
-          call s:Util().drawRect(l:tc, char)
-          call s:Util().drawRect(l:tr, char)
-          call s:Util().drawRect(l:cl, char)
-          call s:Util().drawRect(l:cr, char)
-          call s:Util().drawRect(l:bl, char)
-          call s:Util().drawRect(l:bc, char)
-          call s:Util().drawRect(l:br, char)
+          let b = m - f
+          if f > 0
+            let cnt = 0
+            while cnt < f
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, childwidth, a:line+cnt, a:col)
+
+              let cnt += 1
+            endwhile
+          endif
+          if b > 0
+            let cnt = 0
+            while cnt < b
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, childwidth, a:line+childheight+f+cnt, a:col)
+
+              let cnt += 1
+            endwhile
+          endif
         endif
 
         call a:glyph.draw({
-                         \ 'line': line+line_child,
-                         \ 'column': column+column_child,
-                         \ 'width': childwidth,
-                         \ 'height': childheight
-                         \ })
-      endif
-" call forms#log("drawHVAlign BOTTOM ")
-    endfunction
+                            \ 'line': line+f,
+                            \ 'column': column,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
 
-  endif
-  return s:FU
-endfunction
+      elseif a:alignment == "T"
+        if char != '' 
+          " also do visual method
+          let cnt = 0
+          while cnt < m
+            " TODO use forms#SetVCharsAt
+            call forms#SetHCharsAt(char, childwidth, a:line+childheight+cnt, a:col)
+
+            let cnt += 1
+          endwhile
+        endif
+
+        call a:glyph.draw({
+                          \ 'line': line,
+                          \ 'column': column,
+                          \ 'width': childwidth,
+                          \ 'height': childheight
+                          \ })
+
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        if char != '' 
+          let b = m - f
+          if f > 0
+            " also do visual method
+            let cnt = 0
+            while cnt < f
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, childwidth, a:line+cnt, a:col)
+
+              let cnt += 1
+            endwhile
+          endif
+          if b > 0
+            " also do visual method
+            let cnt = 0
+            while cnt < b
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, childwidth, a:line+childheight+f+cnt, a:col)
+
+              let cnt += 1
+            endwhile
+          endif
+        endif
+        
+        call a:glyph.draw({
+                            \ 'line': line+f,
+                            \ 'column': column,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "B"
+        if char != '' 
+          " also do visual method
+          let cnt = 0
+          while cnt < m
+            " TODO use forms#SetVCharsAt
+            call forms#SetHCharsAt(char, childwidth, a:line++cnt, a:col)
+
+            let cnt += 1
+          endwhile
+        endif
+        
+        call a:glyph.draw({
+                            \ 'line': line+m,
+                            \ 'column': column,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      else
+        throw "Util.drawVAlign: bad alignment: " . a:alignment
+      endif
+    endif
+  endfunction
+
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawVAlign {{{2
+  "   Draw a glyph horizontally aligned 
+  "  parameters:
+  "   glyph       : glyph to be aligned and drawn
+  "   allocation  : dictionary of { 'line', 'column', 'width', 'childwidth', 'childheight' }
+  "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
+  "   char        : character to fill alignment spaces
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawHAlign(glyph, allocation, alignment, char) dict
+" call forms#log("Util.drawHAlign " .  string(a:allocation) . ", " . a:alignment)
+    let line = a:allocation.line
+    let column = a:allocation.column
+    let width = a:allocation.width
+    let childwidth = a:allocation.childwidth
+    let childheight = a:allocation.childheight
+
+    let char = a:char
+
+    if width <= childwidth
+      " draw glyph as is
+      call a:glyph.draw({
+                        \ 'line': line,
+                        \ 'column': column,
+                        \ 'width': childwidth,
+                        \ 'height': childheight
+                        \ })
+
+    elseif childheight == 1
+      let m = width - childwidth
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
+        if char != '' 
+          let b = m - f
+          if f > 0
+            call forms#SetHCharsAt(char, f, line, column)
+          endif
+          if b > 0
+            call forms#SetHCharsAt(char, b, line, column+childwidth+f)
+          endif
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + f,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "L"
+        if char != '' 
+          call forms#SetHCharsAt(char, m, line, column+childwidth)
+        endif
+
+        call a:glyph.draw({
+                        \ 'line': line,
+                        \ 'column': column,
+                        \ 'width': childwidth,
+                        \ 'height': childheight
+                        \ })
+
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        if char != '' 
+          let b = m - f
+          if f > 0
+            call forms#SetHCharsAt(char, f, line, column)
+          endif
+          if b > 0
+            call forms#SetHCharsAt(char, b, line, column+childwidth+f)
+          endif
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + f,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "R"
+        if char != '' 
+          call forms#SetHCharsAt(char, m, line, column)
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + m,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      else
+        throw "HAlign.draw: bad alignment: " . a:alignment
+      endif
+
+    else " childheight > 1
+      let m = width - childwidth
+      if type(a:alignment) == g:self#FLOAT_TYPE
+        let f = float2nr(m * a:alignment)
+        if char != '' 
+          let b = m - f
+          if f > 0
+            let cnt = 0
+            while cnt < childheight
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, f, line+cnt, column)
+
+              let cnt += 1
+            endwhile
+          endif
+          if b > 0
+            let cnt = 0
+            while cnt < childheight
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, b, line+cnt, column+childwidth+f)
+
+              let cnt += 1
+            endwhile
+          endif
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + f,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "L"
+        if char != '' 
+          " also do visual method
+          let cnt = 0
+          while cnt < childheight
+            " TODO use forms#SetVCharsAt
+            call forms#SetHCharsAt(char, m, line+cnt, column+childwidth)
+
+            let cnt += 1
+          endwhile
+        endif
+
+        call a:glyph.draw({
+                        \ 'line': line,
+                        \ 'column': column,
+                        \ 'width': childwidth,
+                        \ 'height': childheight
+                        \ })
+
+      elseif a:alignment == "C"
+        let f = (m+1)/2
+        if char != '' 
+          let b = m - f
+          if f > 0
+            " also do visual method
+            let cnt = 0
+            while cnt < childheight
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, f, line+cnt, column)
+
+              let cnt += 1
+            endwhile
+          endif
+          if b > 0
+            " also do visual method
+            let cnt = 0
+            while cnt < childheight
+              " TODO use forms#SetVCharsAt
+              call forms#SetHCharsAt(char, b, line+cnt, column+childwidth+f)
+
+              let cnt += 1
+            endwhile
+          endif
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + f,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      elseif a:alignment == "R"
+        if char != '' 
+          " also do visual method
+          let cnt = 0
+          while cnt < childheight
+            " TODO use forms#SetVCharsAt
+            call forms#SetHCharsAt(char, m, line+cnt, column)
+
+            let cnt += 1
+          endwhile
+        endif
+
+        call a:glyph.draw({
+                            \ 'line': line,
+                            \ 'column': column + m,
+                            \ 'width': childwidth,
+                            \ 'height': childheight
+                            \ })
+
+      else
+        throw "drawHAlign: bad alignment: " . a:alignment
+      endif
+    endif
+  endfunction
+
+  " ------------------------------------------------------------ 
+  " g:forms_Util.drawHVAlign {{{2
+  "   Draw a glyph both vertically and horizontally aligned 
+  "  parameters:
+  "   glyph       : glyph to be aligned and drawn
+  "   allocation  : dictionary of { 'line', 'column', 'width', 'height', 'childwidth', 'childheight' }
+  "   halignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
+  "   valignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
+  "   char        : character to fill alignment spaces
+  " ------------------------------------------------------------ 
+  function! g:forms_Util.drawHVAlign(glyph, allocation, halignment, valignment, char) dict
+" call forms#log("Util.drawHVAlign " .  string(a:allocation) . ", ha=" . a:halignment . ", va=" . a:valignment)
+    let line = a:allocation.line
+    let column = a:allocation.column
+    let width = a:allocation.width
+    let height = a:allocation.height
+    let childwidth = a:allocation.childwidth
+    let childheight = a:allocation.childheight
+
+    let halignment = a:halignment
+    let valignment = a:valignment
+    let char = a:char
+
+    if height <= childheight && width <= childwidth
+      " currently do not clip to size, so draw body as is
+      call a:glyph.draw({
+                          \ 'line': line,
+                          \ 'column': column,
+                          \ 'width': childwidth,
+                          \ 'height': childheight
+                          \ })
+
+    else
+
+        if char != ''
+          " [line, col, width, height]
+          let l:tl = [-1, -1, -1, -1]
+          let l:tc = [-1, -1, -1, -1]
+          let l:tr = [-1, -1, -1, -1]
+          let l:cl = [-1, -1, -1, -1]
+          " cc is the body glyph
+          let l:cr = [-1, -1, -1, -1]
+          let l:bl = [-1, -1, -1, -1]
+          let l:bc = [-1, -1, -1, -1]
+          let l:br = [-1, -1, -1, -1]
+        endif
+
+        if height <= childheight 
+          " width > childwidth
+          let wdiff = width - childwidth
+          let line_child = 0
+
+          if type(halignment) == g:self#FLOAT_TYPE
+            let l = float2nr(wdiff * halignment)
+            let column_child = l
+            if char != ''
+              let r = wdiff - l
+              let l:cl = [line, column, l, childheight]
+              let l:cr = [line, column+childwidth+l, r, childheight]
+            endif
+
+          elseif halignment == "L"
+            let column_child = 0
+            let l:cr = [line, column+childwidth, wdiff, childheight]
+
+          elseif halignment == "C"
+            let l = (wdiff+1)/2
+            let column_child = l
+            if char != ''
+              let r = wdiff - l
+              let l:cl = [line, column, l, childheight]
+              let l:cr = [line, column+childwidth+l, r, childheight]
+            endif
+
+          elseif halignment == "R"
+            let column_child = wdiff
+            if char != ''
+              let l:cl = [line, column, wdiff, childheight]
+            endif
+
+          else
+            throw "drawHVAlign: bad halignment: " . halignment
+          endif
+
+        elseif width <= childwidth
+          " height > childheight
+          let hdiff = height - childheight
+          let column_child = 0
+
+          if type(valignment) == g:self#FLOAT_TYPE
+" call forms#log("drawHVAlign .valignment")
+            let t = float2nr(hdiff * valignment)
+            let line_child = t
+            if char != ''
+              let b = hdiff - l
+              let l:tc = [line, column, childwidth, t]
+              let l:bc = [line+childheight+t, column, childwidth, b]
+            endif
+
+          elseif valignment == "T"
+" call forms#log("drawHVAlign .T")
+            let line_child = 0
+            if char != ''
+              let l:bc = [line+childheight, column, childwidth, hdiff]
+            endif
+
+          elseif valignment == "C"
+" call forms#log("drawHVAlign .C")
+            let t = (hdiff+1)/2
+            let line_child = t
+            if char != ''
+              let b = hdiff - t
+              let l:tc = [line, column, childwidth, t]
+              let l:bc = [line+childheight+t, column, childwidth, b]
+            endif
+
+          elseif valignment == "B"
+" call forms#log("drawHVAlign .B")
+            let line_child = hdiff
+            if char != ''
+              let l:tc = [line, column, childwidth, hdiff]
+            endif
+
+          else
+            throw "drawHVAlign: bad valignment: " . valignment
+          endif
+
+        else
+          " height > childheight
+          " width > childwidth
+
+          let wdiff = width - childwidth
+          let hdiff = height - childheight
+          if type(valignment) == g:self#FLOAT_TYPE
+            if valignment == 0
+              let vp = 'T'
+            elseif valignment == 1
+              let vp = 'B'
+            else
+              let vp = 'C'
+              let t = float2nr(wdiff * valignment)
+            endif
+          else
+            let vp = valignment
+            if vp == 'C'
+              let t = (hdiff+1)/2
+            endif
+          endif
+          if type(halignment) == g:self#FLOAT_TYPE
+            if halignment == 0
+              let hp = 'L'
+            elseif halignment == 1
+              let hp = 'R'
+            else
+              let hp = 'C'
+              let l = float2nr(hdiff * halignment)
+            endif
+          else
+            let hp = halignment
+            if hp == 'C'
+              let l = (wdiff+1)/2
+            endif
+          endif
+
+          if vp == 'T'
+            let line_child = 0
+            if hp == 'L'
+              let column_child = 0
+              if char != ''
+                let l:cr = [line, column+childwidth, wdiff, childheight]
+                let l:bc = [line+childheight, column, childwidth, hdiff]
+                let l:br = [line+childheight, column+childwidth, wdiff, hdiff]
+              endif
+
+            elseif hp == 'C'
+              let r = wdiff - l
+              let column_child = l
+              if char != ''
+                let l:cl = [line, column, l, childheight]
+                let l:bl = [line+childheight, column, l, hdiff]
+                let l:bc = [line+childheight, column+l, childwidth, hdiff]
+                let l:br = [line+childheight, column+childwidth+l, r, hdiff]
+                let l:cr = [line, column+childwidth+l, r, childheight]
+              endif
+
+            elseif hp == 'R'
+              let column_child = wdiff
+              if char != ''
+                let l:cl = [line, column, wdiff, childheight]
+                let l:bl = [line+childheight, column, wdiff, hdiff]
+                let l:bc = [line+childheight, column+wdiff, childwidth, hdiff]
+              endif
+
+            else
+              throw "drawHVAlign: bad halignment: " . hp
+            endif
+
+          elseif vp == 'C'
+            let b = hdiff - t
+            let line_child = t
+            if hp == 'L'
+              let column_child = 0
+              if char != ''
+                let l:tc = [line, column, childwidth, t]
+                let l:tr = [line, column+childwidth, wdiff, t]
+                let l:cr = [line+t, column+childwidth, wdiff, childheight]
+                let l:br = [line+childheight+t, column+childwidth, wdiff, b]
+                let l:bc = [line+childheight+t, column, childwidth, b]
+              endif
+
+            elseif hp == 'C'
+              let column_child = l
+              if char != ''
+                let r = wdiff - l
+                let l:tl = [line, column, l, t]
+                let l:tc = [line, column+l, childwidth, t]
+                let l:tr = [line, column+l+childwidth, r, t]
+                let l:cr = [line+t, column+l+childwidth, r, childheight]
+                let l:br = [line+childheight+t, column+childwidth+l, r, b]
+                let l:bc = [line+childheight+t, column+l, childwidth, b]
+                let l:bl = [line+childheight+t, column, l, b]
+                let l:cl = [line+t, column, l, childheight]
+              endif
+
+            elseif hp == 'R'
+              let column_child = wdiff
+              if char != ''
+                let l:tl = [line, column, wdiff, t]
+                let l:cl = [line+t, column, wdiff, childheight]
+                let l:bl = [line+childheight+t, column, wdiff, b]
+                let l:tc = [line, column+wdiff, childwidth, t]
+                let l:bc = [line+childheight+t, column+wdiff, childwidth, b]
+              endif
+
+            else
+              throw "drawHVAlign: bad halignment: " . hp
+            endif
+
+          elseif vp == 'B'
+            let line_child = hdiff
+            if hp == 'L'
+              let column_child = 0
+              if char != ''
+                let l:tc = [line, column, childwidth, hdiff]
+                let l:tr = [line, column+childwidth, wdiff, hdiff]
+                let l:cr = [line+hdiff, column+childwidth, wdiff, childheight]
+              endif
+
+            elseif hp == 'C'
+              let column_child = l
+              if char != ''
+                let r = wdiff - l
+                let l:tl = [line, column, l, hdiff]
+                let l:tc = [line, column+l, childwidth, hdiff]
+                let l:tr = [line, column+l+childwidth, r, hdiff]
+                let l:cl = [line+hdiff, column, l, childheight]
+                let l:cr = [line+hdiff, column+l+childwidth, r, childheight]
+              endif
+
+            elseif hp == 'R'
+              let column_child = wdiff
+              if char != ''
+                let l:tl = [line, column, wdiff, hdiff]
+                let l:tc = [line, column+wdiff, childwidth, hdiff]
+                let l:cl = [line+hdiff, column, wdiff, childheight]
+              endif
+
+            else
+              throw "drawHVAlign: bad halignment: " . hp
+            endif
+
+          else
+            throw "drawHVAlign: bad valignment: " . vp
+          endif
+          
+        endif
+"  call forms#log("drawHVAlign line_child=". line_child . ", column_child=" . column_child)
+
+      if char != '' 
+        " [line, column, width, height]
+        call g:forms_Util.drawRect(l:tl, char)
+        call g:forms_Util.drawRect(l:tc, char)
+        call g:forms_Util.drawRect(l:tr, char)
+        call g:forms_Util.drawRect(l:cl, char)
+        call g:forms_Util.drawRect(l:cr, char)
+        call g:forms_Util.drawRect(l:bl, char)
+        call g:forms_Util.drawRect(l:bc, char)
+        call g:forms_Util.drawRect(l:br, char)
+      endif
+
+      call a:glyph.draw({
+                       \ 'line': line+line_child,
+                       \ 'column': column+column_child,
+                       \ 'width': childwidth,
+                       \ 'height': childheight
+                       \ })
+    endif
+" call forms#log("drawHVAlign BOTTOM ")
+  endfunction
+
+endif
 
 
 "-------------------------------------------------------------------------------
@@ -3469,7 +3469,11 @@ endif
 function! forms#loadGlyphPrototype()
 
   if !exists("g:forms#Glyph")
-    let g:forms#Glyph = self#LoadObjectPrototype().clone('forms#Glyph')
+    let xxx = self#LoadObjectPrototype()
+call self#log("forms#loadGlyphPrototype. BEFORE clone forms#Glyph")
+    let g:forms#Glyph = xxx.clone('forms#Glyph')
+call self#log("forms#loadGlyphPrototype. AFTER clone forms#Glyph")
+    " let g:forms#Glyph = self#LoadObjectPrototype().clone('forms#Glyph')
     let g:forms#Glyph.__allocation = {}
     let g:forms#Glyph.__status = g:IS_ENABLED
 
@@ -3973,7 +3977,7 @@ function! forms#loadHLine()
 
         " [line, column, size]
         let rec = [a.line, a.column, a.width]
-        call s:Util().drawHLine(rec, self.__char)
+        call g:forms_Util.drawHLine(rec, self.__char)
       endif
 
       if self.__status == g:IS_DISABLED
@@ -4022,7 +4026,7 @@ function! forms#loadVLine()
       if self.__status != g:IS_INVISIBLE
         " [line, column, size]
         let rec = [a.line, a.column, a.height]
-        call s:Util().drawVLine(rec, self.__char)
+        call g:forms_Util.drawVLine(rec, self.__char)
       endif
 
       if self.__status == g:IS_DISABLED
@@ -4116,7 +4120,7 @@ function! forms#loadAreaPrototype()
 
       if self.__status != g:IS_INVISIBLE
         let box = [a.line, a.column, self.__width, self.__height]
-        call s:Util().drawRect(box, self.__char)
+        call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
         call AugmentGlyphHilight(self, "DisableHi", a)
@@ -4222,7 +4226,7 @@ function! forms#loadHSpace()
 
       if self.__status != g:IS_INVISIBLE
         let box = [a.line, a.column, a.width, a.height]
-        call s:Util().drawRect(box, self.__char)
+        call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
         call AugmentGlyphHilight(self, "DisableHi", a)
@@ -4269,7 +4273,7 @@ function! forms#loadVSpace()
 
       if self.__status != g:IS_INVISIBLE
         let box = [a.line, a.column, a.width, a.height]
-        call s:Util().drawRect(box, self.__char)
+        call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
         call AugmentGlyphHilight(self, "DisableHi", a)
@@ -4776,8 +4780,8 @@ function! forms#loadRadioButtonPrototype()
     let g:forms#RadioButton = forms#loadLeafPrototype().clone('forms#RadioButton')
     let g:forms#RadioButton.__selected = 0
     let g:forms#RadioButton.__char = '*'
-    let g:forms#RadioButton.__on_selection_action = s:Util().emptyAction()
-    let g:forms#RadioButton.__on_deselection_action = s:Util().emptyAction()
+    let g:forms#RadioButton.__on_selection_action = g:forms_Util.emptyAction()
+    let g:forms#RadioButton.__on_deselection_action = g:forms_Util.emptyAction()
 
 
     function! g:forms#RadioButton.init(attrs) dict
@@ -4798,8 +4802,8 @@ function! forms#loadRadioButtonPrototype()
 "call forms#log("forms#RadioButton.reinit TOP")
       let self.__selected = 0
       let self.__char = '*'
-      let self.__on_selection_action = s:Util().emptyAction()
-      let self.__on_deselection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
+      let self.__on_deselection_action = g:forms_Util.emptyAction()
 
       call call(g:forms#Leaf.reinit, [a:attrs], self)
 
@@ -4950,7 +4954,7 @@ function! forms#loadFixedLengthFieldPrototype()
     let g:forms#FixedLengthField.__clearInitText = g:self#IS_FALSE
     let g:forms#FixedLengthField.__pos = 0
     let g:forms#FixedLengthField.__text = ''
-    let g:forms#FixedLengthField.__on_selection_action = s:Util().emptyAction()
+    let g:forms#FixedLengthField.__on_selection_action = g:forms_Util.emptyAction()
 
 
     function! g:forms#FixedLengthField.init(attrs) dict
@@ -4974,7 +4978,7 @@ function! forms#loadFixedLengthFieldPrototype()
       let self.__clearInitText = g:self#IS_FALSE
       let self.__pos = 0
       let self.__text = ''
-      let self.__on_selection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
 
       call call(g:forms#Leaf.reinit, [a:attrs], self)
 
@@ -5273,7 +5277,7 @@ function! forms#loadVariableLengthFieldPrototype()
     let g:forms#VariableLengthField.__pos = 0
     let g:forms#VariableLengthField.__win_start = 0
     let g:forms#VariableLengthField.__text = ''
-    let g:forms#VariableLengthField.__on_selection_action = s:Util().emptyAction()
+    let g:forms#VariableLengthField.__on_selection_action = g:forms_Util.emptyAction()
 
 
     function! g:forms#VariableLengthField.init(attrs) dict
@@ -5298,7 +5302,7 @@ function! forms#loadVariableLengthFieldPrototype()
       let self.__pos = 0
       let self.__win_start = 0
       let self.__text = ''
-      let self.__on_selection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
 
       call call(g:forms#Leaf.reinit, [a:attrs], self)
 
@@ -6225,8 +6229,8 @@ function! forms#loadSelectListPrototype()
     let g:forms#SelectList = forms#loadLeafPrototype().clone('forms#SelectList')
     let g:forms#SelectList.__size = -1
     let g:forms#SelectList.__pos = -1
-    let g:forms#SelectList.__on_selection_action = s:Util().emptyAction()
-    let g:forms#SelectList.__on_deselection_action = s:Util().emptyAction()
+    let g:forms#SelectList.__on_selection_action = g:forms_Util.emptyAction()
+    let g:forms#SelectList.__on_deselection_action = g:forms_Util.emptyAction()
     let g:forms#SelectList.__win_start = 0
     let g:forms#SelectList.__choices = []
     let g:forms#SelectList.__mode = 'single'
@@ -6280,8 +6284,8 @@ function! forms#loadSelectListPrototype()
 
       let self.__size = -1
       let self.__pos = -1
-      let self.__on_selection_action = s:Util().emptyAction()
-      let self.__on_deselection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
+      let self.__on_deselection_action = g:forms_Util.emptyAction()
       let self.__win_start = 0
       let self.__choices = []
       let self.__mode = 'single'
@@ -6750,7 +6754,7 @@ function! forms#loadPopDownListPrototype()
   if !exists("g:forms#PopDownList")
     let g:forms#PopDownList = forms#loadLeafPrototype().clone('forms#PopDownList')
     let g:forms#PopDownList.__pos = 0
-    let g:forms#PopDownList.__on_selection_action = s:Util().emptyAction()
+    let g:forms#PopDownList.__on_selection_action = g:forms_Util.emptyAction()
     let g:forms#PopDownList.__choices = []
 
 
@@ -6797,7 +6801,7 @@ function! forms#loadPopDownListPrototype()
 " call forms#log("g:forms#PopDownList.reinit TOP")
 
       let self.__pos = 0
-      let self.__on_selection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
       let self.__choices = []
       call self.__menu.delete()
       unlet self.__menu
@@ -7019,7 +7023,7 @@ function! forms#loadSliderPrototype()
     let g:forms#Slider.__size = -1
     let g:forms#Slider.__range = []
     let g:forms#Slider.__resolution = 1
-    let g:forms#Slider.__on_move_action = s:Util().emptyAction()
+    let g:forms#Slider.__on_move_action = g:forms_Util.emptyAction()
 
 
     function! g:forms#Slider.init(attrs) dict
@@ -7071,7 +7075,7 @@ function! forms#loadSliderPrototype()
       let self.__size = -1
       let self.__range = []
       let self.__resolution = 1
-      let self.__on_move_action = s:Util().emptyAction()
+      let self.__on_move_action = g:forms_Util.emptyAction()
 
       call call(g:forms#Leaf.reinit, [a:attrs], self)
 
@@ -8010,7 +8014,7 @@ endif
 function! forms#loadMonoPrototype()
   if !exists("g:forms#Mono")
     let g:forms#Mono = forms#loadGlyphPrototype().clone('forms#Mono')
-    let g:forms#Mono.__body = s:Util().nullGlyph()
+    let g:forms#Mono.__body = g:forms_Util.nullGlyph()
 
     function! g:forms#Mono.kind() dict
       return s:MONO_KIND
@@ -8021,7 +8025,7 @@ function! forms#loadMonoPrototype()
 
       let oldBodyId = self.__body._id
 
-      let self.__body = s:Util().nullGlyph()
+      let self.__body = g:forms_Util.nullGlyph()
 
       call call(g:forms#Glyph.reinit, [a:attrs], self)
 
@@ -8960,7 +8964,7 @@ function! forms#loadHAlignPrototype()
     function! g:forms#HAlign.init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
-      call s:Util().checkHAlignment(self.__alignment, "HAlign.init")
+      call g:forms_Util.checkHAlignment(self.__alignment, "HAlign.init")
 
       return self
     endfunction
@@ -9007,7 +9011,7 @@ function! forms#loadHAlignPrototype()
         " TODO should child info be cached
         let [childwidth,childheight] = body.requestedSize()
       
-        call s:Util().drawHAlign(body, {
+        call g:forms_Util.drawHAlign(body, {
                                \ 'line': line,
                                \ 'column': column,
                                \ 'width': width,
@@ -9059,7 +9063,7 @@ function! forms#loadVAlignPrototype()
     function! g:forms#VAlign.init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
-      call s:Util().checkVAlignment(self.__alignment, "VAlign.init")
+      call g:forms_Util.checkVAlignment(self.__alignment, "VAlign.init")
 
       return self
     endfunction
@@ -9106,7 +9110,7 @@ function! forms#loadVAlignPrototype()
         " TODO should child info be cached
         let [childwidth,childheight] = body.requestedSize()
 
-        call s:Util().drawVAlign(body, {
+        call g:forms_Util.drawVAlign(body, {
                                \ 'line': line,
                                \ 'column': column,
                                \ 'height': height,
@@ -9166,8 +9170,8 @@ function! forms#loadHVAlignPrototype()
 " call forms#log("g:forms#HVAlign.init TOP ")
       call call(g:forms#Mono.init, [a:attrs], self)
 
-      call s:Util().checkHAlignment(self.__halignment, "HVAlign.init")
-      call s:Util().checkVAlignment(self.__valignment, "HVAlign.init")
+      call g:forms_Util.checkHAlignment(self.__halignment, "HVAlign.init")
+      call g:forms_Util.checkVAlignment(self.__valignment, "HVAlign.init")
 
 " call forms#log("g:forms#HVAlign.init BOTTOM ")
       return self
@@ -9235,7 +9239,7 @@ function! forms#loadHVAlignPrototype()
 " call forms#log("g:forms#HVAlign.draw b childwidth=" .  childwidth)
 " call forms#log("g:forms#HVAlign.draw b childheight=" .  childheight)
 
-        call s:Util().drawHVAlign(body, {
+        call g:forms_Util.drawHVAlign(body, {
                                \ 'line': line,
                                \ 'column': column,
                                \ 'width': width,
@@ -9288,7 +9292,6 @@ endif
 function! forms#loadButtonPrototype()
   if !exists("g:forms#Button")
     let g:forms#Button = forms#loadMonoPrototype().clone('forms#Button')
-    " let g:forms#Button.__action = s:Util().emptyAction()
     let g:forms#Button.__selected = 0
     let g:forms#Button.__highlight = 1
 
@@ -9304,7 +9307,7 @@ function! forms#loadButtonPrototype()
         let self.__command = a:attrs.command
       else
 "call forms#log("g:forms#Button.init default action ")
-        let self.__action = s:Util().emptyAction()
+        let self.__action = g:forms_Util.emptyAction()
 
         " throw "Button.init: Must have either an action or command attribute: " . string(a:attrs)
       endif
@@ -9449,8 +9452,8 @@ function! forms#loadToggleButtonPrototype()
   if !exists("g:forms#ToggleButton")
     let g:forms#ToggleButton = forms#loadMonoPrototype().clone('forms#ToggleButton')
     let g:forms#ToggleButton.__selected = 0
-    let g:forms#ToggleButton.__on_selection_action = s:Util().emptyAction()
-    let g:forms#ToggleButton.__on_deselection_action = s:Util().emptyAction()
+    let g:forms#ToggleButton.__on_selection_action = g:forms_Util.emptyAction()
+    let g:forms#ToggleButton.__on_deselection_action = g:forms_Util.emptyAction()
 
 
     function! g:forms#ToggleButton.init(attrs) dict
@@ -9481,8 +9484,8 @@ function! forms#loadToggleButtonPrototype()
         unlet self.__group
       endif
       let self.__selected = 0
-      let self.__on_selection_action = s:Util().emptyAction()
-      let self.__on_deselection_action = s:Util().emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
+      let self.__on_deselection_action = g:forms_Util.emptyAction()
 
       call call(g:forms#Mono.reinit, [a:attrs], self)
     endfunction
@@ -10276,8 +10279,8 @@ function! forms#loadFormPrototype()
     function! g:forms#Form.init(attrs) dict
       call call(g:forms#Viewer.init, [a:attrs], self)
 
-      call s:Util().checkHAlignment(self.__halignment, "Form.init")
-      call s:Util().checkVAlignment(self.__valignment, "Form.init")
+      call g:forms_Util.checkHAlignment(self.__halignment, "Form.init")
+      call g:forms_Util.checkVAlignment(self.__valignment, "Form.init")
 
       return self
     endfunction
@@ -10479,7 +10482,7 @@ function! forms#loadFormPrototype()
 
           let l:lineStartOfFormScreen = (self.__y_screen >= 0) 
                     \ ? self.__y_screen 
-                    \ : s:Util().vAlign({
+                    \ : g:forms_Util.vAlign({
                                       \ 'line': l:lineStartOfScreen,
                                       \ 'height': l:winHeigth,
                                       \ 'childheight': formHeight
@@ -10492,7 +10495,7 @@ function! forms#loadFormPrototype()
 
           let l:columnStartOfFormScreen = (self.__x_screen >= 0) 
                     \ ? self.__x_screen 
-                    \ : s:Util().hAlign({
+                    \ : g:forms_Util.hAlign({
                                       \ 'column': l:columnStartOfScreen,
                                       \ 'width': l:winWidth,
                                       \ 'childwidth': formWidth
@@ -10808,7 +10811,7 @@ function! forms#loadDebugPrototype()
         if type(FN) == g:self#FUNCREF_TYPE
           let l:fd =        "function! self." . key . "(...) dict\n"
             let l:fd = l:fd .   "call forms#log('".type.key.": ENTRY ".id.": args='.string(a:000))\n"
-            let l:fd = l:fd .   "let l:o = self#ObjectManager().lookup(".id.")\n"
+            let l:fd = l:fd .   "let l:o = g:self_ObjectManager.lookup(".id.")\n"
             let l:fd = l:fd .   "let l:r = call(l:o.".key.", a:000, l:o)\n"
             let l:fd = l:fd .   "call forms#log('".type.key.": EXIT  ".id.": r='.string(l:r))\n"
             let l:fd = l:fd .   "return l:r\n"
@@ -10981,7 +10984,7 @@ function! forms#loadHPolyPrototype()
 " call forms#log("g:forms#HPoly.init TOP")
       call call(g:forms#Poly.init, [a:attrs], self)
 
-      call s:Util().checkVAlignment(self.__alignment, "HPoly.init")
+      call g:forms_Util.checkVAlignment(self.__alignment, "HPoly.init")
       call self.loadAlignments(a:attrs)
 
       if has_key(a:attrs, 'mode')
@@ -11042,7 +11045,7 @@ function! forms#loadHPolyPrototype()
           if pos < 0 || pos >= nos_children
             throw "HPoly.init: alignments attribute postion not valid: " . pos
           endif
-          call s:Util().checkVAlignment(a, "HPoly.init")
+          call g:forms_Util.checkVAlignment(a, "HPoly.init")
           let alignments[pos] = a
         endfor
       endif
@@ -11135,7 +11138,7 @@ function! forms#loadHPolyPrototype()
           endif
 
           if bheight > childheight
-            call s:Util().drawVAlign(child, {
+            call g:forms_Util.drawVAlign(child, {
                                          \ 'line': line+bdelta,
                                          \ 'column': column+l:x,
                                          \ 'height': bheight,
@@ -11206,7 +11209,7 @@ function! forms#loadVPolyPrototype()
 " call forms#log("g:forms#VPoly.init: TOP")
       call call(g:forms#Poly.init, [a:attrs], self)
 
-      call s:Util().checkHAlignment(self.__alignment, "VPoly.init")
+      call g:forms_Util.checkHAlignment(self.__alignment, "VPoly.init")
 
       call self.loadAlignments(a:attrs)
 
@@ -11269,7 +11272,7 @@ function! forms#loadVPolyPrototype()
           if pos < 0 || pos >= nos_children
             throw "VPoly.init: alignments attribute postion not valid: " . pos
           endif
-          call s:Util().checkHAlignment(a, "VPoly.init")
+          call g:forms_Util.checkHAlignment(a, "VPoly.init")
           let alignments[pos] = a
         endfor
       endif
@@ -11372,7 +11375,7 @@ function! forms#loadVPolyPrototype()
           endif
 
           if bwidth > childwidth
-            call s:Util().drawHAlign(child, {
+            call g:forms_Util.drawHAlign(child, {
                                          \ 'line': line+l:y,
                                          \ 'column': column+bdelta,
                                          \ 'width': bwidth,
@@ -11444,8 +11447,8 @@ function! forms#loadDeckPrototype()
     function! g:forms#Deck.init(attrs) dict
       call call(g:forms#Poly.init, [a:attrs], self)
 
-      call s:Util().checkHAlignment(self.__halignment, "Deck.init")
-      call s:Util().checkVAlignment(self.__valignment, "Deck.init")
+      call g:forms_Util.checkHAlignment(self.__halignment, "Deck.init")
+      call g:forms_Util.checkVAlignment(self.__valignment, "Deck.init")
 
       let card = self.__card
       if card < 0 
@@ -11566,7 +11569,7 @@ call forms#log("g:forms#Deck.setCard add textblock")
         let child = children[card]
         let [childwidth, childheight] = self.__children_request_size[card]
 
-        call s:Util().drawHVAlign(child, {
+        call g:forms_Util.drawHVAlign(child, {
                                 \ 'line': line,
                                 \ 'column': column,
                                 \ 'width': width,
@@ -13508,8 +13511,8 @@ function! forms#loadGridPrototype()
       endif
 
       " Validate default horizontal and vertical alignments
-      call s:Util().checkHAlignment(self.__halignment, "Grid.init")
-      call s:Util().checkVAlignment(self.__valignment, "Grid.init")
+      call g:forms_Util.checkHAlignment(self.__halignment, "Grid.init")
+      call g:forms_Util.checkVAlignment(self.__valignment, "Grid.init")
 
       " Load alignments
       let nos_rows = self.__nos_rows
@@ -13555,7 +13558,7 @@ function! forms#loadGridPrototype()
           if row < 0 || row >= nos_rows
             throw "Grid.init: halignments attribute row not valid: " . row
           endif
-          call s:Util().checkHAlignment(ha, "Grid.init")
+          call g:forms_Util.checkHAlignment(ha, "Grid.init")
           " unlet row_halignments[row]
           let row_halignments[row] = ha
         endfor
@@ -13574,7 +13577,7 @@ function! forms#loadGridPrototype()
           if column < 0 || column >= nos_columns
             throw "Grid.init: valignments attribute column not valid: " . column
           endif
-          call s:Util().checkVAlignment(va, "Grid.init")
+          call g:forms_Util.checkVAlignment(va, "Grid.init")
           " unlet column_valignments[column]
           let column_valignments[column] = va
         endfor
@@ -13589,7 +13592,7 @@ function! forms#loadGridPrototype()
         throw "Grid.init: major_axis must be 'row' or 'column': " . self.__major_axis
       endif
 
-      let nullglyph = s:Util().nullGlyph()
+      let nullglyph = g:forms_Util.nullGlyph()
 
       let grid = []
       let gridsize = []
@@ -13934,7 +13937,7 @@ function! forms#loadGridPrototype()
 
               if w < max_column_width[ccnt] && h < max_row_height[rcnt]
                 " { 'line', 'column', 'width', 'height', 'childwidth', 'childheight' }
-                call s:Util().drawHVAlign(glyph, {
+                call g:forms_Util.drawHVAlign(glyph, {
                                              \ 'line': row_line+bdelta,
                                              \ 'column': column_column+bdelta,
                                              \ 'width': max_column_width[ccnt],
@@ -13948,7 +13951,7 @@ function! forms#loadGridPrototype()
 
               elseif w < max_column_width[ccnt]
                 " { 'line', 'column', 'width', 'childwidth', 'childwidth' }
-                call s:Util().drawHAlign(glyph, {
+                call g:forms_Util.drawHAlign(glyph, {
                                             \ 'line': row_line+bdelta,
                                             \ 'column': column_column+bdelta,
                                             \ 'width': max_column_width[ccnt],
@@ -13959,7 +13962,7 @@ function! forms#loadGridPrototype()
                                             \ char)
               elseif h < max_row_height[rcnt]
                 " { 'line', 'column', 'height', 'childwidth', 'childwidth' }
-                call s:Util().drawVAlign(glyph, {
+                call g:forms_Util.drawVAlign(glyph, {
                                             \ 'line': row_line+bdelta,
                                             \ 'column': column_column+bdelta,
                                             \ 'height': max_row_height[rcnt],
@@ -14002,7 +14005,7 @@ function! forms#loadGridPrototype()
 
               if h < max_row_height[rcnt] && w < max_column_width[ccnt]
                 " { 'line', 'column', 'width', 'height', 'childwidth', 'childheight' }
-                call s:Util().drawHVAlign(glyph, {
+                call g:forms_Util.drawHVAlign(glyph, {
                                              \ 'line': row_line,
                                              \ 'column': column_column,
                                              \ 'width': max_column_width[ccnt],
@@ -14016,7 +14019,7 @@ function! forms#loadGridPrototype()
 
               elseif h < max_row_height[rcnt]
                 " { 'line', 'column', 'width', 'childwidth', 'childwidth' }
-                call s:Util().drawVAlign(glyph, {
+                call g:forms_Util.drawVAlign(glyph, {
                                             \ 'line': row_line,
                                             \ 'column': column_column,
                                             \ 'height': max_row_height[rcnt],
@@ -14027,7 +14030,7 @@ function! forms#loadGridPrototype()
                                             \ char)
               elseif w < max_column_width[ccnt]
                 " { 'line', 'column', 'height', 'childwidth', 'childwidth' }
-                call s:Util().drawHAlign(glyph, {
+                call g:forms_Util.drawHAlign(glyph, {
                                             \ 'line': row_line,
                                             \ 'column': column_column,
                                             \ 'width': max_column_width[ccnt],
@@ -14643,7 +14646,7 @@ function! forms#DoGlyphSelectInfo(glyph, line, column)
       endif
     endfor
 
-    " call add(rc, s:Util().nullGlyph())
+    " call add(rc, g:forms_Util.nullGlyph())
 
     let vpolyLeft = forms#newVPoly({ 'children': lc, 'alignment': 'L' })
     let vpolyRight = forms#newVPoly({ 'children': rc, 'alignment': 'L' })
