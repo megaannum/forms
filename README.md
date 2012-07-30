@@ -244,4 +244,9 @@ No testing has been done on the Windows GVim configure. Feedback is welcome.
 
 ## Vim
 
-[Vim location](http://www.vim.org/scripts/script.php?script_id=XXX)
+[Vim location](http://www.vim.org/scripts/script.php?script_id=4150)
+
+## Acknowledgements and thanks
+
+- Marc Weber: provided initial release feedback identifying Vim 7.3 bug and
+  let me debug it on one of his test machines.
