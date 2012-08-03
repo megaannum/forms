@@ -10341,6 +10341,17 @@ function! forms#loadFormPrototype()
       set sidescrolloff=0
 
       if forms#ViewerStackDepth() == 0 
+
+        " save the syntax if it can be determined
+        if exists("&syntax")
+          let l:save_syntax = &syntax
+          set syntax=
+        endif
+        if exists("b:current_syntax")
+          let l:current_syntax = b:current_syntax
+          execute "syntax clear"
+        endif
+
         " Save current gui font and set to a fixed char-width font
         " that supports box-drawing and block uft-8 characters
         if has("gui_running")
@@ -10698,6 +10709,21 @@ function! forms#loadFormPrototype()
               unlet l:save_gui_font
             endif
           endif
+
+          " reset the syntax if it is known
+          if exists("l:current_syntax")
+            let difile = "/syntax/".l:current_syntax.".vim"
+            for rtp in split(&runtimepath, ',')
+              if filereadable(rtp . difile)
+                execute "source " . rtp . difile
+                break
+              endif
+            endfor
+          endif
+          if exists("l:save_syntax")
+            let &syntax = l:save_syntax
+          endif
+
         endif
 
         let &scrolloff = l:save_scrolloff
@@ -16271,6 +16297,31 @@ function! forms#SetStringAt(str, line, column)
     call forms#SetCharAt(s[0], a:line, a:column)
 
   elseif slen > 1
+    let slen2 = strlen(s)
+    if slen == slen2
+      " there are no multi-byte characters
+      let cnt = 0
+      while cnt < slen
+        call forms#SetCharAt(s[cnt], a:line, a:column+cnt)
+
+        let cnt += 1
+      endwhile
+    else
+      " multibyte characters, must do some ugly work
+      let cnt = 0
+      while cnt < slen-1
+        let start = byteidx(s, cnt)
+        let end = byteidx(s, cnt+1)
+        let ch = strpart(s, start, (end-start))
+        call forms#SetCharAt(ch, a:line, a:column+cnt)
+
+        let cnt += 1
+      endwhile
+      let ch = strpart(s, end)
+      call forms#SetCharAt(ch, a:line, a:column+cnt)
+    endif
+
+if 0
     exe a:line
 
     let c = a:column
@@ -16282,7 +16333,9 @@ function! forms#SetStringAt(str, line, column)
       let c += 1
     endif
 
+    " TODO why does this not work all the time
     exe "norm! 0".(c-1)."l".slen."s".s.''
+endif
 
   endif
 endfunction
