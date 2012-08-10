@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 06/30/2012
-" Version:       1.1
+" Version:       1.2
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -576,49 +576,63 @@ endfunction
 "   command type and, possibly, additional data.
 " Event Types
 "   Exit
-"     action: exit current viewer, if top viewer, no results data
+"     Action: exit current viewer, if top viewer, no results data
 "     Also used as top-of-stack return value for Viewer
+"     The character <Esc> is mapped to Exit
 "   Cancel 
-"     action: exit form, no results data
+"     Action: exit form, no results data
 "     Also used as top-of-stack return value for Viewer
 "   Command
-"     action: exit form, no result data, and execute command
+"     Action: exit form, no result data, and execute command
 "   Context 
-"      action: generate context help menu with application specific help/info
+"     Action: generate context help Form with application specific help/info
 "        and developer tools
-"      data: optional Point [line, column]
+"     data: optional Point [line, column]
+"     The character <RightMouse> is mapped to Context
 "   Drag
-"      action: none
+"     Action: none
+"     The character <LeftDrag> is mapped to Drag
 "   Release
-"      action: none
+"     Action: none
+"     The character <LeftRelease> is mapped to Release
 "   NewFocus
-"      action: find new focus based upon mouse coordinates
+"     Action: find new focus based upon mouse coordinates
+"     The character <LeftMouse> is mapped to NewFocus
+"     Also, if a Viewer is the target of a Select Event, it is mapped
+"       to NewFocus
 "   NextFocus
-"      action: go to next focus
+"     Action: go to next focus
+"     The characters <Tab>, <C-n> and <Down> is mapped to NextFocus
+"     The mouse <ScrollWheelDown> event is mapped to NextFocus
 "   PrevFocus
-"      action: go to previous focus
+"     Action: go to previous focus
+"     The characters <S-Tab>, <C-p> and <Up> is mapped to PrevFocus
+"     The mouse <ScrollWheelUp> event is mapped to PrevFocus
 "   FirstFocus
-"      action: go to first focus glyph
+"     Action: go to first focus glyph
+"     The character <Home> is mapped to FirstFocus
 "   LastFocus
-"      action: go to last focus glyph
+"     Action: go to last focus glyph
+"     The character <End> is mapped to LastFocus
 "   ReDraw
-"      action: redraw current focus glyph
+"     Action: redraw Form in window
 "   ReDrawAll
-"      action: redraw complete form 
+"     Action: redraw complete form 
 "   ReFocus
-"      action: View creates a list of glyphs that can get focus
+"     Action: View creates a list of glyphs that can get focus
 "       this event tells viewer to regenerate that list
 "   ReSize
-"      action: Form does a requestedSize call on its body because a child has
+"     Action: Form does a requestedSize call on its body because a child has
 "       changed size or gone from invisible to visible
 "   Select 
-"     action: change focus and possibly glyph specific sub-selection
+"     Action: change focus and possibly glyph specific sub-selection
 "     data: Point [line, column]
 "   SelectDouble
-"     action: a left mouse double click occured
+"     Action: a left mouse double click occured
 "     data: Point [line, column]
+"     The mouse <2-LeftMouse> event is mapped to SelectDouble
 "   Submit
-"     action: exit form with result data
+"     Action: exit form with result data
 "     data: results from form
 "     Also used as top-of-stack return value for Viewer
 " Special Key Types
@@ -630,11 +644,10 @@ endfunction
 "   Right S-Right C-Right 
 "   ScrollWheelDown S-ScrollWheelDown C-ScrollWheelDown 
 "   ScrollWheelUp S-ScrollWheelUp C-ScrollWheelUp 
-"   Space
-"   CR
-"   Del
-"   BS
-
+"   Space: mapped to Select
+"   CR: mapped to Select
+"   Del: generally, erase character in editor
+"   BS: generally, move over character in editor
 
 
 " ------------------------------------------------------------ 
@@ -3469,11 +3482,7 @@ endif
 function! forms#loadGlyphPrototype()
 
   if !exists("g:forms#Glyph")
-    let xxx = self#LoadObjectPrototype()
-call self#log("forms#loadGlyphPrototype. BEFORE clone forms#Glyph")
-    let g:forms#Glyph = xxx.clone('forms#Glyph')
-call self#log("forms#loadGlyphPrototype. AFTER clone forms#Glyph")
-    " let g:forms#Glyph = self#LoadObjectPrototype().clone('forms#Glyph')
+    let g:forms#Glyph = self#LoadObjectPrototype().clone('forms#Glyph')
     let g:forms#Glyph.__allocation = {}
     let g:forms#Glyph.__status = g:IS_ENABLED
 
@@ -10171,6 +10180,11 @@ call forms#log("g:forms#Viewer.run c=".string(c))
                   call forms#DoFocusInfo(focus)
                 endif
               endif
+
+            else
+              if c == ''
+                call forms#DoFormInfo(self)
+              endif
             endif
 
             redraw
@@ -10678,8 +10692,12 @@ function! forms#loadFormPrototype()
         endwhile
 
       catch /.*/
-        call forms#log("Caught Exception: " . v:exception . " at " . v:throwpoint)
-        echo v:exception
+        if g:forms_log_enabled == g:self#IS_TRUE
+          call forms#log("Caught Exception: " . v:exception . " at " . v:throwpoint)
+          echo v:exception
+        else
+          throw "Forms: " . v:exception . " at " . v:throwpoint
+        endif
       finally
 "  call forms#log("g:forms#Form outer finally")
 
@@ -10765,8 +10783,12 @@ function! forms#loadFormPrototype()
             execute x
           endif
         catch /.*/
-          call forms#log("g:forms#Form.run Caught Exception: " . v:exception . " at " . v:throwpoint)
-          echo v:exception
+          if g:forms_log_enabled == g:self#IS_TRUE
+            call forms#log("g:forms#Form.run Caught Exception: " . v:exception . " at " . v:throwpoint)
+            echo v:exception
+          else
+            throw "Forms: " . v:exception . " at " . v:throwpoint
+          endif
         endtry
       endif
     endfunction
@@ -11578,7 +11600,8 @@ call forms#log("g:forms#Deck.setCard add textblock")
           let textblock = []
           for fline in fulllines
             " let pline = fline[column-1 : column+width-2]
-            let pline = fline[column : column+width-2]
+            " let pline = fline[column : column+width-2]
+            let pline = fline[column : column+width-1]
 " call forms#log("g:forms#Deck.draw pline=" . pline . "END")
             call add(textblock, pline)
           endfor
@@ -14529,24 +14552,18 @@ function! forms#DoFocusInfo(focusHit, ...)
   call form.run()
 endfunction
 
-function! forms#DoFormInfo(form, line, column)
+" ------------------------------------------------------------ 
+" forms#DoFormInfo: {{{2
+"  Display Form purpose. Optionally, create button
+"    to display developer Glyph tree.
+"  parameters:
+"    form     : Form 
+"    line     : Optional y point
+"    column   : Optional x point
+" ------------------------------------------------------------ 
+function! forms#DoFormInfo(form, ...)
   let textlines = a:form.purpose()
   let text = forms#newText({'textlines': textlines })
-
-  let gsaction = forms#newAction({ 'execute': function("forms#GlyphSelectAction")})
-  let gsaction.glyph = a:form.__body
-  let gsaction.line = a:line
-  let gsaction.column = a:column
-
-  let sellabel = forms#newLabel({'text': "Show Selection"})
-  let selbutton = forms#newButton({
-                         \ 'tag': 'select',
-                         \ 'body': sellabel,
-                         \ 'action': gsaction})
-  function! selbutton.purpose() dict
-    return "Show glyph selection information."
-  endfunction
-
 
   let closelabel = forms#newLabel({'text': "Close"})
   let closebutton = forms#newButton({
@@ -14558,14 +14575,43 @@ function! forms#DoFormInfo(form, line, column)
   endfunction
 
   let hspace = forms#newHLine({'size': 6})
-  let vpoly = forms#newVPoly({ 'children': [
-                            \ text, 
-                            \ hspace, 
-                            \ selbutton, 
-                            \ hspace, 
-                            \ closebutton], 
-                            \ 'alignments': [[4,'R']],
-                            \ 'alignment': 'C' })
+
+  if a:0 == 0
+    let vpoly = forms#newVPoly({ 'children': [
+                              \ text, 
+                              \ hspace, 
+                              \ closebutton], 
+                              \ 'alignments': [[2,'R']],
+                              \ 'alignment': 'C' })
+  else
+    let line = a:1
+    let column = a:2
+
+    let gsaction = forms#newAction({ 'execute': function("forms#GlyphSelectAction")})
+    let gsaction.glyph = a:form.__body
+    let gsaction.line = line
+    let gsaction.column = column
+
+    let sellabel = forms#newLabel({'text': "Show Selection"})
+    let selbutton = forms#newButton({
+                           \ 'tag': 'select',
+                           \ 'body': sellabel,
+                           \ 'action': gsaction})
+    function! selbutton.purpose() dict
+      return "Show glyph selection information."
+    endfunction
+
+
+    let vpoly = forms#newVPoly({ 'children': [
+                              \ text, 
+                              \ hspace, 
+                              \ selbutton, 
+                              \ hspace, 
+                              \ closebutton], 
+                              \ 'alignments': [[4,'R']],
+                              \ 'alignment': 'C' })
+  endif
+
   let box = forms#newBox({ 'body': vpoly })
 
   let bg = forms#newBackground({ 'body': box} )
@@ -14755,375 +14801,372 @@ if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
 "---------------------------------------------------------------------------
 " UTF-8 Box Drawing Characters: {{{2
 "-------------------------------------------------------------------------------
-if &encoding == 'utf-8'
-  if !exists("b:forms_BoxDrawingCharacters") 
+if !exists("b:forms_BoxDrawingCharacters") 
 
-    " '─' 9472 2500 BOX DRAWINGS LIGHT HORIZONTAL (present in WGL4)
-    let b:forms_BDLightHorizontal = '─'
-    " '━' 9473 2501 BOX DRAWINGS HEAVY HORIZONTAL
-    let b:forms_BDHeavyHorizontal = '━'
-    " '│' 9474 2502 BOX DRAWINGS LIGHT VERTICAL (present in WGL4)
-    let b:forms_BDLightVertical = '│'
-    " '┃' 9475 2503 BOX DRAWINGS HEAVY VERTICAL
-    let b:forms_BDHeavyVertical = '┃'
-    " '┄' 9476 2504 BOX DRAWINGS LIGHT TRIPLE DASH HORIZONTAL
-    let b:forms_BDLightTripleDashHorizontal = '┄'
-    " '┅' 9477 2505 BOX DRAWINGS HEAVY TRIPLE DASH HORIZONTAL
-    let b:forms_BDHeavyTripleDashHorizontal = '┅'
-    " '┆' 9478 2506 BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL
-    let b:forms_BDLightTripleDashVertical = '┆'
-    " '┇' 9479 2507 BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL
-    let b:forms_BDHeavyTripleDashVertical = '┇'
-    " '┈' 9480 2508 BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL
-    let b:forms_BDLightQuadrupleDashHorizontal = '┈'
-    " '┉' 9481 2509 BOX DRAWINGS HEAVY QUADRUPLE DASH HORIZONTAL
-    let b:forms_BDHeavyQuadrupleDashHorizontal = '┉'
-    " '┊' 9482 250A BOX DRAWINGS LIGHT QUADRUPLE DASH VERTICAL        
-    let b:forms_BDLightQuadrupleDashVertical = '┊'
-    " '┋' 9483 250B BOX DRAWINGS HEAVY QUADRUPLE DASH VERTICAL        
-    let b:forms_BDHeavyQuadrupleDashVertical = '┋'
+  " '─' 9472 2500 BOX DRAWINGS LIGHT HORIZONTAL (present in WGL4)
+  let b:forms_BDLightHorizontal = '─'
+  " '━' 9473 2501 BOX DRAWINGS HEAVY HORIZONTAL
+  let b:forms_BDHeavyHorizontal = '━'
+  " '│' 9474 2502 BOX DRAWINGS LIGHT VERTICAL (present in WGL4)
+  let b:forms_BDLightVertical = '│'
+  " '┃' 9475 2503 BOX DRAWINGS HEAVY VERTICAL
+  let b:forms_BDHeavyVertical = '┃'
+  " '┄' 9476 2504 BOX DRAWINGS LIGHT TRIPLE DASH HORIZONTAL
+  let b:forms_BDLightTripleDashHorizontal = '┄'
+  " '┅' 9477 2505 BOX DRAWINGS HEAVY TRIPLE DASH HORIZONTAL
+  let b:forms_BDHeavyTripleDashHorizontal = '┅'
+  " '┆' 9478 2506 BOX DRAWINGS LIGHT TRIPLE DASH VERTICAL
+  let b:forms_BDLightTripleDashVertical = '┆'
+  " '┇' 9479 2507 BOX DRAWINGS HEAVY TRIPLE DASH VERTICAL
+  let b:forms_BDHeavyTripleDashVertical = '┇'
+  " '┈' 9480 2508 BOX DRAWINGS LIGHT QUADRUPLE DASH HORIZONTAL
+  let b:forms_BDLightQuadrupleDashHorizontal = '┈'
+  " '┉' 9481 2509 BOX DRAWINGS HEAVY QUADRUPLE DASH HORIZONTAL
+  let b:forms_BDHeavyQuadrupleDashHorizontal = '┉'
+  " '┊' 9482 250A BOX DRAWINGS LIGHT QUADRUPLE DASH VERTICAL        
+  let b:forms_BDLightQuadrupleDashVertical = '┊'
+  " '┋' 9483 250B BOX DRAWINGS HEAVY QUADRUPLE DASH VERTICAL        
+  let b:forms_BDHeavyQuadrupleDashVertical = '┋'
 
-    " '┌' 9484 250C BOX DRAWINGS LIGHT DOWN AND RIGHT (present in WGL4)
-    let b:forms_BDLightDownAndRight = '┌'
-    " '┍' 9485 250D BOX DRAWINGS DOWN LIGHT AND RIGHT HEAVY
-    let b:forms_BDDownLightAndRightHeavy = '┍'
-    " '┎' 9486 250E BOX DRAWINGS DOWN HEAVY AND RIGHT LIGHT
-    let b:forms_BDDownHeavyAndRightLight = '┎'
-    " '┏' 9487 250F BOX DRAWINGS HEAVY DOWN AND RIGHT
-    let b:forms_BDHeavyDownAndRight = '┏'
-    " '┐' 9488 2510 BOX DRAWINGS LIGHT DOWN AND LEFT (present in WGL4)
-    let b:forms_BDLightDownAndLeft = '┐'
-    " '┑' 9489 2511 BOX DRAWINGS DOWN LIGHT AND LEFT HEAVY
-    let b:forms_BDDownLightAndLeftHeavy = '┑'
-    " '┒' 9490 2512 BOX DRAWINGS DOWN HEAVY AND LEFT LIGHT
-    let b:forms_BDDownHeavyAndLeftLight = '┒'
-    " '┓' 9491 2513 BOX DRAWINGS HEAVY DOWN AND LEFT
-    let b:forms_BDHeavyDownAndLeft = '┓'
-    " '└' 9492 2514 BOX DRAWINGS LIGHT UP AND RIGHT (present in WGL4)
-    let b:forms_BDLightUpAndRight = '└'
-    " '┕' 9493 2515 BOX DRAWINGS UP LIGHT AND RIGHT HEAVY
-    let b:forms_BDUpLightAndRightHeavy = '┕'
-    " '┖' 9494 2516 BOX DRAWINGS UP HEAVY AND RIGHT LIGHT
-    let b:forms_BDUpHeavyAndRightLight = '┖'
-    " '┗' 9495 2517 BOX DRAWINGS HEAVY UP AND RIGHT
-    let b:forms_BDHeavyUpAndRight = '┗'
-    " '┘' 9496 2518 BOX DRAWINGS LIGHT UP AND LEFT (present in WGL4)
-    let b:forms_BDLightUpAndLeft = '┘'
-    " '┙' 9497 2519 BOX DRAWINGS UP LIGHT AND LEFT HEAVY
-    let b:forms_BDUpLightAndLeftHeavy = '┙'
-    " '┚' 9498 251A BOX DRAWINGS UP HEAVY AND LEFT LIGHT
-    let b:forms_BDUpHeavyAndLeftLight = '┚'
-    " '┛' 9499 251B BOX DRAWINGS HEAVY UP AND LEFT        
-    let b:forms_BDHeavyUpAndLeft = '┛'
+  " '┌' 9484 250C BOX DRAWINGS LIGHT DOWN AND RIGHT (present in WGL4)
+  let b:forms_BDLightDownAndRight = '┌'
+  " '┍' 9485 250D BOX DRAWINGS DOWN LIGHT AND RIGHT HEAVY
+  let b:forms_BDDownLightAndRightHeavy = '┍'
+  " '┎' 9486 250E BOX DRAWINGS DOWN HEAVY AND RIGHT LIGHT
+  let b:forms_BDDownHeavyAndRightLight = '┎'
+  " '┏' 9487 250F BOX DRAWINGS HEAVY DOWN AND RIGHT
+  let b:forms_BDHeavyDownAndRight = '┏'
+  " '┐' 9488 2510 BOX DRAWINGS LIGHT DOWN AND LEFT (present in WGL4)
+  let b:forms_BDLightDownAndLeft = '┐'
+  " '┑' 9489 2511 BOX DRAWINGS DOWN LIGHT AND LEFT HEAVY
+  let b:forms_BDDownLightAndLeftHeavy = '┑'
+  " '┒' 9490 2512 BOX DRAWINGS DOWN HEAVY AND LEFT LIGHT
+  let b:forms_BDDownHeavyAndLeftLight = '┒'
+  " '┓' 9491 2513 BOX DRAWINGS HEAVY DOWN AND LEFT
+  let b:forms_BDHeavyDownAndLeft = '┓'
+  " '└' 9492 2514 BOX DRAWINGS LIGHT UP AND RIGHT (present in WGL4)
+  let b:forms_BDLightUpAndRight = '└'
+  " '┕' 9493 2515 BOX DRAWINGS UP LIGHT AND RIGHT HEAVY
+  let b:forms_BDUpLightAndRightHeavy = '┕'
+  " '┖' 9494 2516 BOX DRAWINGS UP HEAVY AND RIGHT LIGHT
+  let b:forms_BDUpHeavyAndRightLight = '┖'
+  " '┗' 9495 2517 BOX DRAWINGS HEAVY UP AND RIGHT
+  let b:forms_BDHeavyUpAndRight = '┗'
+  " '┘' 9496 2518 BOX DRAWINGS LIGHT UP AND LEFT (present in WGL4)
+  let b:forms_BDLightUpAndLeft = '┘'
+  " '┙' 9497 2519 BOX DRAWINGS UP LIGHT AND LEFT HEAVY
+  let b:forms_BDUpLightAndLeftHeavy = '┙'
+  " '┚' 9498 251A BOX DRAWINGS UP HEAVY AND LEFT LIGHT
+  let b:forms_BDUpHeavyAndLeftLight = '┚'
+  " '┛' 9499 251B BOX DRAWINGS HEAVY UP AND LEFT        
+  let b:forms_BDHeavyUpAndLeft = '┛'
 
-    " '├' 9500 251C BOX DRAWINGS LIGHT VERTICAL AND RIGHT (present in WGL4)
-    let b:forms_BDLightVerticalAndRight = '├'
-    " '┝' 9501 251D BOX DRAWINGS VERTICAL LIGHT AND RIGHT HEAVY
-    let b:forms_BDVerticalLightAndRIghtHeavy = '┝'
-    " '┞' 9502 251E BOX DRAWINGS UP HEAVY AND RIGHT DOWN LIGHT
-    let b:forms_BDUpHeavyAndRIghtDownLight = '┞'
-    " '┟' 9503 251F BOX DRAWINGS DOWN HEAVY AND RIGHT UP LIGHT
-    let b:forms_BDDownHeavyAndRightUpLight = '┟'
-    " '┠' 9504 2520 BOX DRAWINGS VERTICAL HEAVY AND RIGHT LIGHT
-    let b:forms_BDVerticalHeavyAndRightLight = '┠'
-    " '┡' 9505 2521 BOX DRAWINGS DOWN LIGHT AND RIGHT UP HEAVY
-    let b:forms_BDDownLightAndRIghtUpHeavy = '┡'
-    " '┢' 9506 2522 BOX DRAWINGS UP LIGHT AND RIGHT DOWN HEAVY
-    let b:forms_BDUpLightAndRightDownHeavy = '┢'
-    " '┣' 9507 2523 BOX DRAWINGS HEAVY VERTICAL AND RIGHT
-    let b:forms_BDHeavyVerticalAndRight = '┣'
-    " '┤' 9508 2524 BOX DRAWINGS LIGHT VERTICAL AND LEFT (present in WGL4)
-    let b:forms_BDLightVerticalAndLeft = '┤'
-    " '┥' 9509 2525 BOX DRAWINGS VERTICAL LIGHT AND LEFT HEAVY
-    let b:forms_BDVerticalLightAndLeftHeavy = '┥'
-    " '┦' 9510 2526 BOX DRAWINGS UP HEAVY AND LEFT DOWN LIGHT       
-    let b:forms_BDUpHeavyAndLeftDownLight = '┦'
-    " '┧' 9511 2527 BOX DRAWINGS DOWN HEAVY AND LEFT UP LIGHT
-    let b:forms_BDDownHeavyAndLeftUpLight = '┧'
-    " '┨' 9512 2528 BOX DRAWINGS VERTICAL HEAVY AND LEFT LIGHT            
-    let b:forms_BDVerticalHeavyAndLeftLight = '┨'
-    " '┩' 9513 2529 BOX DRAWINGS DOWN LIGHT AND LEFT UP HEAVY
-    let b:forms_BDDownLightAndLeftUpHeavy = '┩'
-    " '┪' 9514 252A BOX DRAWINGS UP LIGHT AND LEFT DOWN HEAVY
-    let b:forms_BDUpLightAndLeftDownHeavy = '┪'
-
-
-    " '┫' 9515 252B BOX DRAWINGS HEAVY VERTICAL AND LEFT
-    let b:forms_BDHeavyVerticalAndLeft = '┫'
-    " '┬' 9516 252C BOX DRAWINGS LIGHT DOWN AND HORIZONTAL (present in WGL4)
-    let b:forms_BDLightDownAndHorizontal = '┬'
-    " '┭' 9517 252D BOX DRAWINGS LEFT HEAVY AND RIGHT DOWN LIGHT
-    let b:forms_BDLeftHeavyAndRightDownLight = '┭'
-    " '┮' 9518 252E BOX DRAWINGS RIGHT HEAVY AND LEFT DOWN LIGHT
-    let b:forms_BDRightHeavyAndLeftDownLight = '┮'
-    " '┯' 9519 252F BOX DRAWINGS DOWN LIGHT AND HORIZONTAL HEAVY
-    let b:forms_BDDOwnLightAndHorizontalHeavy = '┯'
-    " '┰' 9520 2530 BOX DRAWINGS DOWN HEAVY AND HORIZONTAL LIGHT
-    let b:forms_BDDownHeavyAndHorizontalLight = '┰'
-    " '┱' 9521 2531 BOX DRAWINGS RIGHT LIGHT AND LEFT DOWN HEAVY
-    let b:forms_BDRightLightAndLeftDownHeavy = '┱'
-    " '┲' 9522 2532 BOX DRAWINGS LEFT LIGHT AND RIGHT DOWN HEAVY
-    let b:forms_BDLeftLightAndRightDownHeavy = '┲'
-    " '┳' 9523 2533 BOX DRAWINGS HEAVY DOWN AND HORIZONTAL
-    let b:forms_BDHeavyDownAndHorizontal = '┳'
-    " '┴' 9524 2534 BOX DRAWINGS LIGHT UP AND HORIZONTAL (present in WGL4)
-    let b:forms_BDLightUpAndHorizontal = '┴'
-    " '┵' 9525 2535 BOX DRAWINGS LEFT HEAVY AND RIGHT UP LIGHT
-    let b:forms_BDLeftHeavyAndRightUpLight = '┵'
-    " '┶' 9526 2536 BOX DRAWINGS RIGHT HEAVY AND LEFT UP LIGHT
-    let b:forms_BDRightHeavyAndLeftUpLight = '┶'
-    " '┷' 9527 2537 BOX DRAWINGS UP LIGHT AND HORIZONTAL HEAVY
-    let b:forms_BDUpLightAndHorizontalHeavy = '┷'
-    " '┸' 9528 2538 BOX DRAWINGS UP HEAVY AND HORIZONTAL LIGHT
-    let b:forms_BDUpHeavyAndHorizontalLight = '┸'
-    " '┹' 9529 2539 BOX DRAWINGS RIGHT LIGHT AND LEFT UP HEAVY
-    let b:forms_BDRightLightAndLeftUpHeavy = '┹'
-    " '┺' 9530 253A BOX DRAWINGS LEFT LIGHT AND RIGHT UP HEAVY
-    let b:forms_BDLeftLightAndRightUpHeavy = '┺'
-
-    " '┻' 9531 253B BOX DRAWINGS HEAVY UP AND HORIZONTAL
-    let b:forms_BDHeavyUpAndHorizontal = '┻'
-    " '┼' 9532 253C BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL (present in WGL4)
-    let b:forms_BDLightVerticalAndHorizontal = '┼'
-    " '┽' 9533 253D BOX DRAWINGS LEFT HEAVY AND RIGHT VERTICAL LIGHT
-    let b:forms_BDLeftHeavyAndRIghtVerticalLight = '┽'
-    " '┾' 9534 253E BOX DRAWINGS RIGHT HEAVY AND LEFT VERTICAL LIGHT
-    let b:forms_BDRIghtHeavyAndLeftVerticalLight = '┾'
-    " '┿' 9535 253F BOX DRAWINGS VERTICAL LIGHT AND HORIZONTAL HEAVY
-    let b:forms_BDVerticalLightAndHorizontalHeavy = '┿'
-    " '╀' 9536 2540 BOX DRAWINGS UP HEAVY AND DOWN HORIZONTAL LIGHT
-    let b:forms_BDUpHeavyAndDownHorizontalLight = '╀'
-    " '╁' 9537 2541 BOX DRAWINGS DOWN HEAVY AND UP HORIZONTAL LIGHT
-    let b:forms_BDDownHeavyAndUPHorizontalLight = '╁'
-    " '╂' 9538 2542 BOX DRAWINGS VERTICAL HEAVY AND HORIZONTAL LIGHT
-    let b:forms_BDVerticalHeavyAndHorizontalLight = '╂'
-    " '╃' 9539 2543 BOX DRAWINGS LEFT UP HEAVY AND RIGHT DOWN LIGHT
-    let b:forms_BDLeftUpHeavyAndRightDownLight = '╃'
-    " '╄' 9540 2544 BOX DRAWINGS RIGHT UP HEAVY AND LEFT DOWN LIGHT
-    let b:forms_BDRightUpHeavyAndLeftDownLight = '╄'
-    " '╅' 9541 2545 BOX DRAWINGS LEFT DOWN HEAVY AND RIGHT UP LIGHT
-    let b:forms_BDLeftDownHeavyAndRightUpLight = '╅'
-    " '╆' 9542 2546 BOX DRAWINGS RIGHT DOWN HEAVY AND LEFT UP LIGHT
-    let b:forms_BDRightDownHeavyAndLeftUpLight = '╆'
-    " '╇' 9543 2547 BOX DRAWINGS DOWN LIGHT AND UP HORIZONTAL HEAVY
-    let b:forms_BDDownLightAndUpHorizontalHeavy = '╇'
-    " '╈' 9544 2548 BOX DRAWINGS UP LIGHT AND DOWN HORIZONTAL HEAVY
-    let b:forms_BDUpLightAndDownHorizontalHeavy = '╈'
-    " '╉' 9545 2549 BOX DRAWINGS RIGHT LIGHT AND LEFT VERTICAL HEAVY
-    let b:forms_BDRightLightAndLeftVerticalHeavy = '╉'
-    " '╊' 9546 254A BOX DRAWINGS LEFT LIGHT AND RIGHT VERTICAL HEAVY
-    let b:forms_BDLeftLightAndRightVerticalHeavy = '╊'
-    " '╋' 9547 254B BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL        
-    let b:forms_BDHeavyVerticalAndHorizontal = '╋'
+  " '├' 9500 251C BOX DRAWINGS LIGHT VERTICAL AND RIGHT (present in WGL4)
+  let b:forms_BDLightVerticalAndRight = '├'
+  " '┝' 9501 251D BOX DRAWINGS VERTICAL LIGHT AND RIGHT HEAVY
+  let b:forms_BDVerticalLightAndRIghtHeavy = '┝'
+  " '┞' 9502 251E BOX DRAWINGS UP HEAVY AND RIGHT DOWN LIGHT
+  let b:forms_BDUpHeavyAndRIghtDownLight = '┞'
+  " '┟' 9503 251F BOX DRAWINGS DOWN HEAVY AND RIGHT UP LIGHT
+  let b:forms_BDDownHeavyAndRightUpLight = '┟'
+  " '┠' 9504 2520 BOX DRAWINGS VERTICAL HEAVY AND RIGHT LIGHT
+  let b:forms_BDVerticalHeavyAndRightLight = '┠'
+  " '┡' 9505 2521 BOX DRAWINGS DOWN LIGHT AND RIGHT UP HEAVY
+  let b:forms_BDDownLightAndRIghtUpHeavy = '┡'
+  " '┢' 9506 2522 BOX DRAWINGS UP LIGHT AND RIGHT DOWN HEAVY
+  let b:forms_BDUpLightAndRightDownHeavy = '┢'
+  " '┣' 9507 2523 BOX DRAWINGS HEAVY VERTICAL AND RIGHT
+  let b:forms_BDHeavyVerticalAndRight = '┣'
+  " '┤' 9508 2524 BOX DRAWINGS LIGHT VERTICAL AND LEFT (present in WGL4)
+  let b:forms_BDLightVerticalAndLeft = '┤'
+  " '┥' 9509 2525 BOX DRAWINGS VERTICAL LIGHT AND LEFT HEAVY
+  let b:forms_BDVerticalLightAndLeftHeavy = '┥'
+  " '┦' 9510 2526 BOX DRAWINGS UP HEAVY AND LEFT DOWN LIGHT       
+  let b:forms_BDUpHeavyAndLeftDownLight = '┦'
+  " '┧' 9511 2527 BOX DRAWINGS DOWN HEAVY AND LEFT UP LIGHT
+  let b:forms_BDDownHeavyAndLeftUpLight = '┧'
+  " '┨' 9512 2528 BOX DRAWINGS VERTICAL HEAVY AND LEFT LIGHT            
+  let b:forms_BDVerticalHeavyAndLeftLight = '┨'
+  " '┩' 9513 2529 BOX DRAWINGS DOWN LIGHT AND LEFT UP HEAVY
+  let b:forms_BDDownLightAndLeftUpHeavy = '┩'
+  " '┪' 9514 252A BOX DRAWINGS UP LIGHT AND LEFT DOWN HEAVY
+  let b:forms_BDUpLightAndLeftDownHeavy = '┪'
 
 
-    " '╌' 9548 254C BOX DRAWINGS LIGHT DOUBLE DASH HORIZONTAL
-    let b:forms_BDLightDoubleDashHorizontal = '╌'
-    " '╍' 9549 254D BOX DRAWINGS HEAVY DOUBLE DASH HORIZONTAL
-    let b:forms_BDHeavyDoubleDashHorizontal = '╍'
-    " '╎' 9550 254E BOX DRAWINGS LIGHT DOUBLE DASH VERTICAL
-    let b:forms_BDLightDoubleDashVertical = '╎'
-    " '╏' 9551 254F BOX DRAWINGS HEAVY DOUBLE DASH VERTICAL
-    let b:forms_BDHeavyDoubleDashVertical = '╏'
+  " '┫' 9515 252B BOX DRAWINGS HEAVY VERTICAL AND LEFT
+  let b:forms_BDHeavyVerticalAndLeft = '┫'
+  " '┬' 9516 252C BOX DRAWINGS LIGHT DOWN AND HORIZONTAL (present in WGL4)
+  let b:forms_BDLightDownAndHorizontal = '┬'
+  " '┭' 9517 252D BOX DRAWINGS LEFT HEAVY AND RIGHT DOWN LIGHT
+  let b:forms_BDLeftHeavyAndRightDownLight = '┭'
+  " '┮' 9518 252E BOX DRAWINGS RIGHT HEAVY AND LEFT DOWN LIGHT
+  let b:forms_BDRightHeavyAndLeftDownLight = '┮'
+  " '┯' 9519 252F BOX DRAWINGS DOWN LIGHT AND HORIZONTAL HEAVY
+  let b:forms_BDDOwnLightAndHorizontalHeavy = '┯'
+  " '┰' 9520 2530 BOX DRAWINGS DOWN HEAVY AND HORIZONTAL LIGHT
+  let b:forms_BDDownHeavyAndHorizontalLight = '┰'
+  " '┱' 9521 2531 BOX DRAWINGS RIGHT LIGHT AND LEFT DOWN HEAVY
+  let b:forms_BDRightLightAndLeftDownHeavy = '┱'
+  " '┲' 9522 2532 BOX DRAWINGS LEFT LIGHT AND RIGHT DOWN HEAVY
+  let b:forms_BDLeftLightAndRightDownHeavy = '┲'
+  " '┳' 9523 2533 BOX DRAWINGS HEAVY DOWN AND HORIZONTAL
+  let b:forms_BDHeavyDownAndHorizontal = '┳'
+  " '┴' 9524 2534 BOX DRAWINGS LIGHT UP AND HORIZONTAL (present in WGL4)
+  let b:forms_BDLightUpAndHorizontal = '┴'
+  " '┵' 9525 2535 BOX DRAWINGS LEFT HEAVY AND RIGHT UP LIGHT
+  let b:forms_BDLeftHeavyAndRightUpLight = '┵'
+  " '┶' 9526 2536 BOX DRAWINGS RIGHT HEAVY AND LEFT UP LIGHT
+  let b:forms_BDRightHeavyAndLeftUpLight = '┶'
+  " '┷' 9527 2537 BOX DRAWINGS UP LIGHT AND HORIZONTAL HEAVY
+  let b:forms_BDUpLightAndHorizontalHeavy = '┷'
+  " '┸' 9528 2538 BOX DRAWINGS UP HEAVY AND HORIZONTAL LIGHT
+  let b:forms_BDUpHeavyAndHorizontalLight = '┸'
+  " '┹' 9529 2539 BOX DRAWINGS RIGHT LIGHT AND LEFT UP HEAVY
+  let b:forms_BDRightLightAndLeftUpHeavy = '┹'
+  " '┺' 9530 253A BOX DRAWINGS LEFT LIGHT AND RIGHT UP HEAVY
+  let b:forms_BDLeftLightAndRightUpHeavy = '┺'
+
+  " '┻' 9531 253B BOX DRAWINGS HEAVY UP AND HORIZONTAL
+  let b:forms_BDHeavyUpAndHorizontal = '┻'
+  " '┼' 9532 253C BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL (present in WGL4)
+  let b:forms_BDLightVerticalAndHorizontal = '┼'
+  " '┽' 9533 253D BOX DRAWINGS LEFT HEAVY AND RIGHT VERTICAL LIGHT
+  let b:forms_BDLeftHeavyAndRIghtVerticalLight = '┽'
+  " '┾' 9534 253E BOX DRAWINGS RIGHT HEAVY AND LEFT VERTICAL LIGHT
+  let b:forms_BDRIghtHeavyAndLeftVerticalLight = '┾'
+  " '┿' 9535 253F BOX DRAWINGS VERTICAL LIGHT AND HORIZONTAL HEAVY
+  let b:forms_BDVerticalLightAndHorizontalHeavy = '┿'
+  " '╀' 9536 2540 BOX DRAWINGS UP HEAVY AND DOWN HORIZONTAL LIGHT
+  let b:forms_BDUpHeavyAndDownHorizontalLight = '╀'
+  " '╁' 9537 2541 BOX DRAWINGS DOWN HEAVY AND UP HORIZONTAL LIGHT
+  let b:forms_BDDownHeavyAndUPHorizontalLight = '╁'
+  " '╂' 9538 2542 BOX DRAWINGS VERTICAL HEAVY AND HORIZONTAL LIGHT
+  let b:forms_BDVerticalHeavyAndHorizontalLight = '╂'
+  " '╃' 9539 2543 BOX DRAWINGS LEFT UP HEAVY AND RIGHT DOWN LIGHT
+  let b:forms_BDLeftUpHeavyAndRightDownLight = '╃'
+  " '╄' 9540 2544 BOX DRAWINGS RIGHT UP HEAVY AND LEFT DOWN LIGHT
+  let b:forms_BDRightUpHeavyAndLeftDownLight = '╄'
+  " '╅' 9541 2545 BOX DRAWINGS LEFT DOWN HEAVY AND RIGHT UP LIGHT
+  let b:forms_BDLeftDownHeavyAndRightUpLight = '╅'
+  " '╆' 9542 2546 BOX DRAWINGS RIGHT DOWN HEAVY AND LEFT UP LIGHT
+  let b:forms_BDRightDownHeavyAndLeftUpLight = '╆'
+  " '╇' 9543 2547 BOX DRAWINGS DOWN LIGHT AND UP HORIZONTAL HEAVY
+  let b:forms_BDDownLightAndUpHorizontalHeavy = '╇'
+  " '╈' 9544 2548 BOX DRAWINGS UP LIGHT AND DOWN HORIZONTAL HEAVY
+  let b:forms_BDUpLightAndDownHorizontalHeavy = '╈'
+  " '╉' 9545 2549 BOX DRAWINGS RIGHT LIGHT AND LEFT VERTICAL HEAVY
+  let b:forms_BDRightLightAndLeftVerticalHeavy = '╉'
+  " '╊' 9546 254A BOX DRAWINGS LEFT LIGHT AND RIGHT VERTICAL HEAVY
+  let b:forms_BDLeftLightAndRightVerticalHeavy = '╊'
+  " '╋' 9547 254B BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL        
+  let b:forms_BDHeavyVerticalAndHorizontal = '╋'
 
 
-    " '═' 9552 2550 BOX DRAWINGS DOUBLE HORIZONTAL (present in WGL4)
-    let b:forms_BDDoubleHorizontal = '═'
-    " '║' 9553 2551 BOX DRAWINGS DOUBLE VERTICAL (present in WGL4)
-    let b:forms_BDDoubleVertical = '║'
-    " '╒' 9554 2552 BOX DRAWINGS DOWN SINGLE AND RIGHT DOUBLE (present in WGL4)
-    let b:forms_BDDownSingleAndRightDouble = '╒'
-    " '╓' 9555 2553 BOX DRAWINGS DOWN DOUBLE AND RIGHT SINGLE (present in WGL4)
-    let b:forms_BDDownDoubleAndRightSingle = '╓'
-    " '╔' 9556 2554 BOX DRAWINGS DOUBLE DOWN AND RIGHT (present in WGL4)
-    let b:forms_BDDoubleDownAndRight = '╔'
-    " '╕' 9557 2555 BOX DRAWINGS DOWN SINGLE AND LEFT DOUBLE (present inWGL4)
-    let b:forms_BDDownSingleAndLeftDouble = '╕'
-    " '╖' 9558 2556 BOX DRAWINGS DOWN DOUBLE AND LEFT SINGLE (present in WGL4)
-    let b:forms_BDDownDoubleAndLeftSingle = '╖'
-    " '╗' 9559 2557 BOX DRAWINGS DOUBLE DOWN AND LEFT (present in WGL4)
-    let b:forms_BDDoubleDownAndLeft = '╗'
-    " '╘' 9560 2558 BOX DRAWINGS UP SINGLE AND RIGHT DOUBLE (present in WGL4)
-    let b:forms_BDUpSingleAndRightDouble = '╘'
-    " '╙' 9561 2559 BOX DRAWINGS UP DOUBLE AND RIGHT SINGLE (present in WGL4)
-    let b:forms_BDUpDoubleAndRightSingle = '╙'
-    " '╚' 9562 255A BOX DRAWINGS DOUBLE UP AND RIGHT (present in WGL4)
-    let b:forms_BDDoubleUpAndRight = '╚'
-    " '╛' 9563 255B BOX DRAWINGS UP SINGLE AND LEFT DOUBLE (present in WGL4)
-    let b:forms_BDUpSingleAndLeftDouble = '╛'
-    " '╜' 9564 255C BOX DRAWINGS UP DOUBLE AND LEFT SINGLE (present in WGL4)
-    let b:forms_BDUpDoubleAndLeftSingle = '╜'
-    " '╝' 9565 255D BOX DRAWINGS DOUBLE UP AND LEFT (present in WGL4)
-    let b:forms_BDDoubleUpAndleft = '╝'
-    " '╞' 9566 255E BOX DRAWINGS VERTICAL SINGLE AND RIGHT DOUBLE (present in WGL4)
-    let b:forms_BDVerticalSingleAndRightDouble = '╞'
-    " '╟' 9567 255F BOX DRAWINGS VERTICAL DOUBLE AND RIGHT SINGLE (present in WGL4)
-    let b:forms_BDVertialDoubleAndRightSingle = '╟'
-    " '╠' 9568 2560 BOX DRAWINGS DOUBLE VERTICAL AND RIGHT (present in WGL4)
-    let b:forms_BDDoubleVerticalAndRight = '╠'
-    " '╡' 9569 2561 BOX DRAWINGS VERTICAL SINGLE AND LEFT DOUBLE (present in WGL4)
-    let b:forms_BDVerticalSingleAndLeftDouble = '╡'
-    " '╢' 9570 2562 BOX DRAWINGS VERTICAL DOUBLE AND LEFT SINGLE (present in WGL4)
-    let b:forms_BDVerticalDoubleAndLeftSingle = '╢'
-    " '╣' 9571 2563 BOX DRAWINGS DOUBLE VERTICAL AND LEFT (present in WGL4)    
-    let b:forms_BDDoubleVerticalAndLeft = '╣'
-    " '╤' 9572 2564 BOX DRAWINGS DOWN SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
-    let b:forms_BDDownSingleAndHorizontalDouble = '╤'
-    " '╥' 9573 2565 BOX DRAWINGS DOWN DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
-    let b:forms_BDDownDoubleAndHorizontalSingle = '╥'
-    " '╦' 9574 2566 BOX DRAWINGS DOUBLE DOWN AND HORIZONTAL (present in WGL4)
-    let b:forms_BDDoubleDownAndHorizontal = '╦'
-    " '╧' 9575 2567 BOX DRAWINGS UP SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
-    let b:forms_BDUpSingleAndHorizontalDouble = '╧'
-    " '╨' 9576 2568 BOX DRAWINGS UP DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
-    let b:forms_BDUpDoubleAndHorizontalSingle = '╨'
-    " '╩' 9577 2569 BOX DRAWINGS DOUBLE UP AND HORIZONTAL (present in WGL4)
-    let b:forms_BDDoubleUpAndHorizontal = '╩'
-    " '╪' 9578 256A BOX DRAWINGS VERTICAL SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
-    let b:forms_BDVertialSingleAndHorizontalDouble = '╪'
-    " '╫' 9579 256B BOX DRAWINGS VERTICAL DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
-    let b:forms_BDVertialDoubleAndHorixontalSingle = '╫'
-    " '╬' 9580 256C BOX DRAWINGS DOUBLE VERTICAL AND HORIZONTAL (present in WGL4)
-    let b:forms_BDDoubleVerticalAndHorizontal = '╬'
+  " '╌' 9548 254C BOX DRAWINGS LIGHT DOUBLE DASH HORIZONTAL
+  let b:forms_BDLightDoubleDashHorizontal = '╌'
+  " '╍' 9549 254D BOX DRAWINGS HEAVY DOUBLE DASH HORIZONTAL
+  let b:forms_BDHeavyDoubleDashHorizontal = '╍'
+  " '╎' 9550 254E BOX DRAWINGS LIGHT DOUBLE DASH VERTICAL
+  let b:forms_BDLightDoubleDashVertical = '╎'
+  " '╏' 9551 254F BOX DRAWINGS HEAVY DOUBLE DASH VERTICAL
+  let b:forms_BDHeavyDoubleDashVertical = '╏'
+
+
+  " '═' 9552 2550 BOX DRAWINGS DOUBLE HORIZONTAL (present in WGL4)
+  let b:forms_BDDoubleHorizontal = '═'
+  " '║' 9553 2551 BOX DRAWINGS DOUBLE VERTICAL (present in WGL4)
+  let b:forms_BDDoubleVertical = '║'
+  " '╒' 9554 2552 BOX DRAWINGS DOWN SINGLE AND RIGHT DOUBLE (present in WGL4)
+  let b:forms_BDDownSingleAndRightDouble = '╒'
+  " '╓' 9555 2553 BOX DRAWINGS DOWN DOUBLE AND RIGHT SINGLE (present in WGL4)
+  let b:forms_BDDownDoubleAndRightSingle = '╓'
+  " '╔' 9556 2554 BOX DRAWINGS DOUBLE DOWN AND RIGHT (present in WGL4)
+  let b:forms_BDDoubleDownAndRight = '╔'
+  " '╕' 9557 2555 BOX DRAWINGS DOWN SINGLE AND LEFT DOUBLE (present inWGL4)
+  let b:forms_BDDownSingleAndLeftDouble = '╕'
+  " '╖' 9558 2556 BOX DRAWINGS DOWN DOUBLE AND LEFT SINGLE (present in WGL4)
+  let b:forms_BDDownDoubleAndLeftSingle = '╖'
+  " '╗' 9559 2557 BOX DRAWINGS DOUBLE DOWN AND LEFT (present in WGL4)
+  let b:forms_BDDoubleDownAndLeft = '╗'
+  " '╘' 9560 2558 BOX DRAWINGS UP SINGLE AND RIGHT DOUBLE (present in WGL4)
+  let b:forms_BDUpSingleAndRightDouble = '╘'
+  " '╙' 9561 2559 BOX DRAWINGS UP DOUBLE AND RIGHT SINGLE (present in WGL4)
+  let b:forms_BDUpDoubleAndRightSingle = '╙'
+  " '╚' 9562 255A BOX DRAWINGS DOUBLE UP AND RIGHT (present in WGL4)
+  let b:forms_BDDoubleUpAndRight = '╚'
+  " '╛' 9563 255B BOX DRAWINGS UP SINGLE AND LEFT DOUBLE (present in WGL4)
+  let b:forms_BDUpSingleAndLeftDouble = '╛'
+  " '╜' 9564 255C BOX DRAWINGS UP DOUBLE AND LEFT SINGLE (present in WGL4)
+  let b:forms_BDUpDoubleAndLeftSingle = '╜'
+  " '╝' 9565 255D BOX DRAWINGS DOUBLE UP AND LEFT (present in WGL4)
+  let b:forms_BDDoubleUpAndleft = '╝'
+  " '╞' 9566 255E BOX DRAWINGS VERTICAL SINGLE AND RIGHT DOUBLE (present in WGL4)
+  let b:forms_BDVerticalSingleAndRightDouble = '╞'
+  " '╟' 9567 255F BOX DRAWINGS VERTICAL DOUBLE AND RIGHT SINGLE (present in WGL4)
+  let b:forms_BDVertialDoubleAndRightSingle = '╟'
+  " '╠' 9568 2560 BOX DRAWINGS DOUBLE VERTICAL AND RIGHT (present in WGL4)
+  let b:forms_BDDoubleVerticalAndRight = '╠'
+  " '╡' 9569 2561 BOX DRAWINGS VERTICAL SINGLE AND LEFT DOUBLE (present in WGL4)
+  let b:forms_BDVerticalSingleAndLeftDouble = '╡'
+  " '╢' 9570 2562 BOX DRAWINGS VERTICAL DOUBLE AND LEFT SINGLE (present in WGL4)
+  let b:forms_BDVerticalDoubleAndLeftSingle = '╢'
+  " '╣' 9571 2563 BOX DRAWINGS DOUBLE VERTICAL AND LEFT (present in WGL4)    
+  let b:forms_BDDoubleVerticalAndLeft = '╣'
+  " '╤' 9572 2564 BOX DRAWINGS DOWN SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
+  let b:forms_BDDownSingleAndHorizontalDouble = '╤'
+  " '╥' 9573 2565 BOX DRAWINGS DOWN DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
+  let b:forms_BDDownDoubleAndHorizontalSingle = '╥'
+  " '╦' 9574 2566 BOX DRAWINGS DOUBLE DOWN AND HORIZONTAL (present in WGL4)
+  let b:forms_BDDoubleDownAndHorizontal = '╦'
+  " '╧' 9575 2567 BOX DRAWINGS UP SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
+  let b:forms_BDUpSingleAndHorizontalDouble = '╧'
+  " '╨' 9576 2568 BOX DRAWINGS UP DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
+  let b:forms_BDUpDoubleAndHorizontalSingle = '╨'
+  " '╩' 9577 2569 BOX DRAWINGS DOUBLE UP AND HORIZONTAL (present in WGL4)
+  let b:forms_BDDoubleUpAndHorizontal = '╩'
+  " '╪' 9578 256A BOX DRAWINGS VERTICAL SINGLE AND HORIZONTAL DOUBLE (present in WGL4)
+  let b:forms_BDVertialSingleAndHorizontalDouble = '╪'
+  " '╫' 9579 256B BOX DRAWINGS VERTICAL DOUBLE AND HORIZONTAL SINGLE (present in WGL4)
+  let b:forms_BDVertialDoubleAndHorixontalSingle = '╫'
+  " '╬' 9580 256C BOX DRAWINGS DOUBLE VERTICAL AND HORIZONTAL (present in WGL4)
+  let b:forms_BDDoubleVerticalAndHorizontal = '╬'
 
 
 
-    " '╭' 9581 256D BOX DRAWINGS LIGHT ARC DOWN AND RIGH        T
-    let b:forms_BDLightArchDownAndRight = '╭'
-    " '╮' 9582 256E BOX DRAWINGS LIGHT ARC DOWN AND LEFT
-    let b:forms_BDLightArchDownAndLeft = '╮'
-    " '╯' 9583 256F BOX DRAWINGS LIGHT ARC UP AND LEFT
-    let b:forms_BDLightArchUpAndLeft = '╯'
-    " '╰' 9584 2570 BOX DRAWINGS LIGHT ARC UP AND RIGHT
-    let b:forms_BDLightArchUpAndRight = '╰'
+  " '╭' 9581 256D BOX DRAWINGS LIGHT ARC DOWN AND RIGH        T
+  let b:forms_BDLightArchDownAndRight = '╭'
+  " '╮' 9582 256E BOX DRAWINGS LIGHT ARC DOWN AND LEFT
+  let b:forms_BDLightArchDownAndLeft = '╮'
+  " '╯' 9583 256F BOX DRAWINGS LIGHT ARC UP AND LEFT
+  let b:forms_BDLightArchUpAndLeft = '╯'
+  " '╰' 9584 2570 BOX DRAWINGS LIGHT ARC UP AND RIGHT
+  let b:forms_BDLightArchUpAndRight = '╰'
 
 
-    " '╱' 9585 2571 BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT
-    let b:forms_BDLightDiagonalUpperRightToLowerLeft = '╱'
-    " '╲' 9586 2572 BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT       
-    let b:forms_BDLightDiagonalUpperLeftToLowerRight = '╲'
-    " '╳' 9587 2573 BOX DRAWINGS LIGHT DIAGONAL CROSS       
-    let b:forms_BDLightDiagonalCross = '╳'
+  " '╱' 9585 2571 BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT
+  let b:forms_BDLightDiagonalUpperRightToLowerLeft = '╱'
+  " '╲' 9586 2572 BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT       
+  let b:forms_BDLightDiagonalUpperLeftToLowerRight = '╲'
+  " '╳' 9587 2573 BOX DRAWINGS LIGHT DIAGONAL CROSS       
+  let b:forms_BDLightDiagonalCross = '╳'
 
 
-    " '╴' 9588 2574 BOX DRAWINGS LIGHT LEFT
-    let b:forms_BDLightLeft = '╴'
-    " '╵' 9589 2575 BOX DRAWINGS LIGHT UP
-    let b:forms_BDLightUp = '╵'
-    " '╶' 9590 2576 BOX DRAWINGS LIGHT RIGHT
-    let b:forms_BDLightRight = '╶'
-    " '╷' 9591 2577 BOX DRAWINGS LIGHT DOWN
-    let b:forms_BDLightDown = '╷'
-    " '╸' 9592 2578 BOX DRAWINGS HEAVY LEFT         
-    let b:forms_BDHeavyLeft = '╸'
-    " '╹' 9593 2579 BOX DRAWINGS HEAVY UP
-    let b:forms_BDHeavyUp = '╹'
-    " '╺' 9594 257A BOX DRAWINGS HEAVY RIGHT
-    let b:forms_BDHeavyRight = '╺'
-    " '╻' 9595 257B BOX DRAWINGS HEAVY DOWN
-    let b:forms_BDHeavyDown = '╻'
-    " '╼' 9596 257C BOX DRAWINGS LIGHT LEFT AND HEAVY RIGHT
-    let b:forms_BDLightLeftAndHeavyRight = '╼'
-    " '╽' 9597 257D BOX DRAWINGS LIGHT UP AND HEAVY DOWN
-    let b:forms_BDLightUpAndHeavyDown = '╽'
-    " '╾' 9598 257E BOX DRAWINGS HEAVY LEFT AND LIGHT RIGHT
-    let b:forms_BDHeavyLeftAndLightRight = '╾'
-    " '╿' 9599 257F BOX DRAWINGS HEAVY UP AND LIGHT DOWN        
-    let b:forms_BDHeavyUpAndLightDown = '╿'
+  " '╴' 9588 2574 BOX DRAWINGS LIGHT LEFT
+  let b:forms_BDLightLeft = '╴'
+  " '╵' 9589 2575 BOX DRAWINGS LIGHT UP
+  let b:forms_BDLightUp = '╵'
+  " '╶' 9590 2576 BOX DRAWINGS LIGHT RIGHT
+  let b:forms_BDLightRight = '╶'
+  " '╷' 9591 2577 BOX DRAWINGS LIGHT DOWN
+  let b:forms_BDLightDown = '╷'
+  " '╸' 9592 2578 BOX DRAWINGS HEAVY LEFT         
+  let b:forms_BDHeavyLeft = '╸'
+  " '╹' 9593 2579 BOX DRAWINGS HEAVY UP
+  let b:forms_BDHeavyUp = '╹'
+  " '╺' 9594 257A BOX DRAWINGS HEAVY RIGHT
+  let b:forms_BDHeavyRight = '╺'
+  " '╻' 9595 257B BOX DRAWINGS HEAVY DOWN
+  let b:forms_BDHeavyDown = '╻'
+  " '╼' 9596 257C BOX DRAWINGS LIGHT LEFT AND HEAVY RIGHT
+  let b:forms_BDLightLeftAndHeavyRight = '╼'
+  " '╽' 9597 257D BOX DRAWINGS LIGHT UP AND HEAVY DOWN
+  let b:forms_BDLightUpAndHeavyDown = '╽'
+  " '╾' 9598 257E BOX DRAWINGS HEAVY LEFT AND LIGHT RIGHT
+  let b:forms_BDHeavyLeftAndLightRight = '╾'
+  " '╿' 9599 257F BOX DRAWINGS HEAVY UP AND LIGHT DOWN        
+  let b:forms_BDHeavyUpAndLightDown = '╿'
 
-    let b:forms_BoxDrawingCharacters = 1
-  endif
+  let b:forms_BoxDrawingCharacters = 1
+endif
 
-  if !exists("b:forms_BlockCharacters") 
+if !exists("b:forms_BlockCharacters") 
 
-    " '▀' 9600 2580 UPPER HALF BLOCK (present in WGL4)
-    let b:forms_UpperHalfB = '▀'
-    " '▁' 9601 2581  LOWER ONE EIGHTH BLOCK
-    let b:forms_LowerOneEighthB = '▁'
-    " '▂' 9602 2582 LOWER ONE QUARTER BLOCK
-    let b:forms_LowerOneQuarterB = '▂'
-    " '▃' 9603 2583 LOWER THREE EIGHTHS BLOCK
-    let b:forms_LowerThreeEighthsB = '▃'
-    " '▄' 9604 2584 LOWER HALF BLOCK (present in WGL4)
-    let b:forms_LowerHalfB = '▄'
-    " '▅' 9605 2585 LOWER FIVE EIGHTHS BLOCK
-    let b:forms_LowerFiveEighthsB = '▅'
-    " '▆' 9606 2586 LOWER THREE QUARTERS BLOCK
-    let b:forms_LowerThreeQuartersB = '▆'
-    " '▇' 9607 2587 LOWER SEVEN EIGHTHS BLOCK
-    let b:forms_LowerSevenEighthsB = '▇'
-
-
-    " '█' 9608 2588 FULL BLOCK (present in WGL4)
-    let b:forms_FullB = '█'
-    " '▉' 9609 2589 LEFT SEVEN EIGHTHS BLOCK        
-    let b:forms_LeftSevenEighthsB = '▉'
-    " '▊' 9610 258A LEFT THREE QUARTERS BLOCK
-    let b:forms_LeftThreeQuartersB = '▊'
-    " '▋' 9611 258B LEFT FIVE EIGHTHS BLOCK
-    let b:forms_leftFiveEighthsB = '▋'
-    " '▌' 9612 258C LEFT HALF BLOCK (present in WGL4)
-    let b:forms_LeftHalfB = '▌'
-    " '▍' 9613 258D LEFT THREE EIGHTHS BLOCK
-    let b:forms_LeftThreeEighthsB = '▍'
-    " '▎' 9614 258E LEFT ONE QUARTER BLOCK
-    let b:forms_LeftOneQuarterB = '▎'
-    " '▏' 9615 258F LEFT ONE EIGHTH BLOCK
-    let b:forms_LeftOneEighthsB = '▏'
+  " '▀' 9600 2580 UPPER HALF BLOCK (present in WGL4)
+  let b:forms_UpperHalfB = '▀'
+  " '▁' 9601 2581  LOWER ONE EIGHTH BLOCK
+  let b:forms_LowerOneEighthB = '▁'
+  " '▂' 9602 2582 LOWER ONE QUARTER BLOCK
+  let b:forms_LowerOneQuarterB = '▂'
+  " '▃' 9603 2583 LOWER THREE EIGHTHS BLOCK
+  let b:forms_LowerThreeEighthsB = '▃'
+  " '▄' 9604 2584 LOWER HALF BLOCK (present in WGL4)
+  let b:forms_LowerHalfB = '▄'
+  " '▅' 9605 2585 LOWER FIVE EIGHTHS BLOCK
+  let b:forms_LowerFiveEighthsB = '▅'
+  " '▆' 9606 2586 LOWER THREE QUARTERS BLOCK
+  let b:forms_LowerThreeQuartersB = '▆'
+  " '▇' 9607 2587 LOWER SEVEN EIGHTHS BLOCK
+  let b:forms_LowerSevenEighthsB = '▇'
 
 
-    " '▐' 9616 2590 RIGHT HALF BLOCK (present in WGL4)
-    let b:forms_RightHalfB = '▐' 
-    " '░' 9617 2591 LIGHT SHADE (present in WGL4)
-    let b:forms_LightShade = '░'
-    " '▒' 9618 2592 MEDIUM SHADE (present in WGL4)
-    let b:forms_MediumShade = '▒'
-    " '▓' 9619 2593 DARK SHADE (present in WGL4)
-    let b:forms_DarkShade = '▓'
+  " '█' 9608 2588 FULL BLOCK (present in WGL4)
+  let b:forms_FullB = '█'
+  " '▉' 9609 2589 LEFT SEVEN EIGHTHS BLOCK        
+  let b:forms_LeftSevenEighthsB = '▉'
+  " '▊' 9610 258A LEFT THREE QUARTERS BLOCK
+  let b:forms_LeftThreeQuartersB = '▊'
+  " '▋' 9611 258B LEFT FIVE EIGHTHS BLOCK
+  let b:forms_leftFiveEighthsB = '▋'
+  " '▌' 9612 258C LEFT HALF BLOCK (present in WGL4)
+  let b:forms_LeftHalfB = '▌'
+  " '▍' 9613 258D LEFT THREE EIGHTHS BLOCK
+  let b:forms_LeftThreeEighthsB = '▍'
+  " '▎' 9614 258E LEFT ONE QUARTER BLOCK
+  let b:forms_LeftOneQuarterB = '▎'
+  " '▏' 9615 258F LEFT ONE EIGHTH BLOCK
+  let b:forms_LeftOneEighthsB = '▏'
 
 
-    " '▔' 9620 2594 UPPER ONE EIGHTH BLOCK
-    let b:forms_UpperOneEighthsB = '▔'
-    " '▕' 9621 2595 RIGHT ONE EIGHTH BLOCK
-    let b:forms_RightOneEighthsB = '▕'
-    " '▖' 9622 2596 QUADRANT LOWER LEFT
-    let b:forms_QuardrantLowerLeft = '▖'
-    " '▗' 9623 2597 QUADRANT LOWER RIGHT
-    let b:forms_QuardrantLowerRight = '▗'
-    " '▘' 9624 2598 QUADRANT UPPER LEFT
-    let b:forms_QuardrantUpperLeft = '▘'
-    " '▙' 9625 2599 QUADRANT UPPER LEFT AND LOWER LEFT AND LOWER RIGHT
-    let b:forms_QuardrantUpperLeftAndLowerLeftAndLowerRight = '▙'
-    " '▚' 9626 259A QUADRANT UPPER LEFT AND LOWER RIGHT
-    let b:forms_QuadrantUpperLeftAndLowerRight = '▚'
-    " '▛' 9627 259B QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER LEFT
-    let b:forms_QuadrantUpperLeftAndUpperRightAndLowerLeft = '▛'
-    " '▜' 9628 259C QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER RIGHT
-    let b:forms_QuadrantUpperLeftAndUpperRightAndLowerRight = '▜'
-    " '▝' 9629 259D QUADRANT UPPER RIGHT
-    let b:forms_QuadrantUpperRight = '▝'
-    " '▞' 9630 259E QUADRANT UPPER RIGHT AND LOWER LEFT
-    let b:forms_QuadrantUpperRightAndLowerLeft = '▞'
-    " '▟' 9631 259F QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT 
-    let b:forms_QuadrantUpperRightAndLowerLeftAndLowerRight = '▟'
+  " '▐' 9616 2590 RIGHT HALF BLOCK (present in WGL4)
+  let b:forms_RightHalfB = '▐' 
+  " '░' 9617 2591 LIGHT SHADE (present in WGL4)
+  let b:forms_LightShade = '░'
+  " '▒' 9618 2592 MEDIUM SHADE (present in WGL4)
+  let b:forms_MediumShade = '▒'
+  " '▓' 9619 2593 DARK SHADE (present in WGL4)
+  let b:forms_DarkShade = '▓'
 
-    let b:forms_BlockCharacters = 1
-  endif
 
-  if !exists("b:forms_GeometricShapes") 
+  " '▔' 9620 2594 UPPER ONE EIGHTH BLOCK
+  let b:forms_UpperOneEighthsB = '▔'
+  " '▕' 9621 2595 RIGHT ONE EIGHTH BLOCK
+  let b:forms_RightOneEighthsB = '▕'
+  " '▖' 9622 2596 QUADRANT LOWER LEFT
+  let b:forms_QuardrantLowerLeft = '▖'
+  " '▗' 9623 2597 QUADRANT LOWER RIGHT
+  let b:forms_QuardrantLowerRight = '▗'
+  " '▘' 9624 2598 QUADRANT UPPER LEFT
+  let b:forms_QuardrantUpperLeft = '▘'
+  " '▙' 9625 2599 QUADRANT UPPER LEFT AND LOWER LEFT AND LOWER RIGHT
+  let b:forms_QuardrantUpperLeftAndLowerLeftAndLowerRight = '▙'
+  " '▚' 9626 259A QUADRANT UPPER LEFT AND LOWER RIGHT
+  let b:forms_QuadrantUpperLeftAndLowerRight = '▚'
+  " '▛' 9627 259B QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER LEFT
+  let b:forms_QuadrantUpperLeftAndUpperRightAndLowerLeft = '▛'
+  " '▜' 9628 259C QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER RIGHT
+  let b:forms_QuadrantUpperLeftAndUpperRightAndLowerRight = '▜'
+  " '▝' 9629 259D QUADRANT UPPER RIGHT
+  let b:forms_QuadrantUpperRight = '▝'
+  " '▞' 9630 259E QUADRANT UPPER RIGHT AND LOWER LEFT
+  let b:forms_QuadrantUpperRightAndLowerLeft = '▞'
+  " '▟' 9631 259F QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT 
+  let b:forms_QuadrantUpperRightAndLowerLeftAndLowerRight = '▟'
 
-    " '◢' 9698 25E2  BLACK LOWER RIGHT TRIANGLE
-    let b:forms_GSBlackLowerRightTriangle = '◢'
-    " '◣' 9699 25E3  BLACK LOWER LEFT TRIANGLE
-    let b:forms_GSBlackLowerLeftTriangle = '◣'
-    " '◤' 9700 25E4  BLACK UPPER LEFT TRIANGLE
-    let b:forms_GSBlackUpperLeftTriangle = '◤'
-    " '◥' 9701 25E5  BLACK UPPER RIGHT TRIANGLE  
-    let b:forms_GSBlackUpperRightTriangle = '◥'
+  let b:forms_BlockCharacters = 1
+endif
 
-    let b:forms_GeometricShapes = 1
-  endif
+if !exists("b:forms_GeometricShapes") 
 
+  " '◢' 9698 25E2  BLACK LOWER RIGHT TRIANGLE
+  let b:forms_GSBlackLowerRightTriangle = '◢'
+  " '◣' 9699 25E3  BLACK LOWER LEFT TRIANGLE
+  let b:forms_GSBlackLowerLeftTriangle = '◣'
+  " '◤' 9700 25E4  BLACK UPPER LEFT TRIANGLE
+  let b:forms_GSBlackUpperLeftTriangle = '◤'
+  " '◥' 9701 25E5  BLACK UPPER RIGHT TRIANGLE  
+  let b:forms_GSBlackUpperRightTriangle = '◥'
+
+  let b:forms_GeometricShapes = 1
 endif
 
 "---------------------------------------------------------------------------

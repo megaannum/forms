@@ -251,3 +251,4 @@ No testing has been done on the Windows GVim configure. Feedback is welcome.
 
 - Marc Weber: provided initial release feedback identifying Vim 7.3 bug and
   let me debug it on one of his test machines.
+- Andy Wokula: provided feedback on help file syntax and GVim when font is latin1.
