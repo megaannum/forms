@@ -31,3 +31,8 @@ function! forms#example#labels3#Make()
   call form.run()
 endfunction
 
+function! forms#example#labels3#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#labels3#Make()
+endfunction

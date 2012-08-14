@@ -66,6 +66,14 @@ function! forms#dialog#info#Make(textlines)
 " call forms#log("forms#dialog#info#Make: bottom")
 endfunction
 
+" forms#dialog#info#MakeTest: {{{1
+function! forms#dialog#info#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  let textlines = "Display some information.\nText can be on multiple lines." 
+  call forms#dialog#info#Make(textlines)
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

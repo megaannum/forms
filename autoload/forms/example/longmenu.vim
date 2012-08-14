@@ -86,3 +86,8 @@ function! forms#example#longmenu#Make()
   call form.run()
 endfunction
 
+function! forms#example#longmenu#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#longmenu#Make()
+endfunction

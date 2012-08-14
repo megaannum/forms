@@ -77,3 +77,9 @@ function! forms#example#boxchars#Make()
   let form = forms#newForm({'body': bg })
   call form.run()
 endfunction
+
+function! forms#example#boxchars#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#boxchars#Make()
+endfunction

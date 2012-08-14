@@ -38,3 +38,9 @@ function! forms#example#form2#Make()
   let form = forms#newForm({'body': bg })
   call form.run()
 endfunction
+
+function! forms#example#form2#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#form2#Make()
+endfunction

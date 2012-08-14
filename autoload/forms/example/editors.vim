@@ -26,3 +26,8 @@ function! forms#example#editors#Make()
   call form.run()
 endfunction
 
+function! forms#example#editors#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#editors#Make()
+endfunction

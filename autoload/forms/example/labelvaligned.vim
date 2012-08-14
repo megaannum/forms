@@ -22,3 +22,8 @@ function! forms#example#labelvaligned#Make()
   call form.run()
 endfunction
 
+function! forms#example#labelvaligned#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#labelvaligned#Make()
+endfunction

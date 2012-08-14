@@ -17,3 +17,8 @@ function! forms#example#labelsaligned#Make()
   call form.run()
 endfunction
 
+function! forms#example#labelsaligned#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#labelsaligned#Make()
+endfunction

@@ -49,3 +49,8 @@ function! forms#example#frame#Make()
   call form.run()
 endfunction
 
+function! forms#example#frame#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#frame#Make()
+endfunction

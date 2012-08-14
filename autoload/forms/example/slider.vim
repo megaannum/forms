@@ -268,3 +268,8 @@ function! forms#example#slider#Make()
   call form.run()
 endfunction
 
+function! forms#example#slider#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#slider#Make()
+endfunction

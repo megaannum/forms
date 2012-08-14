@@ -20,8 +20,8 @@ function! forms#example#deck2#Make()
           \ 'pos': 0,
           \ 'choices': [
           \ ["one", 1],
-          \ ["twoUE", 2],
-          \ ["threX", 3]
+          \ ["two", 2],
+          \ ["three", 3]
           \ ],
           \ 'on_selection_action': action
           \ }
@@ -35,3 +35,8 @@ function! forms#example#deck2#Make()
   call form.run()
 endfunction
 
+function! forms#example#deck2#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#deck2#Make()
+endfunction

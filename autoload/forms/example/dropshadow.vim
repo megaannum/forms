@@ -47,3 +47,9 @@ function! forms#example#dropshadow#Make()
   let form = forms#newForm({'body': bg})
   call form.run()
 endfunction
+
+function! forms#example#dropshadow#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#dropshadow#Make()
+endfunction

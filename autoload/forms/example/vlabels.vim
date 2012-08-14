@@ -26,3 +26,8 @@ function! forms#example#vlabels#Make()
   call form.run()
 endfunction
 
+function! forms#example#vlabels#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#vlabels#Make()
+endfunction

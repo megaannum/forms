@@ -203,6 +203,19 @@ all but Forms developers, at least for the non-power user, having
 a short, easy to remember, mnemonic mapping for menu and popup is certainly 
 reasonable.
 
+Also, there is the function 'forms#example#demo#MakeTest()' which displays
+each of the demonstrations for 5 seconds using:
+
+    :call forms#example#demo#MakeTest()
+
+While this does not exercise any of the interactive demo; it simply renders
+each in turn, it is good to see if anything causes error messages or
+does not display at all. Its the beginning (maybe) of a more complete
+Event driven tests. 
+
+One can also, choose a 'light' or 'dark' colorscheme prior to running
+the tests, just to see the differences.
+
 # Supported Platforms
 
 The Forms library ought to work on any platform where Vim has 256 colors

@@ -32,6 +32,13 @@ function!  forms#dialog#colorchooser#Make()
   return forms#dialog#color#Make(0)
 endfunction
 
+" forms#dialog#colorchooser#MakeTest: {{{1
+function! forms#dialog#colorchooser#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#dialog#colorchooser#Make()
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

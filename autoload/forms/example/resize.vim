@@ -51,4 +51,8 @@ function! forms#example#resize#Make()
   call form.run()
 endfunction
 
-
+function! forms#example#resize#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#resize#Make()
+endfunction

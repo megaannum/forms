@@ -2470,6 +2470,13 @@ function! forms#menu#MakeMenu(mode) range
   call s:menubarform.run()
 endfunction
 
+" forms#menu#MakeMenuTest: {{{3
+function! forms#menu#MakeMenuTest() range
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#menu#MakeMenu('n')
+endfunction
+
 "-------------------------------------------------------------------------------
 "-------------------------------------------------------------------------------
 " PopUp: {{{1
@@ -2961,10 +2968,12 @@ function! forms#menu#MakePopUp(mode) range
   call s:popupform.run()
 endfunction
 
-
-
-
-
+" forms#menu#MakePopUpTest: {{{2
+function! forms#menu#MakePopUpTest() range
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#menu#MakePopUp('n')
+endfunction
 
 "---------------------------------------------------------------------------
 " test stuff: {{{2

@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 06/30/2012
-" Version:       1.2
+" Version:       1.3
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -139,62 +139,177 @@ endif
 " Definitions: {{{2
 " ------------------------------------------------------------ 
 
-if ! hlexists("HotSpotHi") || g:self#IN_DEVELOPMENT_MODE
+if &background == 'light' 
+
+if has("gui_running")
+
   " ReverseHi must use same background color, ctermbg, as BackgroundHi
-  :hi ReverseHi   term=reverse cterm=reverse ctermbg=253 gui=reverse guibg=#dadada
+  :hi ReverseHi           gui=reverse guibg=#dadada
+  :hi HotSpotHi           gui=NONE guibg=#00ff00
+  :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
+  :hi FlashHi             gui=NONE guibg=#ffff87
 
-" TODO if &background == 'light' ... else ... endif
-if &t_Co == 256 || has("gui_running")
-  :hi HotSpotHi           cterm=NONE ctermbg=46 guibg=#00ff00
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 gui=reverse guibg=#00ff00
-  :hi FlashHi             cterm=NONE ctermbg=228 guibg=#ffff87
+  :hi ToggleSelectionHi   gui=NONE guibg=#5fffff
 
-  :hi ToggleSelectionHi   cterm=bold ctermbg=87 guibg=#5fffff
+  :hi SelectedHi          gui=bold guibg=#5fffff
 
-  :hi SelectedHi          cterm=bold ctermbg=87 gui=bold guibg=#5fffff
+  :hi ButtonHi            gui=NONE guibg=#bcbcbc
+  :hi ButtonFlashHi       gui=NONE guibg=#767676
 
-  :hi ButtonHi            cterm=NONE ctermbg=250 guifg=#bcbcbc
-  :hi ButtonFlashHi       cterm=NONE ctermbg=243 guifg=#767676
-
-  " :hi BackgroundHi        cterm=NONE ctermbg=255 guifg=#dadada
-  " :hi BackgroundHi        ctermfg=124 ctermbg=200 guifg=#dadada
-  :hi BackgroundHi        cterm=NONE ctermbg=253 guibg=#dadada
+  :hi BackgroundHi        gui=NONE guibg=#dadada
 
   " TODO derive FrameHi values from BackgroundHi values
-  :hi FrameHi             cterm=NONE ctermfg=254 ctermbg=252 guifg=#e4e4e4 guibg=#d0d0d0
+  :hi FrameHi             gui=NONE guifg=#e4e4e4 guibg=#d0d0d0
 
   " TODO derive DropShadowHi values from BackgroundHi values
-  :hi DropShadowHi        cterm=NONE ctermbg=253 ctermfg=250 guibg=#dadada guifg=#bcbcbc
+  :hi DropShadowHi        gui=NONE guibg=#dadada guifg=#bcbcbc
 
-  :hi DisableHi           cterm=NONE ctermbg=214 guifg=#ffaf00
+  :hi DisableHi           gui=NONE guibg=#ffaf00
 
-  :hi MenuHi              cterm=None ctermbg=253 guifg=#dadada
-  :hi MenuMnemonicHi      cterm=underline ctermbg=253 guifg=#dadada
+  :hi MenuHi              gui=NONE guibg=#dadada
+  :hi MenuMnemonicHi      gui=underline guibg=#dadada
 
-  " :hi MenuHotSpotHi       cterm=None ctermbg=250 guifg=#bcbcbc
-  :hi MenuHotSpotHi       cterm=None ctermbg=200 guifg=#bcbcbc
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 gui=underline guifg=#bcbcbc
+  :hi MenuHotSpotHi       gui=NONE guibg=#ff00d7
+  :hi MenuMnemonicHotSpotHi  gui=underline guibg=#ff00d7
 
-else
+elseif &t_Co == 256 
+
+  :hi ReverseHi           cterm=reverse ctermbg=253 
+  :hi HotSpotHi           cterm=NONE ctermbg=46 
+  :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
+  :hi FlashHi             cterm=NONE ctermbg=228 
+
+  :hi ToggleSelectionHi   cterm=bold ctermbg=87 
+
+  :hi SelectedHi          cterm=bold ctermbg=87 
+
+  :hi ButtonHi            cterm=NONE ctermbg=250 
+  :hi ButtonFlashHi       cterm=NONE ctermbg=243 
+
+  :hi BackgroundHi        cterm=NONE ctermbg=253 
+
+  :hi FrameHi             cterm=NONE ctermfg=254 ctermbg=252 
+
+  :hi DropShadowHi        cterm=NONE ctermbg=253 ctermfg=250 
+
+  :hi DisableHi           cterm=NONE ctermbg=214 
+
+  :hi MenuHi              cterm=None ctermbg=253 
+  :hi MenuMnemonicHi      cterm=underline ctermbg=253 
+
+  :hi MenuHotSpotHi       cterm=None ctermbg=200 
+  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 
+
+else " t_Co < 256
+
+  " TODO: I have no idea if these values look ok
+  :hi ReverseHi           cterm=reverse ctermbg=LightGrey
   :hi HotSpotHi           ctermbg=Green 
+  :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
   :hi FlashHi             ctermbg=LightYellow
 
   :hi ToggleSelectionHi   cterm=bold ctermbg=LightBlue
 
   :hi SelectedHi          cterm=bold ctermbg=LightBlue
 
-  :hi ButtonHi            cterm=NONE ctermbg=250
-  :hi ButtonFlashHi       cterm=NONE ctermbg=243
+  :hi ButtonHi            cterm=NONE ctermbg=Grey
+  :hi ButtonFlashHi       cterm=NONE ctermbg=DarkGrey
 
-  :hi BackgroundHi        cterm=NONE ctermbg=253
-  :hi DisableHi           cterm=NONE ctermbg=214 guifg=#ffaf00
+  :hi BackgroundHi        cterm=NONE ctermbg=LightGrey
+  :hi DisableHi           cterm=NONE ctermbg=LightRed
 
-  :hi MenuHi              cterm=None ctermbg=253 guifg=#dadada
-  :hi MenuMnemonicHi      cterm=underline ctermbg=253 guifg=#dadada
-  :hi MenuHotSpotHi       cterm=None ctermbg=250 guifg=#bcbcbc
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 guifg=#bcbcbc
+  :hi MenuHi              cterm=None ctermbg=LightGrey
+  :hi MenuMnemonicHi      cterm=underline ctermbg=LightGrey 
+  :hi MenuHotSpotHi       cterm=None ctermbg=LightGrey
+  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=LightMagenta
+
 endif
+
+else " &background == 'dark'
+
+if has("gui_running")
+
+  :hi ReverseHi           gui=reverse guibg=#303030 
+  :hi HotSpotHi           gui=NONE guibg=#00ff00
+  :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
+  :hi FlashHi             gui=NONE guibg=#ffff87
+
+  :hi ToggleSelectionHi   gui=bold guibg=#5fffff
+
+  :hi SelectedHi          gui=bold guibg=#5fffff
+
+  :hi ButtonHi            gui=NONE guibg=#585858
+  :hi ButtonFlashHi       gui=NONE guibg=#9e9e9e
+
+  :hi BackgroundHi        gui=NONE guibg=#303030
+
+  :hi FrameHi             gui=NONE guifg=#3a3a3a guibg=#262626
+
+  :hi DropShadowHi        gui=NONE guibg=#303030 guifg=#080808
+
+  :hi DisableHi           gui=NONE guibg=#ffaf00
+
+  :hi MenuHi              gui=None guibg=#303030 
+  :hi MenuMnemonicHi      gui=underline guibg=#303030 
+
+  :hi MenuHotSpotHi       gui=None guibg=#ff00d7
+  :hi MenuMnemonicHotSpotHi  gui=underline guibg=#ff00d7
+
+elseif &t_Co == 256 
+
+  :hi ReverseHi           cterm=reverse ctermbg=236 
+  :hi HotSpotHi           cterm=NONE ctermbg=46 
+  :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
+  :hi FlashHi             cterm=NONE ctermbg=228 
+
+  :hi ToggleSelectionHi   cterm=bold ctermbg=87 
+
+  :hi SelectedHi          cterm=bold ctermbg=87 
+
+  :hi ButtonHi            cterm=NONE ctermbg=240 
+  :hi ButtonFlashHi       cterm=NONE ctermbg=247 
+
+  " :hi BackgroundHi        cterm=NONE ctermbg=253 
+  :hi BackgroundHi        cterm=NONE ctermbg=236
+
+  :hi FrameHi             cterm=NONE ctermfg=237 ctermbg=235
+
+  :hi DropShadowHi        cterm=NONE ctermbg=236 ctermfg=232
+
+  :hi DisableHi           cterm=NONE ctermbg=214 
+
+  :hi MenuHi              cterm=None ctermbg=236 
+  :hi MenuMnemonicHi      cterm=underline ctermbg=236 
+
+  :hi MenuHotSpotHi       cterm=None ctermbg=200 
+  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 
+
+else " t_Co < 256
+
+  " TODO: I have no idea if these values look ok
+  :hi ReverseHi           cterm=reverse ctermbg=DarkGrey
+  :hi HotSpotHi           ctermbg=Green 
+  :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
+  :hi FlashHi             ctermbg=LightYellow
+
+  :hi ToggleSelectionHi   cterm=bold ctermbg=LightBlue
+
+  :hi SelectedHi          cterm=bold ctermbg=LightBlue
+
+  :hi ButtonHi            cterm=NONE ctermbg=Grey
+  :hi ButtonFlashHi       cterm=NONE ctermbg=LightGrey
+
+  :hi BackgroundHi        cterm=NONE ctermbg=DarkGrey
+  :hi DisableHi           cterm=NONE ctermbg=DarkGrey
+
+  :hi MenuHi              cterm=None ctermbg=DarkGrey
+  :hi MenuMnemonicHi      cterm=underline ctermbg=DarkGrey
+  :hi MenuHotSpotHi       cterm=None ctermbg=DarkGrey
+  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=LightMagenta
+
 endif
+
+endif " background
 
 
 " ------------------------------------------------------------ 
@@ -587,7 +702,7 @@ endfunction
 "   Context 
 "     Action: generate context help Form with application specific help/info
 "        and developer tools
-"     data: optional Point [line, column]
+"     Data: optional Point [line, column]
 "     The character <RightMouse> is mapped to Context
 "   Drag
 "     Action: none
@@ -626,14 +741,18 @@ endfunction
 "       changed size or gone from invisible to visible
 "   Select 
 "     Action: change focus and possibly glyph specific sub-selection
-"     data: Point [line, column]
+"     Data: Point [line, column]
 "   SelectDouble
 "     Action: a left mouse double click occured
-"     data: Point [line, column]
+"     Data: Point [line, column]
 "     The mouse <2-LeftMouse> event is mapped to SelectDouble
+"   Sleep
+"     Action: Viewer Event handling sleeps for given time.
+"     Data: time: Number (e.g., 10) or String (Number+'m' e.g., 200m)
+"     Used for visual testing
 "   Submit
 "     Action: exit form with result data
-"     data: results from form
+"     Data: results from form
 "     Also used as top-of-stack return value for Viewer
 " Special Key Types
 "   Down
@@ -9833,7 +9952,7 @@ function! forms#loadViewerPrototype()
 
           if type(input) == g:self#DICTIONARY_TYPE
             let event = input
-call forms#log("g:forms#Viewer.run EVENT=".string(event))
+" call forms#log("g:forms#Viewer.run EVENT=".string(event))
             let type = event.type
 
             if type == 'NextFocus'
@@ -10135,6 +10254,11 @@ endif
               else
                 return event
               endif
+
+            elseif type == 'Sleep'
+              let time = event.time
+" call forms#log("g:forms#Viewer.run Sleep time=".time)
+              execute 'sleep '.time
 
             else
               if exists('focus')

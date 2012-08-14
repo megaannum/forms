@@ -44,3 +44,8 @@ function! forms#example#subform#Make()
   call form.run()
 endfunction
 
+function! forms#example#subform#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#subform#Make()
+endfunction

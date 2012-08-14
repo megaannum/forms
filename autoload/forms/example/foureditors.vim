@@ -31,3 +31,8 @@ function! forms#example#foureditors#Make()
   call form.run()
 endfunction
 
+function! forms#example#foureditors#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#foureditors#Make()
+endfunction

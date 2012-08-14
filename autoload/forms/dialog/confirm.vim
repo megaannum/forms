@@ -134,6 +134,16 @@ function!  forms#dialog#confirm#Make(textlines, choices, def)
   return 0
 endfunction
 
+" forms#dialog#confirm#MakeTest: {{{1
+function! forms#dialog#confirm#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  let textlines = "User should pick one.\nCan be on multiple lines." 
+  let choices = "Apple\nOrange\nPear\nPeach" 
+  let def = 2
+  call forms#dialog#confirm#Make(textlines, choices, def)
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

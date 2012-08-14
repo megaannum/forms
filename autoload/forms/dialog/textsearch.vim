@@ -271,6 +271,21 @@ function!  forms#dialog#textsearch#Make(title, findonly, ...)
   return ''
 endfunction
 
+" forms#dialog#textsearch#MakeTest: {{{1
+function! forms#dialog#textsearch#MakeTest() 
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  let title = "Find Text"
+  let findonly = 1
+  call forms#dialog#textsearch#Make(title, findonly) 
+
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  let title = "Find and Replace Text"
+  let findonly = 0
+  call forms#dialog#textsearch#Make(title, findonly) 
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

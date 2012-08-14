@@ -204,6 +204,13 @@ function! forms#dialog#filebrowser#Make(...)
   return ''
 endfunction
 
+" forms#dialog#filebrowser#MakeTest: {{{1
+function! forms#dialog#filebrowser#MakeTest() 
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#dialog#filebrowser#Make() 
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

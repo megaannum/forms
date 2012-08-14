@@ -47,6 +47,13 @@ function!  forms#dialog#palletdesigner#Make()
   return forms#dialog#color#Make(1)
 endfunction
 
+" forms#dialog#palletdesigner#MakeTest: {{{1
+function! forms#dialog#palletdesigner#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#dialog#palletdesigner#Make()
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

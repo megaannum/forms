@@ -16,3 +16,8 @@ function! forms#example#popdownlist#Make()
   call form.run()
 endfunction
 
+function! forms#example#popdownlist#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#popdownlist#Make()
+endfunction

@@ -332,6 +332,51 @@ function! s:MakeExample(title, FN, ...)
   return vpoly
 endfunction
 
+" forms#example#demo#MakeTest: {{{1
+function! forms#example#demo#MakeTest()
+  call forms#example#dropshadow#MakeTest()
+  call forms#example#frame#MakeTest()
+  call forms#example#popdownlist#MakeTest()
+  call forms#example#slider#MakeTest()
+  call forms#example#resize#MakeTest()
+  call forms#dialog#info#MakeTest()
+  call forms#dialog#input#MakeTest()
+  call forms#dialog#textsearch#MakeTest()
+  " call forms#dialog#textsearch#MakeTest()
+  call forms#dialog#confirm#MakeTest()
+  call forms#dialog#filebrowser#MakeTest()
+  call forms#dialog#colorchooser#MakeTest()
+  call forms#dialog#palletdesigner#MakeTest()
+  call forms#menu#MakeMenuTest()
+  call forms#menu#MakePopUpTest()
+  call forms#example#boxchars#MakeTest()
+  call forms#example#labels#MakeTest()
+  call forms#example#editors#MakeTest()
+  call forms#example#vlabels#MakeTest()
+  call forms#example#fixedlayout#MakeTest()
+  call forms#example#foureditors#MakeTest()
+  call forms#example#texteditor#MakeTest()
+  call forms#example#form1#MakeTest()
+  " currently a duplicate of form1
+  " call forms#example#form2#MakeTest()
+  call forms#example#deck1#MakeTest()
+  call forms#example#deck2#MakeTest()
+  call forms#example#checkboxes#MakeTest()
+  call forms#example#radiobuttons#MakeTest()
+  call forms#example#togglebuttons#MakeTest()
+  call forms#example#selectlists#MakeTest()
+  call forms#example#subform#MakeTest()
+  call forms#example#longmenu#MakeTest()
+  call forms#example#menusubmenu#MakeTest()
+  call forms#example#editors2#MakeTest()
+  call forms#example#text#MakeTest()
+  call forms#example#labelsingrid#MakeTest()
+  call forms#example#labels2#MakeTest()
+  call forms#example#labels3#MakeTest()
+  call forms#example#labelsaligned#MakeTest()
+  call forms#example#labelvaligned#MakeTest()
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

@@ -105,6 +105,14 @@ function!  forms#dialog#input#Make(textlines, ...)
   endif
 endfunction
 
+" forms#dialog#input#MakeTest: {{{1
+function! forms#dialog#input#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  let textlines = "User should add requested input.\n\nCan be on multiple lines." 
+  call forms#dialog#input#Make(textlines, 'some initial text')
+endfunction
+
 "  Modelines: {{{1
 " ================
 " vim: ts=4 fdm=marker

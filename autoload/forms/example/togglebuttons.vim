@@ -39,3 +39,9 @@ function! forms#example#togglebuttons#Make()
   let form = forms#newForm({'body': bg })
   call form.run()
 endfunction
+
+function! forms#example#togglebuttons#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#togglebuttons#Make()
+endfunction

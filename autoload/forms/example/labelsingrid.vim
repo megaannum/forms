@@ -59,3 +59,8 @@ function! forms#example#labelsingrid#Make()
   call form.run()
 endfunction
 
+function! forms#example#labelsingrid#MakeTest()
+  call forms#AppendInput({'type': 'Sleep', 'time': 5})
+  call forms#AppendInput({'type': 'Exit'})
+  call forms#example#labelsingrid#Make()
+endfunction
