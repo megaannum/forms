@@ -109,7 +109,7 @@ function!  forms#dialog#textsearch#Make(title, findonly, ...)
 
   " Direction
   let ld = forms#newLabel({'text': "Direction"})
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let rbdu = forms#newRadioButton({'tag': 'dir_up', 'group': group})
   function! rbdu.purpose() dict

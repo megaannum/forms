@@ -8,7 +8,7 @@ function! forms#example#longmenu#Make()
   let action_two = forms#newAction({ 'execute': function("M0Action")})
   let action_two.name = 'TWO'
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let items = []
 

@@ -3514,12 +3514,12 @@ let g:forms#exitAction = forms#newAction({ 'execute': function("FormsExitAction"
 "-------------------------------------------------------------------------------
 " Glyph Utils: {{{2
 "-------------------------------------------------------------------------------
-" Glyph kinds
+" Glyph node types
 "----------------------------
-let s:LEAF_KIND = 'leaf'
-let s:MONO_KIND = 'mono'
-let s:POLY_KIND = 'poly'
-let s:GRID_KIND = 'grid'
+let g:LEAF_NODE = 'leaf'
+let g:MONO_NODE = 'mono'
+let g:POLY_NODE = 'poly'
+let g:GRID_NODE = 'grid'
 
 "----------------------------
 " Status of glyph
@@ -3571,7 +3571,7 @@ endfunction
 "   tag      : tag associated with glyph. Used to name the glyph
 "               so that its results can be found in the results dictionary
 " public methods
-"   kind      : return 'leaf', 'mono', 'poly' or 'grid'
+"   nodeType  : return 'leaf', 'mono', 'poly' or 'grid'
 "   canFocus  : return 1 if glyph can get focus and 0 otherwise
 "   gainFocus : notify glyph it has gained focus
 "   loseFocus : notify glyph it has lost focus
@@ -3752,13 +3752,13 @@ function! forms#loadGlyphPrototype()
     endfunction
 
     " ------------------------------------------------------------ 
-    " g:forms#Glyph.kind: {{{3
-    "   Returns the kind of the glyph:
+    " g:forms#Glyph.nodeType: {{{3
+    "   Returns the node type of the glyph:
     "     leaf, mono, poly or grid
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.kind() dict
-      throw "Glyph: must define in child: kind"
+    function! g:forms#Glyph.nodeType() dict
+      throw "Glyph: must define in child: nodeType"
     endfunction
 
     " ------------------------------------------------------------ 
@@ -3975,8 +3975,8 @@ function! forms#loadLeafPrototype()
   if !exists("g:forms#Leaf")
     let g:forms#Leaf = forms#loadGlyphPrototype().clone('forms#Leaf')
 
-    function! g:forms#Leaf.kind() dict
-      return s:LEAF_KIND
+    function! g:forms#Leaf.nodeType() dict
+      return g:LEAF_NODE
     endfunction
 
   endif
@@ -4796,7 +4796,7 @@ endfunction
 " Associates radiobutton or togglebuttons into a group and used to
 "     enforce a single selected-at-a-time rule.
 " attributes
-"   member_type  : 'forms#ToggleButton' or 'forms#RadioButton'
+"   member_kind  : 'forms#ToggleButton' or 'forms#RadioButton'
 "   members      : all buttons controlled by the group
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
@@ -4810,7 +4810,7 @@ function! forms#loadButtonGroupPrototype()
 " call forms#log("ButtonGroup. load BEFORE clone ")
     let g:forms#ButtonGroup = self#LoadObjectPrototype().clone('forms#ButtonGroup')
 " call forms#log("ButtonGroup. load AFTER clone ")
-    let g:forms#ButtonGroup.__member_type = ''
+    let g:forms#ButtonGroup.__member_kind = ''
     let g:forms#ButtonGroup.__members = []
 
     function! g:forms#ButtonGroup.delete(...) dict
@@ -4831,12 +4831,12 @@ function! forms#loadButtonGroupPrototype()
       if type(a:button) != g:self#DICTIONARY_TYPE
         throw "ButtonGroup.addMember: Bad type, not Dictionary: " + string(a:button)
       endif
-      if ! has_key(a:button, '_type')
-        throw "ButtonGroup.addMember: Not a Glyph, no _type attribute: " + string(a:button)
+      if ! has_key(a:button, '_kind')
+        throw "ButtonGroup.addMember: Not a Glyph, no _kind attribute: " + string(a:button)
       endif
-"call forms#log("g:forms#ButtonGroup.addMember: member_type=" . self.__member_type)
-      if a:button._type != self.__member_type
-        throw "ButtonGroup.addMember: Not type" . self.__member_type . " type: " + a:button._type
+"call forms#log("g:forms#ButtonGroup.addMember: member_kind=" .  "self.__member_kind)
+      if a:button._kind != self.__member_kind
+        throw "ButtonGroup.addMember: Not type" . self.__member_kind . " type: " + a:button._kind
       endif
 
       call add(self.__members, a:button)
@@ -8144,8 +8144,8 @@ function! forms#loadMonoPrototype()
     let g:forms#Mono = forms#loadGlyphPrototype().clone('forms#Mono')
     let g:forms#Mono.__body = g:forms_Util.nullGlyph()
 
-    function! g:forms#Mono.kind() dict
-      return s:MONO_KIND
+    function! g:forms#Mono.nodeType() dict
+      return g:MONO_NODE
     endfunction
 
     function! g:forms#Mono.reinit(attrs) dict
@@ -9651,7 +9651,7 @@ function! forms#loadToggleButtonPrototype()
         let type = a:event.type
         if type == 'Select'
           if ! has_key(self, '__group')
-            let self.__group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+            let self.__group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
             call self.__group.addMember(self)
           endif
 
@@ -9669,7 +9669,7 @@ function! forms#loadToggleButtonPrototype()
         if c == "\<CR>" || c == "\<Space>"
           if ! has_key(self, '__group')
   call forms#log("g:forms#ToggleButton.handleChar: make group")
-            let self.__group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+            let self.__group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
             call self.__group.addMember(self)
           endif
 
@@ -10815,6 +10815,13 @@ function! forms#loadFormPrototype()
 
         endwhile
 
+      catch /Vim.*/
+        if g:forms_log_enabled == g:self#IS_TRUE
+          call forms#log("Caught Vim Exception: " . v:exception . " at " . v:throwpoint)
+          echo v:exception
+        else
+          echoerr v:exception . " at " . v:throwpoint
+        endif
       catch /.*/
         if g:forms_log_enabled == g:self#IS_TRUE
           call forms#log("Caught Exception: " . v:exception . " at " . v:throwpoint)
@@ -10969,13 +10976,13 @@ function! forms#loadDebugPrototype()
       if self.__msg != ''
         let initmsg = initmsg . ":msg(".self.__msg.")"
       endif
-      let initmsg = initmsg . ":type(" . self.__body.getType() . ")"
+      let initmsg = initmsg . ":type(" . self.__body.getKind() . ")"
       let initmsg = initmsg . ":tag(" . self.__body.getTag() . ")"
       let initmsg = initmsg . ":id(" . self.__body._id . ")"
       call forms#log(initmsg)
 
       " create methods for each method the body has that Debug does not have
-      let type = self.__body.getType()
+      let type = self.__body.getKind()
       let id = self.__body._id
       for key in keys(self.__body)
         " TODO handle clone and delete methods
@@ -11036,8 +11043,8 @@ function! forms#loadPolyPrototype()
     let g:forms#Poly.__children = []
     let g:forms#Poly.__children_request_size = []
 
-    function! g:forms#Poly.kind() dict
-      return s:POLY_KIND
+    function! g:forms#Poly.nodeType() dict
+      return g:POLY_NODE
     endfunction
 
     function! g:forms#Poly.init(attrs) dict
@@ -13663,8 +13670,8 @@ function! forms#loadGridPrototype()
       endfor
     endfunction
 
-    function! g:forms#Grid.kind() dict
-      return s:GRID_KIND
+    function! g:forms#Grid.nodeType() dict
+      return g:GRID_NODE
     endfunction
 
     function! g:forms#Grid.major() dict
@@ -14429,20 +14436,20 @@ endfunction
 "            its children's highlights.
 " ------------------------------------------------------------ 
 function! forms#DeleteHighLights(glyph)
-  let kind = a:glyph.kind()
-  if kind == s:LEAF_KIND
+  let nodeType = a:glyph.nodeType()
+  if nodeType == g:LEAF_NODE
     call GlyphDeleteHi(a:glyph)
 
-  elseif kind == s:MONO_KIND
+  elseif nodeType == g:MONO_NODE
     call forms#DeleteHighLights(a:glyph.getBody())
     call GlyphDeleteHi(a:glyph)
 
-  elseif kind == s:POLY_KIND
+  elseif nodeType == g:POLY_NODE
     for child in a:glyph.children()
       call forms#DeleteHighLights(child)
     endfor
     call GlyphDeleteHi(a:glyph)
-  elseif kind == s:GRID_KIND
+  elseif nodeType == g:GRID_NODE
     for minor in a:glyph.major()
       for child in minor
         call forms#DeleteHighLights(child)
@@ -14450,7 +14457,7 @@ function! forms#DeleteHighLights(glyph)
     endfor
     call GlyphDeleteHi(a:glyph)
   else
-    throw "Unknown glyph kind " . kind
+    throw "Unknown glyph nodeType " . nodeType
   endif
 endfunction
 
@@ -14466,16 +14473,16 @@ endfunction
 "    flist : list to add focusable glyphs to.
 " ------------------------------------------------------------ 
 function! forms#GenerateFocusList(glyph, flist)
-  let kind = a:glyph.kind()
-  if kind == s:LEAF_KIND
+  let nodeType = a:glyph.nodeType()
+  if nodeType == g:LEAF_NODE
     if a:glyph.canFocus() | call add(a:flist, a:glyph) | endif
-  elseif kind == s:MONO_KIND
+  elseif nodeType == g:MONO_NODE
     if a:glyph.canFocus() 
       call add(a:flist, a:glyph) 
     else
       call forms#GenerateFocusList(a:glyph.getBody(), a:flist)
     endif
-  elseif kind == s:POLY_KIND
+  elseif nodeType == g:POLY_NODE
     if a:glyph.canFocus() 
       call add(a:flist, a:glyph) 
     else
@@ -14483,7 +14490,7 @@ function! forms#GenerateFocusList(glyph, flist)
         call forms#GenerateFocusList(child, a:flist)
       endfor
     endif
-  elseif kind == s:GRID_KIND
+  elseif nodeType == g:GRID_NODE
     if a:glyph.canFocus() 
       call add(a:flist, a:glyph) 
     else
@@ -14494,7 +14501,7 @@ function! forms#GenerateFocusList(glyph, flist)
       endfor
     endif
   else
-    throw "Unknown glyph kind " . kind
+    throw "Unknown glyph nodeType " . nodeType
   endif
 endfunction
 
@@ -14510,18 +14517,18 @@ endfunction
 "    results : Dictionary holding each glyph results.
 " ------------------------------------------------------------ 
 function! forms#GenerateResults(glyph, results)
-  let kind = a:glyph.kind()
-  if kind == s:LEAF_KIND
+  let nodeType = a:glyph.nodeType()
+  if nodeType == g:LEAF_NODE
     call a:glyph.addResults(a:results)
 
-  elseif kind == s:MONO_KIND
+  elseif nodeType == g:MONO_NODE
     if has_key(a:glyph, 'addResults')
       call a:glyph.addResults(a:results)
     endif
 
     call forms#GenerateResults(a:glyph.getBody(), a:results)
 
-  elseif kind == s:POLY_KIND
+  elseif nodeType == g:POLY_NODE
     if has_key(a:glyph, 'addResults')
       call a:glyph.addResults(a:results)
     endif
@@ -14530,7 +14537,7 @@ function! forms#GenerateResults(glyph, results)
       call forms#GenerateResults(child, a:results)
     endfor
 
-  elseif kind == s:GRID_KIND
+  elseif nodeType == g:GRID_NODE
     if has_key(a:glyph, 'addResults')
       call a:glyph.addResults(a:results)
     endif
@@ -14542,7 +14549,7 @@ function! forms#GenerateResults(glyph, results)
     endfor
 
   else
-    throw "Unknown glyph kind " . kind
+    throw "Unknown glyph nodeType " . nodeType
   endif
 endfunction
 
@@ -14561,7 +14568,7 @@ endfunction
 "    slist : List of selected glyphs
 " ------------------------------------------------------------ 
 function! forms#Select(glyph, line, column, slist)
-" call forms#log("Select: glyph.type=" . a:glyph.getType())
+" call forms#log("Select: glyph.kind=" . a:glyph.getKind())
   let a = a:glyph.allocation()
   " glyphs that have not been drawn yet, have empty allocations
   if ! empty(a)
@@ -14570,19 +14577,19 @@ function! forms#Select(glyph, line, column, slist)
 
       call add(a:slist, a:glyph) 
 
-      let kind = a:glyph.kind()
-      if kind == s:LEAF_KIND
+      let nodeType = a:glyph.nodeType()
+      if nodeType == g:LEAF_NODE
         " nothing
 
-      elseif kind == s:MONO_KIND
+      elseif nodeType == g:MONO_NODE
         call forms#Select(a:glyph.getBody(), a:line, a:column, a:slist)
 
-      elseif kind == s:POLY_KIND
+      elseif nodeType == g:POLY_NODE
         for child in a:glyph.children()
           call forms#Select(child, a:line, a:column, a:slist)
         endfor
 
-      elseif kind == s:GRID_KIND
+      elseif nodeType == g:GRID_NODE
         for minor in a:glyph.major()
           for child in minor
             call forms#Select(child, a:line, a:column, a:slist)
@@ -14590,7 +14597,7 @@ function! forms#Select(glyph, line, column, slist)
         endfor
 
       else
-        throw "Unknown glyph kind " . kind
+        throw "Unknown glyph nodeType " . nodeType
       endif
     endif
   endif
@@ -14775,25 +14782,25 @@ function! forms#DoGlyphSelectInfo(glyph, line, column)
 
 " call forms#log("forms#DoGlyphSelectInfo: hits.len=" . len(hits))
 " for s in hits
-" call forms#log("forms#DoGlyphSelectInfo:   " . s.getType())
+" call forms#log("forms#DoGlyphSelectInfo:   " . s.getKind())
 " endfor
 
   let infoList = []
   let choices = []
   let cnt = 0
   for s in hits
-"call forms#log("forms#DoGlyphSelectInfo:   " . s.getType())
-    let type = s.getType()
+"call forms#log("forms#DoGlyphSelectInfo:   " . s.getKind())
+    let kind = s.getKind()
     let lc = []
     let rc = []
-    call add(lc, forms#newLabel({'text': 'type:'}))
     call add(lc, forms#newLabel({'text': 'kind:'}))
+    call add(lc, forms#newLabel({'text': 'nodeType:'}))
     call add(lc, forms#newLabel({'text': 'canfocus:'}))
     call add(lc, forms#newLabel({'text': 'allocation:'}))
     call add(lc, forms#newLabel({'text': ''}))
 
-    call add(rc, forms#newLabel({'text': type}))
-    call add(rc, forms#newLabel({'text': s.kind()}))
+    call add(rc, forms#newLabel({'text': kind}))
+    call add(rc, forms#newLabel({'text': s.nodeType()}))
     if s.canFocus()
       call add(rc, forms#newLabel({'text': 'true'}))
     else
@@ -14849,7 +14856,7 @@ function! forms#DoGlyphSelectInfo(glyph, line, column)
 
     let hpoly = forms#newHPoly({ 'children': [vpolyLeft, vpolyRight]})
     call add(infoList, hpoly)
-    call add(choices, [type, cnt])
+    call add(choices, [kind, cnt])
 
     let cnt += 1
   endfor

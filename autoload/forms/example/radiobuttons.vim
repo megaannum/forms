@@ -1,6 +1,6 @@
 
 function! forms#example#radiobuttons#Make()
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let rb11 = forms#newRadioButton({'tag': 'one', 'group': group})
   let b11 = forms#newBorder({ 'body': rb11 })

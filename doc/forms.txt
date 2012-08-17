@@ -908,6 +908,11 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.4   - Fix: ~
+    Changed Glyph 'kind' to node type and method kind() to nodeType().
+    Adjusted to use Self Version 2.1 '_kind' rather than '_type' attribute.
+    Glyph methods are now named not numbered.
+
 1.3   - Fix: ~
     Better support for both 'light' and 'dard' backgrounds.
     Added simple visual test scripts and 'Sleep' Event.

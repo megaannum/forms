@@ -464,7 +464,7 @@ map <Leader>c2 :call MakeFormc2()<CR>
 function! MakeFormc2() 
 call forms#log("MakeFormc2 TOP")
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let rb1 = forms#newRadioButton({'tag': 'one', 'group': group})
   let b1 = forms#newBorder({ 'body': rb1 })
@@ -484,7 +484,7 @@ endfunction
 map <Leader>c3 :call MakeFormc3()<CR>
 function! MakeFormc3() 
 call forms#log("MakeFormc3 TOP")
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let rb11 = forms#newRadioButton({'tag': 'one', 'group': group})
   let b11 = forms#newBorder({ 'body': rb11 })
@@ -540,7 +540,7 @@ call forms#log("MakeFormc5 TOP")
   let tbo = forms#newToggleButton({'tag': 'alone', 'body': text})
   let boxtbo = forms#newBox({ 'body': tbo} )
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
   let l1 = forms#newLabel({'text': "ONE"})
   let tb1 = forms#newToggleButton({'tag': 'one', 'body': l1, 'group': group})
   let b1 = forms#newBox({ 'body': tb1} )
@@ -554,7 +554,7 @@ call forms#log("MakeFormc5 TOP")
   let b3 = forms#newBox({ 'body': tb3} )
   let vpoly = forms#newVPoly({ 'children': [b1, b2, b3], 'alignment': 'L' })
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
   let lx1 = forms#newLabel({'text': "XONE"})
   let tbx1 = forms#newToggleButton({'tag': 'xone', 'body': lx1, 'group': group})
   let bx1 = forms#newBox({ 'body': tbx1} )
@@ -1293,7 +1293,7 @@ endfunction
 map <Leader>g0 :call MakeFormg0()<CR>
 function! MakeFormg0() 
 call forms#log("MakeFormg0 TOP")
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
   let rb1 = forms#newRadioButton({'tag': 'one', 'group': group})
   let b1 = forms#newBorder({ 'body': rb1 })
   let rb2 = forms#newRadioButton({'tag': 'two', 'group': group})
@@ -1319,7 +1319,7 @@ call forms#log("MakeFormg1 TOP")
                                       \ ]})
   let tbo = forms#newToggleButton({'tag': 'alone', 'body': text})
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
   let l1 = forms#newLabel({'text': "ONE"})
   let tb1 = forms#newToggleButton({'tag': 'one', 'body': l1, 'group': group})
   let b1 = forms#newBorder({ 'body': tb1 })
@@ -1333,7 +1333,7 @@ call forms#log("MakeFormg1 TOP")
   let b3 = forms#newBorder({ 'body': tb3 })
   let vpoly = forms#newVPoly({ 'children': [b1, b2, b3], 'alignment': 'L' })
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#ToggleButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#ToggleButton'})
   let lx1 = forms#newLabel({'text': "XONE"})
   let tbx1 = forms#newToggleButton({'tag': 'xone', 'body': lx1, 'group': group})
   let lx2 = forms#newLabel({'text': "XTWO"})
@@ -1620,7 +1620,7 @@ call forms#log("MOAction.execute: name=" . self.name)
   let action_two = forms#newAction({ 'execute': function("M0Action")})
   let action_two.name = 'TWO'
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let subattrs = {
         \ 'items' : [
@@ -1712,7 +1712,7 @@ call forms#log("MOAction.execute: name=" . self.name)
   let action_two = forms#newAction({ 'execute': function("M0Action")})
   let action_two.name = 'TWO'
 
-  let group = forms#newButtonGroup({ 'member_type': 'forms#RadioButton'})
+  let group = forms#newButtonGroup({ 'member_kind': 'forms#RadioButton'})
 
   let items = []
 
