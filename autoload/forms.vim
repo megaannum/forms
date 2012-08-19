@@ -139,6 +139,16 @@ endif
 " Definitions: {{{2
 " ------------------------------------------------------------ 
 
+function! s:ColorSchemeEvent() 
+  call s:LoadeHighlights() 
+endfunction
+
+augroup forms
+  autocmd ColorScheme * call s:ColorSchemeEvent()
+augroup END
+
+function! s:LoadeHighlights() 
+
 if &background == 'light' 
 
 if has("gui_running")
@@ -311,6 +321,9 @@ endif
 
 endif " background
 
+endfunction
+
+call s:LoadeHighlights() 
 
 " ------------------------------------------------------------ 
 " CleanupHighlights: {{{2
