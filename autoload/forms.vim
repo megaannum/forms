@@ -906,12 +906,12 @@ if 0
     return remove(s:inputlist, 0)
   else
     let c = getchar()
-call forms#log("GetInput: c=" .  c)
+" call forms#log("GetInput: c=" .  c)
     let next = getchar(0)
-call forms#log("GetInput: o next=" .  next)
+" call forms#log("GetInput: o next=" .  next)
     while next != 0 && c == next
       let next = getchar(0)
-call forms#log("GetInput: i next=" .  next)
+" call forms#log("GetInput: i next=" .  next)
     endwhile
     if next != 0
       call insert(s:inputlist, next)
@@ -938,24 +938,26 @@ if !exists("g:forms_Util")
   "  Gets a null glyph; no actions, size or rendering.
   "  parameters: NONE
   " ------------------------------------------------------------ 
-  function! g:forms_Util.nullGlyph() dict
+  function! FORMS_UTIL_nullGlyph() dict
     if ! exists("g:forms_Util.__nullGlyph")
       let g:forms_Util.__nullGlyph = forms#newNullGlyph({})
     endif
     return g:forms_Util.__nullGlyph
   endfunction
+  let g:forms_Util.nullGlyph = function("FORMS_UTIL_nullGlyph")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.emptyAction {{{2
   "  Gets action that does nothing
   "  parameters: NONE
   " ------------------------------------------------------------ 
-  function! g:forms_Util.emptyAction() dict
+  function! FORMS_UTIL_emptyAction() dict
     if ! exists("g:forms_Util.__emptyAction")
       let g:forms_Util.__emptyAction = forms#newAction({})
     endif
     return g:forms_Util.__emptyAction
   endfunction
+  let g:forms_Util.emptyAction = function("FORMS_UTIL_emptyAction")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.checkHAlignment {{{2
@@ -968,7 +970,7 @@ if !exists("g:forms_Util")
   "   halignment : attribute value being checked
   "   name       : name of component requesting check
   " ------------------------------------------------------------ 
-  function! g:forms_Util.checkHAlignment(halignment, name) dict
+  function! FORMS_UTIL_checkHAlignment(halignment, name) dict
     if type(a:halignment) == g:self#FLOAT_TYPE
       if a:halignment < 0.0
         throw "" . a:name . ": alignment float value < 0.0: " . a:halignment
@@ -983,6 +985,7 @@ if !exists("g:forms_Util")
       throw "" . a:name . ": bad halignment type: " . a:halignment
     endif
   endfunction
+  let g:forms_Util.checkHAlignment = function("FORMS_UTIL_checkHAlignment")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.checkVAlignment {{{2
@@ -995,7 +998,7 @@ if !exists("g:forms_Util")
   "   valignment : attribute value being checked
   "   name       : name of component requesting check
   " ------------------------------------------------------------ 
-  function! g:forms_Util.checkVAlignment(valignment, name) dict
+  function! FORMS_UTIL_checkVAlignment(valignment, name) dict
     if type(a:valignment) == g:self#FLOAT_TYPE
       if a:valignment < 0.0
         throw "" . a:name . ": alignment float value < 0.0: " . a:valignment
@@ -1010,6 +1013,7 @@ if !exists("g:forms_Util")
       throw "" . a:name . ": bad valignment type: " . a:valignment
     endif
   endfunction
+  let g:forms_Util.checkVAlignment = function("FORMS_UTIL_checkVAlignment")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.drawHLine {{{2
@@ -1018,7 +1022,7 @@ if !exists("g:forms_Util")
   "   rect       : list of [line, column, size]
   "   char       : character used to draw line 
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawHLine(rect, char) dict
+  function! FORMS_UTIL_drawHLine(rect, char) dict
 "call forms#log("Util.drawHLine " .  string(a:rect) . ", char=" . a:char)
     let [line, column, size] = a:rect
     if size == 1
@@ -1028,6 +1032,7 @@ if !exists("g:forms_Util")
       call forms#SetStringAt(str, line, column)
     endif
   endfunction
+  let g:forms_Util.drawHLine = function("FORMS_UTIL_drawHLine")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.drawVLine {{{2
@@ -1036,7 +1041,7 @@ if !exists("g:forms_Util")
   "   rect       : list of [line, column, size]
   "   char       : character used to draw line 
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawVLine(rect, char) dict
+  function! FORMS_UTIL_drawVLine(rect, char) dict
 "call forms#log("Util.drawVLine " .  string(a:rect) . ", char=" . a:char)
     let [line, column, size] = a:rect
     if size == 1
@@ -1050,6 +1055,7 @@ if !exists("g:forms_Util")
       endwhile
     endif
   endfunction
+  let g:forms_Util.drawVLine = function("FORMS_UTIL_drawVLine")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.drawRect {{{2
@@ -1063,7 +1069,7 @@ if !exists("g:forms_Util")
   "   rect       : list of [line, column, width, height]
   "   char       : character used to draw line 
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawRect(rect, char) dict
+  function! FORMS_UTIL_drawRect(rect, char) dict
 " call forms#log("Util.drawRect " .  string(a:rect) . ", char=" . a:char)
     if a:char != ''
       let [line, column, width, height] = a:rect
@@ -1097,6 +1103,7 @@ if !exists("g:forms_Util")
       endif
     endif
   endfunction
+  let g:forms_Util.drawRect = function("FORMS_UTIL_drawRect")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.vAlign {{{2
@@ -1105,7 +1112,7 @@ if !exists("g:forms_Util")
   "   vinfo       : list of [line, height, childheight]
   "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
   " ------------------------------------------------------------ 
-  function! g:forms_Util.vAlign(vinfo, alignment) dict
+  function! FORMS_UTIL_vAlign(vinfo, alignment) dict
 " call forms#log("Util.vAlign " .  string(a:vinfo) . ", " . a:alignment)
     let line = a:vinfo.line
     let height = a:vinfo.height
@@ -1130,6 +1137,7 @@ if !exists("g:forms_Util")
       endif
     endif
   endfunction
+  let g:forms_Util.vAlign = function("FORMS_UTIL_vAlign")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.hAlign {{{2
@@ -1138,7 +1146,7 @@ if !exists("g:forms_Util")
   "   vinfo       : list of [column, width, childwidth]
   "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
   " ------------------------------------------------------------ 
-  function! g:forms_Util.hAlign(hinfo, alignment) dict
+  function! FORMS_UTIL_hAlign(hinfo, alignment) dict
 " call forms#log("Util.hAlign " .  string(a:hinfo) . ", " . a:alignment)
     let column = a:hinfo.column
     let width = a:hinfo.width
@@ -1163,6 +1171,7 @@ if !exists("g:forms_Util")
       endif
     endif
   endfunction
+  let g:forms_Util.hAlign = function("FORMS_UTIL_hAlign")
 
 
   " ------------------------------------------------------------ 
@@ -1174,7 +1183,7 @@ if !exists("g:forms_Util")
   "   alignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
   "   char        : character to fill alignment spaces
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawVAlign(glyph, allocation, alignment, char) dict
+  function! FORMS_UTIL_drawVAlign(glyph, allocation, alignment, char) dict
 " call forms#log("Util.drawVAlign " .  string(a:allocation) . ", " . a:alignment)
     let line = a:allocation.line
     let column = a:allocation.column
@@ -1418,6 +1427,7 @@ if !exists("g:forms_Util")
       endif
     endif
   endfunction
+  let g:forms_Util.drawVAlign = function("FORMS_UTIL_drawVAlign")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.drawVAlign {{{2
@@ -1428,7 +1438,7 @@ if !exists("g:forms_Util")
   "   alignment   : 0 <= float <= 1 or 'L', 'C' or 'R'
   "   char        : character to fill alignment spaces
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawHAlign(glyph, allocation, alignment, char) dict
+  function! FORMS_UTIL_drawHAlign(glyph, allocation, alignment, char) dict
 " call forms#log("Util.drawHAlign " .  string(a:allocation) . ", " . a:alignment)
     let line = a:allocation.line
     let column = a:allocation.column
@@ -1624,6 +1634,7 @@ if !exists("g:forms_Util")
       endif
     endif
   endfunction
+  let g:forms_Util.drawHAlign = function("FORMS_UTIL_drawHAlign")
 
   " ------------------------------------------------------------ 
   " g:forms_Util.drawHVAlign {{{2
@@ -1635,7 +1646,7 @@ if !exists("g:forms_Util")
   "   valignment   : 0 <= float <= 1 or 'T', 'C' or 'B'
   "   char        : character to fill alignment spaces
   " ------------------------------------------------------------ 
-  function! g:forms_Util.drawHVAlign(glyph, allocation, halignment, valignment, char) dict
+  function! FORMS_UTIL_drawHVAlign(glyph, allocation, halignment, valignment, char) dict
 " call forms#log("Util.drawHVAlign " .  string(a:allocation) . ", ha=" . a:halignment . ", va=" . a:valignment)
     let line = a:allocation.line
     let column = a:allocation.column
@@ -1924,6 +1935,7 @@ if !exists("g:forms_Util")
     endif
 " call forms#log("drawHVAlign BOTTOM ")
   endfunction
+  let g:forms_Util.drawHVAlign = function("FORMS_UTIL_drawHVAlign")
 
 endif
 
@@ -2234,7 +2246,7 @@ function! g:ColorUtil()
     "              Number (0 <= n < 256)
     "              Float (0.0 <= f < 256.0)
     " ------------------------------------------------------------ 
-    function! g:FCU.ParseRGB(rgb, ...) dict
+    function! FORMS_COLOR_UTIL_ParseRGB(rgb, ...) dict
 "call forms#log("ParseRGB: TOP rgb=". string(a:rgb) . " a:0=" . a:0)
 "let start = reltime()
       let needs_extra_args = g:self#IS_FALSE
@@ -2348,6 +2360,7 @@ function! g:ColorUtil()
 
       return [rn,gn,bn]
     endfunction
+    let g:FCU.ParseRGB = function("FORMS_COLOR_UTIL_ParseRGB")
 
     " ------------------------------------------------------------ 
     " TintRGB: {{{2
@@ -2375,7 +2388,7 @@ function! g:ColorUtil()
     "    gn    : Parameters accepted by ParseRGB
     "    bn    : Parameters accepted by ParseRGB
     " ------------------------------------------------------------ 
-    function! g:FCU.TintRGB(adjust, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_TintRGB(adjust, rn, gn, bn) dict
       let adjust = a:adjust
       let rn = a:rn
       let gn = a:gn
@@ -2393,6 +2406,7 @@ function! g:ColorUtil()
         return [rn,gn,bn]
       endif
     endfunction
+    let g:FCU.TintRGB = function("FORMS_COLOR_UTIL_TintRGB")
 
     " ------------------------------------------------------------ 
     " ShadeRGB: {{{2
@@ -2419,7 +2433,7 @@ function! g:ColorUtil()
     "              positive values brighten
     "    rgb    : Parameters accepted by ParseRGB
     " ------------------------------------------------------------ 
-    function! g:FCU.ShadeRGB(adjust, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ShadeRGB(adjust, rn, gn, bn) dict
       let adjust = a:adjust
       let rn = a:rn
       let gn = a:gn
@@ -2438,6 +2452,7 @@ function! g:ColorUtil()
         return [rn,gn,bn]
       endif
     endfunction
+    let g:FCU.ShadeRGB = function("FORMS_COLOR_UTIL_ShadeRGB")
 
     
     " ------------------------------------------------------------ 
@@ -2469,7 +2484,7 @@ function! g:ColorUtil()
       endif
     endfunction
 
-    function! g:FCU.BrightnessRGB(adjust, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_BrightnessRGB(adjust, rn, gn, bn) dict
       let adjust = a:adjust
       let rn = a:rn
       let gn = a:gn
@@ -2498,6 +2513,7 @@ function! g:ColorUtil()
 
       return [rn,gn,bn]
     endfunction
+    let g:FCU.BrightnessRGB = function("FORMS_COLOR_UTIL_BrightnessRGB")
 
     " ------------------------------------------------------------ 
     " MergerRGBs: {{{2
@@ -2507,7 +2523,7 @@ function! g:ColorUtil()
     "    rgb1 : Parameters accepted by ParseRGB
     "    rgb2 : Parameters accepted by ParseRGB
     " ------------------------------------------------------------ 
-    function! g:FCU.MergerRGBs(rgb1, rgb2) dict
+    function! FORMS_COLOR_UTIL_MergerRGBs(rgb1, rgb2) dict
 " call forms#log("MergerRGBs: TOP rgb1=". a:rgb1)
 " call forms#log("MergerRGBs: TOP rgb2=". a:rgb2)
       let [rn1,gn1,bn1] = self.ParseRGB(a:rgb1)
@@ -2519,6 +2535,7 @@ function! g:ColorUtil()
 
       return [rn, gn, bn]
     endfunction
+    let g:FCU.MergerRGBs = function("FORMS_COLOR_UTIL_MergerRGBs")
 
     " ------------------------------------------------------------ 
     " ShiftHue: {{{2
@@ -2527,7 +2544,7 @@ function! g:ColorUtil()
     "    shift : -0.5 <= float <= 0.5
     "    hue   : hue to be adjusted
     " ------------------------------------------------------------ 
-    function! g:FCU.ShiftHue(shift, hue) dict
+    function! FORMS_COLOR_UTIL_ShiftHue(shift, hue) dict
 " let hues = printf("%f",a:hue)
 " call forms#log("ShiftHue: TOP hue=". hues)
       let hc = a:hue + a:shift
@@ -2538,6 +2555,7 @@ function! g:ColorUtil()
       endif
       return hc
     endfunction
+    let g:FCU.ShiftHue = function("FORMS_COLOR_UTIL_ShiftHue")
 
     " ------------------------------------------------------------ 
     " ConvertRGB2HSL: {{{2
@@ -2548,7 +2566,7 @@ function! g:ColorUtil()
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertRGB2HSL(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ConvertRGB2HSL(rn, gn, bn) dict
       let rn = a:rn
       let gn = a:gn
       let bn = a:bn
@@ -2613,6 +2631,7 @@ endif
       endif
       return [h,s,l]
     endfunction
+    let g:FCU.ConvertRGB2HSL = function("FORMS_COLOR_UTIL_ConvertRGB2HSL")
 
     " ------------------------------------------------------------ 
     " ReduceHSL: {{{2
@@ -2623,7 +2642,7 @@ endif
     "    l           : value
     "    adjustments : List of List of Float pair to be applied to s and l
     " ------------------------------------------------------------ 
-    function! g:FCU.ReduceHSL(h,s,l, adjustments) dict
+    function! FORMS_COLOR_UTIL_ReduceHSL(h,s,l, adjustments) dict
       let r = []
       for adj in a:adjustments
         let sadj = a[0]
@@ -2632,6 +2651,7 @@ endif
       endfor
       return r
     endfunction
+    let g:FCU.ReduceHSL = function("FORMS_COLOR_UTIL_ReduceHSL")
 
     " ------------------------------------------------------------ 
     " ConvertHSL2RGB: {{{2
@@ -2641,7 +2661,7 @@ endif
     "    s           : saturation
     "    l           : value
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertHSL2RGB(h,s,l) dict
+    function! FORMS_COLOR_UTIL_ConvertHSL2RGB(h,s,l) dict
 "let hstr = printf("%f",a:h)
 "let sstr = printf("%f",a:s)
 "let lstr = printf("%f",a:l)
@@ -2692,6 +2712,7 @@ endif
       endif
       return [r,g,b]
     endfunction
+    let g:FCU.ConvertHSL2RGB = function("FORMS_COLOR_UTIL_ConvertHSL2RGB")
 
     " ------------------------------------------------------------ 
     " ShiftHueRGBusingHSL: {{{2
@@ -2702,7 +2723,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ShiftHueRGBusingHSL(shift, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ShiftHueRGBusingHSL(shift, rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
 
       let h = hsl[0]
@@ -2711,6 +2732,7 @@ endif
       let hc = self.ShiftHue(a:shift, h)
       return self.ConvertHSL2RGB(hc,s,l)
     endfunction
+    let g:FCU.ShiftHueRGBusingHSL = function("FORMS_COLOR_UTIL_ShiftHueRGBusingHSL")
 
     " ------------------------------------------------------------ 
     " ComplimentRGBusingHSL: {{{2
@@ -2720,10 +2742,11 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ComplimentRGBusingHSL(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ComplimentRGBusingHSL(rn, gn, bn) dict
       let shift = 180.0/360
       return self.ShiftHueRGBusingHSL(shift, a:rgb, a:000)
     endfunction
+    let g:FCU.ComplimentRGBusingHSL = function("FORMS_COLOR_UTIL_ComplimentRGBusingHSL")
 
     " ------------------------------------------------------------ 
     " AnalogicRGBusingHSL: {{{2
@@ -2733,7 +2756,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.AnalogicRGBusingHSL(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_AnalogicRGBusingHSL(rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -2743,6 +2766,7 @@ endif
       let hc2 = self.ShiftHue(-shift, h)
       return [self.ConvertHSL2RGB(hc1,s,l), self.ConvertHSL2RGB(hc2,s,l)]
     endfunction
+    let g:FCU.AnalogicRGBusingHSL = function("FORMS_COLOR_UTIL_AnalogicRGBusingHSL")
 
     " ------------------------------------------------------------ 
     " SplitComplimentaryRGBusingHSL: {{{2
@@ -2753,7 +2777,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.SplitComplimentaryRGBusingHSL(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSL(rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -2764,6 +2788,7 @@ endif
       let hc1 = self.ShiftHue(half+shift, h)
       return [self.ConvertHSL2RGV(hc1,s,v), self.ConvertHSL2RGV(hc2,s,v)]
     endfunction
+    let g:FCU.SplitComplimentaryRGBusingHSL = function("FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSL")
 
     " ------------------------------------------------------------ 
     " TriadicRGBusingHSL: {{{2
@@ -2774,7 +2799,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.TriadicRGBusingHSL(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_TriadicRGBusingHSL(rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -2785,6 +2810,7 @@ endif
       let hc1 = self.ShiftHue(half+shift, h)
       return [self.ConvertHSL2RGV(hc1,s,v), self.ConvertHSL2RGV(hc2,s,v)]
     endfunction
+    let g:FCU.TriadicRGBusingHSL = function("FORMS_COLOR_UTIL_TriadicRGBusingHSL")
 
     " ------------------------------------------------------------ 
     " ConvertRGB2HSV: {{{2
@@ -2794,7 +2820,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertRGB2HSV(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ConvertRGB2HSV(rn, gn, bn) dict
       let rn = a:rn
       let gn = a:gn
       let bn = a:bn
@@ -2853,6 +2879,7 @@ endif
         return [hue,sat,val]
       endif
     endfunction
+    let g:FCU.ConvertRGB2HSV = function("FORMS_COLOR_UTIL_ConvertRGB2HSV")
 
 
     " ReduceHSV: {{{2
@@ -2863,7 +2890,7 @@ endif
     "    v           : value
     "    adjustments : List of List of Float pair to be applied to s and v
     " ------------------------------------------------------------ 
-    function! g:FCU.ReduceHSV(h,s,v, adjustments) dict
+    function! FORMS_COLOR_UTIL_ReduceHSV(h,s,v, adjustments) dict
       let r = []
       for adj in a:adjustments
         let sadj = a[0]
@@ -2872,6 +2899,7 @@ endif
       endfor
       return r
     endfunction
+    let g:FCU.ReduceHSV = function("FORMS_COLOR_UTIL_ReduceHSV")
 
     " ------------------------------------------------------------ 
     " ConvertHSV2RGB: {{{2
@@ -2881,7 +2909,7 @@ endif
     "    s : saturation
     "    v : value
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertHSV2RGB(h,s,v) dict
+    function! FORMS_COLOR_UTIL_ConvertHSV2RGB(h,s,v) dict
 "let hstr = printf("%f",a:h)
 "let sstr = printf("%f",a:s)
 "let vstr = printf("%f",a:v)
@@ -2928,6 +2956,7 @@ endif
               \ float2nr((g * 255)+offset), 
               \ float2nr((b * 255)+offset)]
     endfunction
+    let g:FCU.ConvertHSV2RGB = function("FORMS_COLOR_UTIL_ConvertHSV2RGB")
 
     " ------------------------------------------------------------ 
     " ShiftHueRGBusingHSV: {{{2
@@ -2938,7 +2967,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ShiftHueRGBusingHSV(shift, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ShiftHueRGBusingHSV(shift, rn, gn, bn) dict
 " call forms#log("ShiftHueRGBusingHSV: TOP rgbstr=". a:rgb)
       let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
       let h = hsl[0]
@@ -2947,6 +2976,7 @@ endif
       let hc = self.ShiftHue(a:shift, h)
       return self.ConvertHSV2RGB(hc,s,l)
     endfunction
+    let g:FCU.ShiftHueRGBusingHSV = function("FORMS_COLOR_UTIL_ShiftHueRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " ComplimentRGBusingHSV: {{{2
@@ -2956,10 +2986,11 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.ComplimentRGBusingHSV(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_ComplimentRGBusingHSV(rn, gn, bn) dict
       let shift = 180.0/360
       return self.ShiftHueRGBusingHSV(shift, a:rn, a:gn, a:bn)
     endfunction
+    let g:FCU.ComplimentRGBusingHSV = function("FORMS_COLOR_UTIL_ComplimentRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " AnalogicRGBusingHSV: {{{2
@@ -2972,7 +3003,7 @@ endif
     "    gn     : green Number
     "    bn     : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.AnalogicRGBusingHSV(shift, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_AnalogicRGBusingHSV(shift, rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -2981,6 +3012,7 @@ endif
       let hc2 = self.ShiftHue(-a:shift, h)
       return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
     endfunction
+    let g:FCU.AnalogicRGBusingHSV = function("FORMS_COLOR_UTIL_AnalogicRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " SplitComplimentaryRGBusingHSV: {{{2
@@ -2993,7 +3025,7 @@ endif
     "    gn     : green Number
     "    bn     : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.SplitComplimentaryRGBusingHSV(shift, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSV(shift, rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -3003,6 +3035,7 @@ endif
       let hc1 = self.ShiftHue(half+a:shift, h)
       return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
     endfunction
+    let g:FCU.SplitComplimentaryRGBusingHSV = function("FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " TriadicRGBusingHSV: {{{2
@@ -3013,7 +3046,7 @@ endif
     "    gn  : green Number
     "    bn  : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.TriadicRGBusingHSV(rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_TriadicRGBusingHSV(rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -3023,6 +3056,7 @@ endif
       let hc1 = self.ShiftHue(+third, h)
       return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
     endfunction
+    let g:FCU.TriadicRGBusingHSV = function("FORMS_COLOR_UTIL_TriadicRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " DoubleContrastRGBusingHSV: {{{2
@@ -3035,7 +3069,7 @@ endif
     "    gn     : green Number
     "    bn     : blue Number
     " ------------------------------------------------------------ 
-    function! g:FCU.DoubleContrastRGBusingHSV(shift, rn, gn, bn) dict
+    function! FORMS_COLOR_UTIL_DoubleContrastRGBusingHSV(shift, rn, gn, bn) dict
       let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
       let h = hsl[0]
       let s = hsl[1]
@@ -3051,6 +3085,7 @@ endif
               \ self.ConvertHSV2RGB(halfHue,s,v), 
               \ self.ConvertHSV2RGB(halfminusHue,s,v)]
     endfunction
+    let g:FCU.DoubleContrastRGBusingHSV = function("FORMS_COLOR_UTIL_DoubleContrastRGBusingHSV")
 
     " ------------------------------------------------------------ 
     " ConvertRGB2IntNEW: {{{2
@@ -3286,7 +3321,7 @@ let start = reltime()
     "  parameters:
     "    rgb : Parameters accepted by ParseRGB
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertRGB2Int(rgb, ...) dict
+    function! FORMS_COLOR_UTIL_ConvertRGB2Int(rgb, ...) dict
 "call forms#log("ConvertRGB2Int: TOP rgb=". a:rgb)
       if a:0 == 0
         let [rn,gn,bn] = self.ParseRGB(a:rgb)
@@ -3323,13 +3358,13 @@ let start = reltime()
 
 if 0
 let x = self.ConvertRGB2IntOLD(rn,gn,bn)
-call forms#log("ConvertRGB2Int:          x=". x)
+" call forms#log("ConvertRGB2Int:          x=". x)
 if x != best_match
   throw "ConvertRGB2Int missmatch"
 endif
 
 let y = self.ConvertRGB2IntNew(rn,gn,bn)
-call forms#log("ConvertRGB2Int:          y=". y)
+" call forms#log("ConvertRGB2Int:          y=". y)
 if y != best_match
   throw "ConvertRGB2Int missmatch"
 endif
@@ -3337,6 +3372,7 @@ endif
       return best_match
 
     endfunction
+    let g:FCU.ConvertRGB2Int = function("FORMS_COLOR_UTIL_ConvertRGB2Int")
 
     " ------------------------------------------------------------ 
     " ConvertInt2RGB: {{{2
@@ -3346,7 +3382,7 @@ endif
     "    nr : String or Number or xterm 256 value
     "           value must be 0 <= value <= 255
     " ------------------------------------------------------------ 
-    function! g:FCU.ConvertInt2RGB(nr) dict
+    function! FORMS_COLOR_UTIL_ConvertInt2RGB(nr) dict
       if (type(a:nr) == g:self#NUMBER_TYPE)
         return self.Int2RGB[a:nr]
       elseif (type(a:nr) == g:self#STRING_TYPE)
@@ -3355,7 +3391,9 @@ endif
         throw "ConvertInt2RGB: Bad number: " . string(a:nsstr)
       endif
     endfunction
+    let g:FCU.ConvertInt2RGB = function("FORMS_COLOR_UTIL_ConvertInt2RGB")
   endif
+
   return g:FCU
 endfunction
 
@@ -3427,24 +3465,26 @@ function! forms#loadActionPrototype()
     "  parameters: 
     "   attrs  : attributes for initializing new object
     " ------------------------------------------------------------ 
-    function! g:forms#Action.init(attrs) dict
+    function! FORMS_ACTION_init(attrs) dict
       call call(g:self_ObjectPrototype.init, [a:attrs], self)
       if type(self.__execute) != g:self#FUNCREF_TYPE
         throw "Action: Not Fuction, bad execute type " . type(self.__execute)
       endif
       return self
     endfunction
+    let g:forms#Action.init = function("FORMS_ACTION_init")
 
     " ------------------------------------------------------------ 
     " g:forms#Action.execute: {{{3
     "   Execute Action object
     "  parameters: optional (depends upon situation)
     " ------------------------------------------------------------ 
-    function! g:forms#Action.execute(...) dict
+    function! FORMS_ACTION_execute(...) dict
 "call forms#log("g:forms#Action.execute TOP a:000=" . string(a:000))
 "call forms#log("g:forms#Action.execute self.__execute=" . string(self.__execute))
       call call(self.__execute, a:000, self)
     endfunction
+    let g:forms#Action.execute = function("FORMS_ACTION_execute")
   endif
 
   return g:forms#Action
@@ -3614,11 +3654,12 @@ function! forms#loadGlyphPrototype()
     "       tag    : optional tag name associated with glyph
     "                (default "tag".__id)
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.init(attrs) dict
+    function! FORMS_GLYPH_init(attrs) dict
       call call(g:self_ObjectPrototype.init, [a:attrs], self)
       call s:CheckStatus(self.__status)
       return self
     endfunction
+    let g:forms#Glyph.init = function("FORMS_GLYPH_init")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.reinit: {{{3
@@ -3626,7 +3667,7 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "   attrs  : same a init method
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.reinit(attrs) dict
+    function! FORMS_GLYPH_reinit(attrs) dict
 " call forms#log("forms#Glyph.reinit TOP")
       " let self.__allocation = {}
       let self.__status = g:IS_ENABLED
@@ -3635,6 +3676,7 @@ function! forms#loadGlyphPrototype()
 
       call self.init(a:attrs)
     endfunction
+    let g:forms#Glyph.reinit = function("FORMS_GLYPH_reinit")
 
 
     " ------------------------------------------------------------ 
@@ -3643,13 +3685,14 @@ function! forms#loadGlyphPrototype()
     "   Calls Object Prototype delete
     "  parameters: No user parameters
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.delete(...) dict
+    function! FORMS_GLYPH_delete(...) dict
 "call forms#log("Glyph.delete: TOP")
       call GlyphDeleteHi(self)
 
       call call(g:self_ObjectPrototype.delete, a:000, self)
 "call forms#log("Glyph.delete: BOTTOM")
     endfunction
+    let g:forms#Glyph.delete = function("FORMS_GLYPH_delete")
 
 
     "-----------------------------------------------
@@ -3665,7 +3708,7 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "   status : new status value
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.setStatus(status) dict
+    function! FORMS_GLYPH_setStatus(status) dict
       if self.__status != a:status
         call s:CheckStatus(a:status)
 
@@ -3685,42 +3728,47 @@ function! forms#loadGlyphPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Glyph.setStatus = function("FORMS_GLYPH_setStatus")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.getStatus: {{{3
     "   Get the status of the glyph
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.getStatus() dict
+    function! FORMS_GLYPH_getStatus() dict
       return self.__status
     endfunction
+    let g:forms#Glyph.getStatus = function("FORMS_GLYPH_getStatus")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.isEnabled: {{{3
     "   Returns true if glyph status is IS_ENABLED
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.isEnabled() dict
+    function! FORMS_GLYPH_isEnabled() dict
       return self.__status == g:IS_ENABLED
     endfunction
+    let g:forms#Glyph.isEnabled = function("FORMS_GLYPH_isEnabled")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.isDisabled: {{{3
     "   Returns true if glyph status is IS_DISABLED
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.isDisabled() dict
+    function! FORMS_GLYPH_isDisabled() dict
       return self.__status == g:IS_DISABLED
     endfunction
+    let g:forms#Glyph.isDisabled = function("FORMS_GLYPH_isDisabled")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.isInvisible: {{{3
     "   Returns true if glyph status is IS_INVISIBLE
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.isInvisible() dict
+    function! FORMS_GLYPH_isInvisible() dict
       return self.__status == g:IS_INVISIBLE
     endfunction
+    let g:forms#Glyph.isInvisible = function("FORMS_GLYPH_isInvisible")
 
     "-----------------------------------------------
     " public methods
@@ -3732,9 +3780,10 @@ function! forms#loadGlyphPrototype()
     "     The allocation is non-empty only if glyph is visible
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.allocation() dict
+    function! FORMS_GLYPH_allocation() dict
       return self.__allocation
     endfunction
+    let g:forms#Glyph.allocation = function("FORMS_GLYPH_allocation")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.inAllocation: {{{3
@@ -3745,11 +3794,12 @@ function! forms#loadGlyphPrototype()
     "     line   : line position
     "     column : column position
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.inAllocation(line, column) dict
+    function! FORMS_GLYPH_inAllocation(line, column) dict
       let a = self.__allocation
       return empty(a) ? 0 : a:line >= a.line && a:line < a.line + a.height &&
                       \ a:column >= a.column && a:column < a.column + a.width
     endfunction
+    let g:forms#Glyph.inAllocation = function("FORMS_GLYPH_inAllocation")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.nodeType: {{{3
@@ -3757,9 +3807,10 @@ function! forms#loadGlyphPrototype()
     "     leaf, mono, poly or grid
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.nodeType() dict
+    function! FORMS_GLYPH_nodeType() dict
       throw "Glyph: must define in child: nodeType"
     endfunction
+    let g:forms#Glyph.nodeType = function("FORMS_GLYPH_nodeType")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.canFocus: {{{3
@@ -3769,25 +3820,28 @@ function! forms#loadGlyphPrototype()
     "     (if status == g:IS_INVISIBLE then false)
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.canFocus() dict
+    function! FORMS_GLYPH_canFocus() dict
       return g:self#IS_FALSE
     endfunction
+    let g:forms#Glyph.canFocus = function("FORMS_GLYPH_canFocus")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.gainFocus: {{{3
     "   Notify glyph it has gained focus
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.gainFocus() dict
+    function! FORMS_GLYPH_gainFocus() dict
     endfunction
+    let g:forms#Glyph.gainFocus = function("FORMS_GLYPH_gainFocus")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.loseFocus: {{{3
     "   Notify glyph it has lost focus
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.loseFocus() dict
+    function! FORMS_GLYPH_loseFocus() dict
     endfunction
+    let g:forms#Glyph.loseFocus = function("FORMS_GLYPH_loseFocus")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.hotspot: {{{3
@@ -3798,8 +3852,9 @@ function! forms#loadGlyphPrototype()
     "     (if status != g:IS_INVISIBLE then hotspot)
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.hotspot() dict
+    function! FORMS_GLYPH_hotspot() dict
     endfunction
+    let g:forms#Glyph.hotspot = function("FORMS_GLYPH_hotspot")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.flash: {{{3
@@ -3809,8 +3864,9 @@ function! forms#loadGlyphPrototype()
     "     (if status != g:IS_INVISIBLE then flash)
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.flash() dict
+    function! FORMS_GLYPH_flash() dict
     endfunction
+    let g:forms#Glyph.flash = function("FORMS_GLYPH_flash")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.getTag: {{{3
@@ -3820,13 +3876,14 @@ function! forms#loadGlyphPrototype()
     "     then 'tag' . self.__id will be returned.
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.getTag() dict
+    function! FORMS_GLYPH_getTag() dict
       if exists("self.__tag")
         return self.__tag
       else
         return 'tag_' . self._id
       endif
     endfunction
+    let g:forms#Glyph.getTag = function("FORMS_GLYPH_getTag")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.addResults: {{{3
@@ -3837,8 +3894,9 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "     results: type Dictionary of glyph-tag:value entries.
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.addResults(results) dict
+    function! FORMS_GLYPH_addResults(results) dict
     endfunction
+    let g:forms#Glyph.addResults = function("FORMS_GLYPH_addResults")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.handleEvent: {{{3
@@ -3850,10 +3908,11 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "     event: the event to be processed
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.handleEvent(event) dict
+    function! FORMS_GLYPH_handleEvent(event) dict
 " call forms#log("g:forms#Glyph.handleEvent event=" . string(a:event))
       return 0
     endfunction
+    let g:forms#Glyph.handleEvent = function("FORMS_GLYPH_handleEvent")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.handleChar: {{{3
@@ -3865,10 +3924,11 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "     character: the character to be processed
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.handleChar(nr) dict
+    function! FORMS_GLYPH_handleChar(nr) dict
 " call forms#log("g:forms#Glyph.handleChar nr=" . a:nr)
       return 0
     endfunction
+    let g:forms#Glyph.handleChar = function("FORMS_GLYPH_handleChar")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.requestedSize: {{{3
@@ -3882,9 +3942,10 @@ function! forms#loadGlyphPrototype()
     "     (if status == g:IS_INVISIBLE then return [0,0])
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.requestedSize() dict
+    function! FORMS_GLYPH_requestedSize() dict
       return [0,0]
     endfunction
+    let g:forms#Glyph.requestedSize = function("FORMS_GLYPH_requestedSize")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.hide: {{{3
@@ -3894,9 +3955,10 @@ function! forms#loadGlyphPrototype()
     "  parameters: None
     " ------------------------------------------------------------ 
 
-    function! g:forms#Glyph.hide() dict
+    function! FORMS_GLYPH_hide() dict
       " empty for most glyphs
     endfunction
+    let g:forms#Glyph.hide = function("FORMS_GLYPH_hide")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.redraw: {{{3
@@ -3906,9 +3968,10 @@ function! forms#loadGlyphPrototype()
     "     a glyph its allocation).
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.redraw() dict
+    function! FORMS_GLYPH_redraw() dict
       call self.draw(self.__allocation)
     endfunction
+    let g:forms#Glyph.redraw = function("FORMS_GLYPH_redraw")
 
     " allocation { 'line': n, 'column': n, 'width': n, 'height': n}
     " Only draws if glyph is visible
@@ -3922,9 +3985,10 @@ function! forms#loadGlyphPrototype()
     "  parameters: 
     "     allocation: { 'line': n, 'column': n, 'width': n, 'height': n}
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.draw(allocation) dict
+    function! FORMS_GLYPH_draw(allocation) dict
       throw "Glyph: must define in child: draw"
     endfunction
+    let g:forms#Glyph.draw = function("FORMS_GLYPH_draw")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.purpose: {{{3
@@ -3935,9 +3999,10 @@ function! forms#loadGlyphPrototype()
     "     glyphs to provide context sensitive information.
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.purpose() dict
+    function! FORMS_GLYPH_purpose() dict
       return "No purpose information provided"
     endfunction
+    let g:forms#Glyph.purpose = function("FORMS_GLYPH_purpose")
 
     " ------------------------------------------------------------ 
     " g:forms#Glyph.usage: {{{3
@@ -3951,9 +4016,10 @@ function! forms#loadGlyphPrototype()
     "     to provide context sensitive information.
     "  parameters: None
     " ------------------------------------------------------------ 
-    function! g:forms#Glyph.usage() dict
+    function! FORMS_GLYPH_usage() dict
       return "No usage information provided"
     endfunction
+    let g:forms#Glyph.usage = function("FORMS_GLYPH_usage")
   endif
 
   return g:forms#Glyph
@@ -3975,9 +4041,10 @@ function! forms#loadLeafPrototype()
   if !exists("g:forms#Leaf")
     let g:forms#Leaf = forms#loadGlyphPrototype().clone('forms#Leaf')
 
-    function! g:forms#Leaf.nodeType() dict
+    function! FORMS_LEAF_nodeType() dict
       return g:LEAF_NODE
     endfunction
+    let g:forms#Leaf.nodeType = function("FORMS_LEAF_nodeType")
 
   endif
 
@@ -4005,13 +4072,15 @@ function! forms#loadNullGlyphPrototype()
                                           \ 'height': 0
                                           \ }
 
-    function! g:forms#NullGlyph.delete(...) dict
+    function! FORMS_NULL_GLYPH_delete(...) dict
       " Do not delete since instances may be used as singletons
       " See Utils nullGlyph() method
     endfunction
+    let g:forms#NullGlyph.delete = function("FORMS_NULL_GLYPH_delete")
 
-    function! g:forms#NullGlyph.draw(allocation) dict
+    function! FORMS_NULL_GLYPH_draw(allocation) dict
     endfunction
+    let g:forms#NullGlyph.draw = function("FORMS_NULL_GLYPH_draw")
   endif
 
   return g:forms#NullGlyph
@@ -4040,7 +4109,7 @@ function! forms#loadLinePrototype()
     let g:forms#Line.__char = ''
     let g:forms#Line.__size = 0
 
-    function! g:forms#Line.init(attrs) dict
+    function! FORMS_LINE_init(attrs) dict
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       if self.__size < 0
@@ -4055,8 +4124,9 @@ function! forms#loadLinePrototype()
 
       return self
     endfunction
+    let g:forms#Line.init = function("FORMS_LINE_init")
 
-    function! g:forms#Line.reinit(attrs) dict
+    function! FORMS_LINE_reinit(attrs) dict
 " call forms#log("forms#Line.reinit TOP")
       let oldSize = self.__size
 
@@ -4071,6 +4141,7 @@ function! forms#loadLinePrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Line.reinit = function("FORMS_LINE_reinit")
   endif
 
   return g:forms#Line
@@ -4091,11 +4162,12 @@ function! forms#loadHLine()
   if !exists("g:forms#HLine")
     let g:forms#HLine = forms#loadLinePrototype().clone('forms#HLine')
 
-    function! g:forms#HLine.requestedSize() dict
+    function! FORMS_HLINE_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [self.__size,1]
     endfunction
+    let g:forms#HLine.requestedSize = function("FORMS_HLINE_requestedSize")
 
-    function! g:forms#HLine.draw(allocation) dict
+    function! FORMS_HLINE_draw(allocation) dict
 " call forms#log("g:forms#HLine.draw" .  string(a:allocation))
       " [line, column, width, height]
       let self.__allocation = a:allocation
@@ -4112,6 +4184,7 @@ function! forms#loadHLine()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#HLine.draw = function("FORMS_HLINE_draw")
 
   endif
 
@@ -4142,11 +4215,12 @@ function! forms#loadVLine()
   if !exists("g:forms#VLine")
     let g:forms#VLine = forms#loadLinePrototype().clone('forms#VLine')
 
-    function! g:forms#VLine.requestedSize() dict
+    function! FORMS_VLINE_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [1,self.__size]
     endfunction
+    let g:forms#VLine.requestedSize = function("FORMS_VLINE_requestedSize")
 
-    function! g:forms#VLine.draw(allocation) dict
+    function! FORMS_VLINE_draw(allocation) dict
 "call forms#log("g:forms#VLine.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4162,6 +4236,7 @@ function! forms#loadVLine()
       endif                     
 
     endfunction
+    let g:forms#VLine.draw = function("FORMS_VLINE_draw")
 
   endif
 
@@ -4198,7 +4273,7 @@ function! forms#loadAreaPrototype()
     let g:forms#Area.__width = 0
     let g:forms#Area.__height = 0
 
-    function! g:forms#Area.init(attrs) dict
+    function! FORMS_AREA_init(attrs) dict
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       if self.__width < 0
@@ -4216,8 +4291,9 @@ function! forms#loadAreaPrototype()
 
       return self
     endfunction
+    let g:forms#Area.init = function("FORMS_AREA_init")
 
-    function! g:forms#Area.reinit(attrs) dict
+    function! FORMS_AREA_reinit(attrs) dict
 " call forms#log("forms#Area.reinit TOP")
       let oldWidth = self.__width
       let oldHeight = self.__height
@@ -4235,13 +4311,15 @@ function! forms#loadAreaPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Area.reinit = function("FORMS_AREA_reinit")
 
-    function! g:forms#Area.requestedSize() dict
+    function! FORMS_AREA_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] 
                     \ : [self.__width, self.__height]
     endfunction
+    let g:forms#Area.requestedSize = function("FORMS_AREA_requestedSize")
 
-    function! g:forms#Area.draw(allocation) dict
+    function! FORMS_AREA_draw(allocation) dict
 " call forms#log("g:forms#Area.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4255,6 +4333,7 @@ function! forms#loadAreaPrototype()
       endif                     
 
     endfunction
+    let g:forms#Area.draw = function("FORMS_AREA_draw")
   endif
 
   return g:forms#Area
@@ -4291,7 +4370,7 @@ function! forms#loadSpacePrototype()
     let g:forms#Space.__char = ''
     let g:forms#Space.__size = 0
 
-    function! g:forms#Space.init(attrs) dict
+    function! FORMS_SPACE_init(attrs) dict
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       if self.__size < 0
@@ -4306,8 +4385,9 @@ function! forms#loadSpacePrototype()
 
       return self
     endfunction
+    let g:forms#Space.init = function("FORMS_SPACE_init")
 
-    function! g:forms#Space.reinit(attrs) dict
+    function! FORMS_SPACE_reinit(attrs) dict
 " call forms#log("forms#Space.reinit TOP")
       let oldSize = self.__size
 
@@ -4322,6 +4402,7 @@ function! forms#loadSpacePrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Space.reinit = function("FORMS_SPACE_reinit")
 
   endif
 
@@ -4343,11 +4424,12 @@ function! forms#loadHSpace()
   if !exists("g:forms#HSpace")
     let g:forms#HSpace = forms#loadSpacePrototype().clone('forms#HSpace')
 
-    function! g:forms#HSpace.requestedSize() dict
+    function! FORMS_HSPACE_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [self.__size,1]
     endfunction
+    let g:forms#HSpace.requestedSize = function("FORMS_HSPACE_requestedSize")
 
-    function! g:forms#HSpace.draw(allocation) dict
+    function! FORMS_HSPACE_draw(allocation) dict
 " call forms#log("g:forms#HSpace.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4361,6 +4443,7 @@ function! forms#loadHSpace()
       endif                     
 
     endfunction
+    let g:forms#HSpace.draw = function("FORMS_HSPACE_draw")
   endif
 
   return g:forms#HSpace
@@ -4390,11 +4473,12 @@ function! forms#loadVSpace()
   if !exists("g:forms#VSpace")
     let g:forms#VSpace = forms#loadSpacePrototype().clone('forms#VSpace')
 
-    function! g:forms#VSpace.requestedSize() dict
+    function! FORMS_VSPACE_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [1,self.__size]
     endfunction
+    let g:forms#VSpace.requestedSize = function("FORMS_VSPACE_requestedSize")
 
-    function! g:forms#VSpace.draw(allocation) dict
+    function! FORMS_VSPACE_draw(allocation) dict
 " call forms#log("g:forms#VSpace.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4407,6 +4491,7 @@ function! forms#loadVSpace()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#VSpace.draw = function("FORMS_VSPACE_draw")
 
   endif
 
@@ -4440,7 +4525,7 @@ function! forms#loadLabelPrototype()
     let g:forms#Label = forms#loadLeafPrototype().clone('forms#Label')
     let g:forms#Label.__text = ''
 
-    function! g:forms#Label.reinit(attrs) dict
+    function! FORMS_LABEL_reinit(attrs) dict
 " call forms#log("forms#Label.reinit TOP")
       let oldText = self.__text
 
@@ -4454,13 +4539,15 @@ function! forms#loadLabelPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Label.reinit = function("FORMS_LABEL_reinit")
 
-    function! g:forms#Label.requestedSize() dict
+    function! FORMS_LABEL_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) 
               \ ? [0,0] : [strchars(self.__text),1]
     endfunction
+    let g:forms#Label.requestedSize = function("FORMS_LABEL_requestedSize")
 
-    function! g:forms#Label.draw(allocation) dict
+    function! FORMS_LABEL_draw(allocation) dict
 " call forms#log("g:forms#Label.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4476,6 +4563,7 @@ function! forms#loadLabelPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif
     endfunction
+    let g:forms#Label.draw = function("FORMS_LABEL_draw")
   endif
 
   return g:forms#Label
@@ -4508,7 +4596,7 @@ function! forms#loadVLabelPrototype()
     let g:forms#VLabel = forms#loadLeafPrototype().clone('forms#VLabel')
     let g:forms#VLabel.__text = ''
 
-    function! g:forms#VLabel.reinit(attrs) dict
+    function! FORMS_VLABEL_reinit(attrs) dict
 "call forms#log("forms#VLabel.reinit TOP")
       let oldText = self.__text
 
@@ -4522,12 +4610,14 @@ function! forms#loadVLabelPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#VLabel.reinit = function("FORMS_VLABEL_reinit")
 
-    function! g:forms#VLabel.requestedSize() dict
+    function! FORMS_VLABEL_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [1, strchars(self.__text)]
     endfunction
+    let g:forms#VLabel.requestedSize = function("FORMS_VLABEL_requestedSize")
 
-    function! g:forms#VLabel.draw(allocation) dict
+    function! FORMS_VLABEL_draw(allocation) dict
 " call forms#log("g:forms#VLabel.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4549,6 +4639,7 @@ function! forms#loadVLabelPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#VLabel.draw = function("FORMS_VLABEL_draw")
 
   endif
 
@@ -4583,7 +4674,7 @@ function! forms#loadTextPrototype()
     let g:forms#Text = forms#loadLeafPrototype().clone('forms#Text')
     let g:forms#Text.__textlines = []
 
-    function! g:forms#Text.init(attrs) dict
+    function! FORMS_TEXT_init(attrs) dict
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       let textlines = self.__textlines
@@ -4598,8 +4689,9 @@ function! forms#loadTextPrototype()
 
       return self
     endfunction
+    let g:forms#Text.init = function("FORMS_TEXT_init")
 
-    function! g:forms#Text.reinit(attrs) dict
+    function! FORMS_TEXT_reinit(attrs) dict
 " call forms#log("forms#Text.reinit TOP")
       let oldTextlines = self.__textlines
 
@@ -4613,9 +4705,10 @@ function! forms#loadTextPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Text.reinit = function("FORMS_TEXT_reinit")
 
 
-    function! g:forms#Text.requestedSize() dict
+    function! FORMS_TEXT_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
          return [0,0]
       else
@@ -4628,8 +4721,9 @@ function! forms#loadTextPrototype()
         return [w,len(self.__textlines)]
       endif
     endfunction
+    let g:forms#Text.requestedSize = function("FORMS_TEXT_requestedSize")
 
-    function! g:forms#Text.draw(allocation) dict
+    function! FORMS_TEXT_draw(allocation) dict
 " call forms#log("g:forms#Text.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4654,6 +4748,7 @@ function! forms#loadTextPrototype()
       endif                     
 
     endfunction
+    let g:forms#Text.draw = function("FORMS_TEXT_draw")
   endif
 
   return g:forms#Text
@@ -4689,14 +4784,15 @@ function! forms#loadCheckBoxPrototype()
     let g:forms#CheckBox.__char = 'X'
 
 
-    function! g:forms#CheckBox.init(attrs) dict
+    function! FORMS_CHECKBOX_init(attrs) dict
 " call forms#log("forms#CheckBox.init TOP")
       call call(g:forms#Leaf.init, [a:attrs], self)
 " call forms#log("forms#CheckBox.init BOTTOM")
       return self
     endfunction
+    let g:forms#CheckBox.init = function("FORMS_CHECKBOX_init")
 
-    function! g:forms#CheckBox.reinit(attrs) dict
+    function! FORMS_CHECKBOX_reinit(attrs) dict
 " call forms#log("forms#CheckBox.reinit TOP")
       let self.__selected = 0
       let self.__char = 'X'
@@ -4705,27 +4801,32 @@ function! forms#loadCheckBoxPrototype()
 
       call forms#ViewerRedrawListAdd(self) 
     endfunction
+    let g:forms#CheckBox.reinit = function("FORMS_CHECKBOX_reinit")
 
-    function! g:forms#CheckBox.canFocus() dict
+    function! FORMS_CHECKBOX_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#CheckBox.canFocus = function("FORMS_CHECKBOX_canFocus")
 
-    function! g:forms#CheckBox.hotspot() dict
+    function! FORMS_CHECKBOX_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         call HotSpot(self.__allocation.line, self.__allocation.column+1)
       endif
     endfunction
+    let g:forms#CheckBox.hotspot = function("FORMS_CHECKBOX_hotspot")
 
-    function! g:forms#CheckBox.addResults(results) dict
+    function! FORMS_CHECKBOX_addResults(results) dict
       let tag = self.getTag()
       let a:results[tag] = self.__selected
     endfunction
+    let g:forms#CheckBox.addResults = function("FORMS_CHECKBOX_addResults")
 
-    function! g:forms#CheckBox.requestedSize() dict
+    function! FORMS_CHECKBOX_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [3,1]
     endfunction
+    let g:forms#CheckBox.requestedSize = function("FORMS_CHECKBOX_requestedSize")
 
-    function! g:forms#CheckBox.handleEvent(event) dict
+    function! FORMS_CHECKBOX_handleEvent(event) dict
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -4736,8 +4837,9 @@ function! forms#loadCheckBoxPrototype()
       endif
       return 0
     endfunction
+    let g:forms#CheckBox.handleEvent = function("FORMS_CHECKBOX_handleEvent")
 
-    function! g:forms#CheckBox.handleChar(nr) dict
+    function! FORMS_CHECKBOX_handleChar(nr) dict
 " call forms#log("g:forms#CheckBox.handleChar" .  string(a:nr))
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
@@ -4749,8 +4851,9 @@ function! forms#loadCheckBoxPrototype()
       endif
       return 0
     endfunction
+    let g:forms#CheckBox.handleChar = function("FORMS_CHECKBOX_handleChar")
 
-    function! g:forms#CheckBox.draw(allocation) dict
+    function! FORMS_CHECKBOX_draw(allocation) dict
 "call forms#log("g:forms#CheckBox.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -4767,14 +4870,16 @@ function! forms#loadCheckBoxPrototype()
       endif                     
 
     endfunction
+    let g:forms#CheckBox.draw = function("FORMS_CHECKBOX_draw")
 
-    function! g:forms#CheckBox.usage() dict
+    function! FORMS_CHECKBOX_usage() dict
       return [
            \ "A CheckBox has two states: selected or not selected.",
            \ "Selection is with keyboard <CR> or <Space>,",
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#CheckBox.usage = function("FORMS_CHECKBOX_usage")
 
   endif
 
@@ -4813,7 +4918,7 @@ function! forms#loadButtonGroupPrototype()
     let g:forms#ButtonGroup.__member_kind = ''
     let g:forms#ButtonGroup.__members = []
 
-    function! g:forms#ButtonGroup.delete(...) dict
+    function! FORMS_BUTTON_GROUP_delete(...) dict
 "call forms#log("ButtonGroup.delete: TOP")
       call ButtonGroupDeleteHi(self)
       unlet self.__members
@@ -4822,11 +4927,12 @@ function! forms#loadButtonGroupPrototype()
       call call(p.delete, [p], self)
 "call forms#log("ButtonGroup.delete: BOTTOM")
     endfunction
+    let g:forms#ButtonGroup.delete = function("FORMS_BUTTON_GROUP_delete")
 
 " call forms#log("ButtonGroup: delete=" .  GetFunDef('g:forms#ButtonGroup.delete'))
 
 
-    function! g:forms#ButtonGroup.addMember(button) dict
+    function! FORMS_BUTTON_GROUP_addMember(button) dict
 "call forms#log("g:forms#ButtonGroup.addMember: TOP")
       if type(a:button) != g:self#DICTIONARY_TYPE
         throw "ButtonGroup.addMember: Bad type, not Dictionary: " + string(a:button)
@@ -4842,8 +4948,9 @@ function! forms#loadButtonGroupPrototype()
       call add(self.__members, a:button)
 "call forms#log("g:forms#ButtonGroup.addMember: BOTTOM")
     endfunction
+    let g:forms#ButtonGroup.addMember = function("FORMS_BUTTON_GROUP_addMember")
 
-    function! g:forms#ButtonGroup.setValues(button) dict
+    function! FORMS_BUTTON_GROUP_setValues(button) dict
       let id = a:button._id
 "call forms#log("g:forms#ButtonGroup.setValues: id=" .  id)
       let nos_members = len(self.__members)
@@ -4867,6 +4974,7 @@ function! forms#loadButtonGroupPrototype()
         endfor
       endif
     endfunction
+    let g:forms#ButtonGroup.setValues = function("FORMS_BUTTON_GROUP_setValues")
 
   endif
 
@@ -4912,7 +5020,7 @@ function! forms#loadRadioButtonPrototype()
     let g:forms#RadioButton.__on_deselection_action = g:forms_Util.emptyAction()
 
 
-    function! g:forms#RadioButton.init(attrs) dict
+    function! FORMS_RADIO_BUTTON_init(attrs) dict
 " call forms#log("forms#RadioButton.init TOP")
       call call(g:forms#Leaf.init, [a:attrs], self)
 " call forms#log("forms#RadioButton.init BOTTOM")
@@ -4925,8 +5033,9 @@ function! forms#loadRadioButtonPrototype()
       endif
       return self
     endfunction
+    let g:forms#RadioButton.init = function("FORMS_RADIO_BUTTON_init")
 
-    function! g:forms#RadioButton.reinit(attrs) dict
+    function! FORMS_RADIO_BUTTON_reinit(attrs) dict
 "call forms#log("forms#RadioButton.reinit TOP")
       let self.__selected = 0
       let self.__char = '*'
@@ -4937,28 +5046,33 @@ function! forms#loadRadioButtonPrototype()
 
       call forms#ViewerRedrawListAdd(self) 
     endfunction
+    let g:forms#RadioButton.reinit = function("FORMS_RADIO_BUTTON_reinit")
 
 
-    function! g:forms#RadioButton.canFocus() dict
+    function! FORMS_RADIO_BUTTON_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#RadioButton.canFocus = function("FORMS_RADIO_BUTTON_canFocus")
 
-    function! g:forms#RadioButton.hotspot() dict
+    function! FORMS_RADIO_BUTTON_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         call HotSpot(self.__allocation.line, self.__allocation.column+1)
       endif
     endfunction
+    let g:forms#RadioButton.hotspot = function("FORMS_RADIO_BUTTON_hotspot")
 
-    function! g:forms#RadioButton.addResults(results) dict
+    function! FORMS_RADIO_BUTTON_addResults(results) dict
       let tag = self.getTag()
       let a:results[tag] = self.__selected
     endfunction
+    let g:forms#RadioButton.addResults = function("FORMS_RADIO_BUTTON_addResults")
 
-    function! g:forms#RadioButton.requestedSize() dict
+    function! FORMS_RADIO_BUTTON_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [3,1]
     endfunction
+    let g:forms#RadioButton.requestedSize = function("FORMS_RADIO_BUTTON_requestedSize")
 
-    function! g:forms#RadioButton.handleEvent(event) dict
+    function! FORMS_RADIO_BUTTON_handleEvent(event) dict
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -4976,8 +5090,9 @@ function! forms#loadRadioButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#RadioButton.handleEvent = function("FORMS_RADIO_BUTTON_handleEvent")
 
-    function! g:forms#RadioButton.handleChar(nr) dict
+    function! FORMS_RADIO_BUTTON_handleChar(nr) dict
 " call forms#log("g:forms#RadioButton.handleChar: " .  string(a:nr))
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
@@ -4996,8 +5111,9 @@ function! forms#loadRadioButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#RadioButton.handleChar = function("FORMS_RADIO_BUTTON_handleChar")
 
-    function! g:forms#RadioButton.setValue(value) dict
+    function! FORMS_RADIO_BUTTON_setValue(value) dict
       let oldvalue = self.__selected
       let self.__selected = a:value
       if oldvalue != a:value
@@ -5009,15 +5125,18 @@ function! forms#loadRadioButtonPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#RadioButton.setValue = function("FORMS_RADIO_BUTTON_setValue")
 
-    function! g:forms#RadioButton.getValue() dict
+    function! FORMS_RADIO_BUTTON_getValue() dict
       return self.__selected
     endfunction
+    let g:forms#RadioButton.getValue = function("FORMS_RADIO_BUTTON_getValue")
 
-    function! g:forms#RadioButton.selected() dict
+    function! FORMS_RADIO_BUTTON_selected() dict
     endfunction
+    let g:forms#RadioButton.selected = function("FORMS_RADIO_BUTTON_selected")
 
-    function! g:forms#RadioButton.draw(allocation) dict
+    function! FORMS_RADIO_BUTTON_draw(allocation) dict
 " call forms#log("g:forms#RadioButton.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -5034,8 +5153,9 @@ function! forms#loadRadioButtonPrototype()
       endif                     
 
     endfunction
+    let g:forms#RadioButton.draw = function("FORMS_RADIO_BUTTON_draw")
 
-    function! g:forms#RadioButton.usage() dict
+    function! FORMS_RADIO_BUTTON_usage() dict
       return [
            \ "A RadioButton has two states: selected or not selected.",
            \ "  Generally, multiple Radiobuttons are grouped together.",
@@ -5044,6 +5164,7 @@ function! forms#loadRadioButtonPrototype()
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#RadioButton.usage = function("FORMS_RADIO_BUTTON_usage")
 
   endif
 
@@ -5085,7 +5206,7 @@ function! forms#loadFixedLengthFieldPrototype()
     let g:forms#FixedLengthField.__on_selection_action = g:forms_Util.emptyAction()
 
 
-    function! g:forms#FixedLengthField.init(attrs) dict
+    function! FORMS_FIXED_LENGTH_FIELD_init(attrs) dict
 " call forms#log("forms#FixedLengthField.init TOP self.__size=" .  self.__size)
       call call(g:forms#Leaf.init, [a:attrs], self)
 " call forms#log("forms#FixedLengthField.init BOTTOM self.__size=" .  self.__size)
@@ -5096,8 +5217,9 @@ function! forms#loadFixedLengthFieldPrototype()
 
       return self
     endfunction
+    let g:forms#FixedLengthField.init = function("FORMS_FIXED_LENGTH_FIELD_init")
 
-    function! g:forms#FixedLengthField.reinit(attrs) dict
+    function! FORMS_FIXED_LENGTH_FIELD_reinit(attrs) dict
 " call forms#log("forms#FixedLengthField.reinit TOP")
       let oldSize = self.__size
 
@@ -5116,12 +5238,14 @@ function! forms#loadFixedLengthFieldPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#FixedLengthField.reinit = function("FORMS_FIXED_LENGTH_FIELD_reinit")
 
-    function! g:forms#FixedLengthField.getText() dict
+    function! FORMS_FIXED_LENGTH_FIELD_getText() dict
       return self.__text
     endfunction
+    let g:forms#FixedLengthField.getText = function("FORMS_FIXED_LENGTH_FIELD_getText")
 
-    function! g:forms#FixedLengthField.setText(text) dict
+    function! FORMS_FIXED_LENGTH_FIELD_setText(text) dict
 " call forms#log("forms#FixedLengthField.setText TOP")
       let slen = len(a:text)
       if self.__size < slen
@@ -5136,12 +5260,14 @@ function! forms#loadFixedLengthFieldPrototype()
         endif
       endif
     endfunction
+    let g:forms#FixedLengthField.setText = function("FORMS_FIXED_LENGTH_FIELD_setText")
 
-    function! g:forms#FixedLengthField.canFocus() dict
+    function! FORMS_FIXED_LENGTH_FIELD_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#FixedLengthField.canFocus = function("FORMS_FIXED_LENGTH_FIELD_canFocus")
 
-    function! g:forms#FixedLengthField.hotspot() dict
+    function! FORMS_FIXED_LENGTH_FIELD_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         if self.__pos == 0
@@ -5151,19 +5277,22 @@ function! forms#loadFixedLengthFieldPrototype()
         endif
       endif
     endfunction
+    let g:forms#FixedLengthField.hotspot = function("FORMS_FIXED_LENGTH_FIELD_hotspot")
 
-    function! g:forms#FixedLengthField.addResults(results) dict
+    function! FORMS_FIXED_LENGTH_FIELD_addResults(results) dict
       let tag = self.getTag()
       let txt = self.__text
 
       let a:results[tag] = substitute(txt, '[[:space:][:cntrl:]]\+$', '', '')
     endfunction
+    let g:forms#FixedLengthField.addResults = function("FORMS_FIXED_LENGTH_FIELD_addResults")
 
-    function! g:forms#FixedLengthField.requestedSize() dict
+    function! FORMS_FIXED_LENGTH_FIELD_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [self.__size,1]
     endfunction
+    let g:forms#FixedLengthField.requestedSize = function("FORMS_FIXED_LENGTH_FIELD_requestedSize")
 
-    function! g:forms#FixedLengthField.handleEvent(event) dict
+    function! FORMS_FIXED_LENGTH_FIELD_handleEvent(event) dict
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -5177,8 +5306,9 @@ function! forms#loadFixedLengthFieldPrototype()
       endif
       return 0
     endfunction
+    let g:forms#FixedLengthField.handleEvent = function("FORMS_FIXED_LENGTH_FIELD_handleEvent")
 
-    function! g:forms#FixedLengthField.handleChar(nr) dict
+    function! FORMS_FIXED_LENGTH_FIELD_handleChar(nr) dict
       let handled = 0
       if (self.__status == g:IS_ENABLED)
         if self.__clearInitText
@@ -5239,7 +5369,7 @@ endif
           let handled = 1
 
         elseif c == "\<CR>" 
-call forms#log("g:forms#VariableLengthField.handleChar CR=")
+" call forms#log("g:forms#VariableLengthField.handleChar CR=")
           call self.__on_selection_action.execute(self.__text)
           let handled = 1
 
@@ -5306,15 +5436,17 @@ call forms#log("g:forms#VariableLengthField.handleChar CR=")
       endif
       return handled
     endfunction
+    let g:forms#FixedLengthField.handleChar = function("FORMS_FIXED_LENGTH_FIELD_handleChar")
 
-    function! g:forms#FixedLengthField.flash() dict
+    function! FORMS_FIXED_LENGTH_FIELD_flash() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         call Flash(a.line, a.column, a.column + self.__size - 1)
       endif
     endfunction
+    let g:forms#FixedLengthField.flash = function("FORMS_FIXED_LENGTH_FIELD_flash")
 
-    function! g:forms#FixedLengthField.draw(allocation) dict
+    function! FORMS_FIXED_LENGTH_FIELD_draw(allocation) dict
 " call forms#log("g:forms#FixedLengthField.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -5335,12 +5467,14 @@ call forms#log("g:forms#VariableLengthField.handleChar CR=")
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#FixedLengthField.draw = function("FORMS_FIXED_LENGTH_FIELD_draw")
 
-    function! g:forms#FixedLengthField.reset() dict
+    function! FORMS_FIXED_LENGTH_FIELD_reset() dict
       call self.__reset(self.__init_text)
     endfunction
+    let g:forms#FixedLengthField.reset = function("FORMS_FIXED_LENGTH_FIELD_reset")
 
-    function! g:forms#FixedLengthField.__reset(initTxt) dict
+    function! FORMS_FIXED_LENGTH_FIELD___reset(initTxt) dict
       let self.__pos = 0
 
       if a:initTxt != ''
@@ -5351,8 +5485,9 @@ call forms#log("g:forms#VariableLengthField.handleChar CR=")
       endif
 
     endfunction
+    let g:forms#FixedLengthField.__reset = function("FORMS_FIXED_LENGTH_FIELD___reset")
 
-    function! g:forms#FixedLengthField.usage() dict
+    function! FORMS_FIXED_LENGTH_FIELD_usage() dict
       return [
            \ "A FixedLengthField is a line editor with a fixed",
            \ "  number of characters which is also the width",
@@ -5367,6 +5502,7 @@ call forms#log("g:forms#VariableLengthField.handleChar CR=")
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#FixedLengthField.usage = function("FORMS_FIXED_LENGTH_FIELD_usage")
   endif
 
   return g:forms#FixedLengthField
@@ -5408,7 +5544,7 @@ function! forms#loadVariableLengthFieldPrototype()
     let g:forms#VariableLengthField.__on_selection_action = g:forms_Util.emptyAction()
 
 
-    function! g:forms#VariableLengthField.init(attrs) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_init(attrs) dict
 " call forms#log("forms#VariableLengthField.init TOP self.__size=" .  self.__size)
       call call(g:forms#Leaf.init, [a:attrs], self)
 
@@ -5419,8 +5555,9 @@ function! forms#loadVariableLengthFieldPrototype()
 
       return self
     endfunction
+    let g:forms#VariableLengthField.init = function("FORMS_VARIABLE_LENGTH_FIELD_init")
 
-    function! g:forms#VariableLengthField.reinit(attrs) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_reinit(attrs) dict
 " call forms#log("forms#VariableLengthField.reinit TOP")
       let oldSize = self.__size
 
@@ -5440,8 +5577,9 @@ function! forms#loadVariableLengthFieldPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#VariableLengthField.reinit = function("FORMS_VARIABLE_LENGTH_FIELD_reinit")
 
-    function! g:forms#VariableLengthField.setText(text) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_setText(text) dict
 " call forms#log("forms#VariableLengthField.setText TOP")
       if self.__text != a:text
         let self.__pos = len(a:text)
@@ -5452,12 +5590,14 @@ function! forms#loadVariableLengthFieldPrototype()
         endif
       endif
     endfunction
+    let g:forms#VariableLengthField.setText = function("FORMS_VARIABLE_LENGTH_FIELD_setText")
 
-    function! g:forms#VariableLengthField.canFocus() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#VariableLengthField.canFocus = function("FORMS_VARIABLE_LENGTH_FIELD_canFocus")
 
-    function! g:forms#VariableLengthField.hotspot() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let pos = self.__pos
         let size = self.__size
@@ -5472,26 +5612,30 @@ function! forms#loadVariableLengthFieldPrototype()
         endif
       endif
     endfunction
+    let g:forms#VariableLengthField.hotspot = function("FORMS_VARIABLE_LENGTH_FIELD_hotspot")
 
-    function! g:forms#VariableLengthField.flash() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_flash() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         call Flash(a.line, a.column, a.column + self.__size - 1)
       endif
     endfunction
+    let g:forms#VariableLengthField.flash = function("FORMS_VARIABLE_LENGTH_FIELD_flash")
 
-    function! g:forms#VariableLengthField.addResults(results) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_addResults(results) dict
       let tag = self.getTag()
       let txt = self.__text
 
       let a:results[tag] = substitute(txt, '[[:space:][:cntrl:]]\+$', '', '')
     endfunction
+    let g:forms#VariableLengthField.addResults = function("FORMS_VARIABLE_LENGTH_FIELD_addResults")
 
-    function! g:forms#VariableLengthField.requestedSize() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [self.__size,1]
     endfunction
+    let g:forms#VariableLengthField.requestedSize = function("FORMS_VARIABLE_LENGTH_FIELD_requestedSize")
 
-    function! g:forms#VariableLengthField.handleEvent(event) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_handleEvent(event) dict
 " call forms#log("g:forms#VariableLengthField.handleEvent event="+string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -5514,8 +5658,9 @@ function! forms#loadVariableLengthFieldPrototype()
       endif
       return 0
     endfunction
+    let g:forms#VariableLengthField.handleEvent = function("FORMS_VARIABLE_LENGTH_FIELD_handleEvent")
 
-    function! g:forms#VariableLengthField.handleChar(nr) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_handleChar(nr) dict
 " call forms#log("g:forms#VariableLengthField.handleChar TOP")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -5621,8 +5766,9 @@ function! forms#loadVariableLengthFieldPrototype()
       return handled
 
     endfunction
+    let g:forms#VariableLengthField.handleChar = function("FORMS_VARIABLE_LENGTH_FIELD_handleChar")
 
-    function! g:forms#VariableLengthField.draw(allocation) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_draw(allocation) dict
 " call forms#log("g:forms#VariableLengthField.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -5661,12 +5807,14 @@ function! forms#loadVariableLengthFieldPrototype()
       endif                     
 
     endfunction
+    let g:forms#VariableLengthField.draw = function("FORMS_VARIABLE_LENGTH_FIELD_draw")
 
-    function! g:forms#VariableLengthField.reset() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_reset() dict
       call self.__reset(self.__init_text)
     endfunction
+    let g:forms#VariableLengthField.reset = function("FORMS_VARIABLE_LENGTH_FIELD_reset")
 
-    function! g:forms#VariableLengthField.__reset(initTxt) dict
+    function! FORMS_VARIABLE_LENGTH_FIELD___reset(initTxt) dict
       let self.__text = ''
 
       if a:initTxt != ''
@@ -5678,8 +5826,9 @@ function! forms#loadVariableLengthFieldPrototype()
       let self.__win_start = slen <= self.__size ? 0 : slen - self.__size
 
     endfunction
+    let g:forms#VariableLengthField.__reset = function("FORMS_VARIABLE_LENGTH_FIELD___reset")
 
-    function! g:forms#VariableLengthField.usage() dict
+    function! FORMS_VARIABLE_LENGTH_FIELD_usage() dict
       return [
            \ "A VariableLengthField is a line editor a fixed display",
            \ "  size but can hold any number of characters.",
@@ -5694,6 +5843,7 @@ function! forms#loadVariableLengthFieldPrototype()
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#VariableLengthField.usage = function("FORMS_VARIABLE_LENGTH_FIELD_usage")
   endif
 
   return g:forms#VariableLengthField
@@ -5737,7 +5887,7 @@ function! forms#loadTextEditorPrototype()
     let g:forms#TextEditor.__y_win_start = 0
     let g:forms#TextEditor.__textlines = []
 
-    function! g:forms#TextEditor.init(attrs) dict
+    function! FORMS_TEXT_EDITOR_init(attrs) dict
 " call forms#log("forms#TextEditor.init TOP self.__width=" .  self.__width)
 " call forms#log("forms#TextEditor.init TOP self.__height=" .  self.__height)
       call call(g:forms#Leaf.init, [a:attrs], self)
@@ -5757,8 +5907,9 @@ function! forms#loadTextEditorPrototype()
 
       return self
     endfunction
+    let g:forms#TextEditor.init = function("FORMS_TEXT_EDITOR_init")
 
-    function! g:forms#TextEditor.reinit(attrs) dict
+    function! FORMS_TEXT_EDITOR_reinit(attrs) dict
 " call forms#log("forms#TextEditor.reinit TOP")
       let oldWidth = self.__width
       let oldHeight = self.__height
@@ -5783,12 +5934,14 @@ function! forms#loadTextEditorPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#TextEditor.reinit = function("FORMS_TEXT_EDITOR_reinit")
 
-    function! g:forms#TextEditor.canFocus() dict
+    function! FORMS_TEXT_EDITOR_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#TextEditor.canFocus = function("FORMS_TEXT_EDITOR_canFocus")
 
-    function! g:forms#TextEditor.hotspot() dict
+    function! FORMS_TEXT_EDITOR_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let x_pos = self.__x_pos
         let y_pos = self.__y_pos
@@ -5809,8 +5962,9 @@ function! forms#loadTextEditorPrototype()
         endif
       endif
     endfunction
+    let g:forms#TextEditor.hotspot = function("FORMS_TEXT_EDITOR_hotspot")
 
-    function! g:forms#TextEditor.flash() dict
+    function! FORMS_TEXT_EDITOR_flash() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         let y_pos = self.__y_pos
@@ -5820,18 +5974,21 @@ function! forms#loadTextEditorPrototype()
         call Flash(a.line+diff, a.column, a.column + self.__width - 1)
       endif
     endfunction
+    let g:forms#TextEditor.flash = function("FORMS_TEXT_EDITOR_flash")
 
-    function! g:forms#TextEditor.addResults(results) dict
+    function! FORMS_TEXT_EDITOR_addResults(results) dict
       let tag = self.getTag()
 
       let a:results[tag] = copy(self.__textlines)
     endfunction
+    let g:forms#TextEditor.addResults = function("FORMS_TEXT_EDITOR_addResults")
 
-    function! g:forms#TextEditor.requestedSize() dict
+    function! FORMS_TEXT_EDITOR_requestedSize() dict
       return (self.__status == g:IS_INVISIBLE) ? [0,0] : [self.__width,self.__height]
     endfunction
+    let g:forms#TextEditor.requestedSize = function("FORMS_TEXT_EDITOR_requestedSize")
 
-    function! g:forms#TextEditor.handleEvent(event) dict
+    function! FORMS_TEXT_EDITOR_handleEvent(event) dict
 " call forms#log("g:forms#TextEditor.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -5866,8 +6023,9 @@ function! forms#loadTextEditorPrototype()
       endif
       return 0
     endfunction
+    let g:forms#TextEditor.handleEvent = function("FORMS_TEXT_EDITOR_handleEvent")
 
-    function! g:forms#TextEditor.handleChar(nr) dict
+    function! FORMS_TEXT_EDITOR_handleChar(nr) dict
 " call forms#log("g:forms#TextEditor.handleChar ")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -6080,8 +6238,9 @@ function! forms#loadTextEditorPrototype()
 
       return handled
     endfunction
+    let g:forms#TextEditor.handleChar = function("FORMS_TEXT_EDITOR_handleChar")
 
-    function! g:forms#TextEditor.draw(allocation) dict
+    function! FORMS_TEXT_EDITOR_draw(allocation) dict
 "call forms#log("g:forms#TextEditor.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -6147,12 +6306,14 @@ function! forms#loadTextEditorPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#TextEditor.draw = function("FORMS_TEXT_EDITOR_draw")
 
-    function! g:forms#TextEditor.reset() dict
+    function! FORMS_TEXT_EDITOR_reset() dict
       call self.__reset(self.__init_text)
     endfunction
+    let g:forms#TextEditor.reset = function("FORMS_TEXT_EDITOR_reset")
 
-    function! g:forms#TextEditor.__reset(initTxt) dict
+    function! FORMS_TEXT_EDITOR___reset(initTxt) dict
       if type(a:initTxt) == g:self#STRING_TYPE
         let self.__clearInitText = g:self#IS_TRUE
         let self.__textlines = [ a:initTxt ]
@@ -6175,8 +6336,9 @@ function! forms#loadTextEditorPrototype()
         throw "TextEditor: reset inital text must be either a string or a list of strings"
       endif
     endfunction
+    let g:forms#TextEditor.__reset = function("FORMS_TEXT_EDITOR___reset")
 
-    function! g:forms#TextEditor.usage() dict
+    function! FORMS_TEXT_EDITOR_usage() dict
       return [
            \ "A TextEditor is a multi-line editor a fixed display",
            \ "  size but can hold any number of lines, each line.",
@@ -6197,6 +6359,7 @@ function! forms#loadTextEditorPrototype()
            \ "There is no selection activity.",
            \ ]
     endfunction
+    let g:forms#TextEditor.usage = function("FORMS_TEXT_EDITOR_usage")
   endif
 
   return g:forms#TextEditor
@@ -6233,7 +6396,7 @@ function! forms#loadTextBlockPrototype()
     let g:forms#TextBlock = forms#loadLeafPrototype().clone('forms#TextBlock')
     let g:forms#TextBlock.__textblock = []
 
-    function! g:forms#TextBlock.init(attrs) dict
+    function! FORMS_TEXT_BLOCK_init(attrs) dict
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       " make sure each line in the textblock has the same length
@@ -6252,8 +6415,9 @@ function! forms#loadTextBlockPrototype()
 
       return self
     endfunction
+    let g:forms#TextBlock.init = function("FORMS_TEXT_BLOCK_init")
 
-    function! g:forms#TextBlock.reinit(attrs) dict
+    function! FORMS_TEXT_BLOCK_reinit(attrs) dict
 " call forms#log("forms#TextBlock.reinit TOP")
       let oldTextBlock = self.__textblock
 
@@ -6269,8 +6433,9 @@ function! forms#loadTextBlockPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#TextBlock.reinit = function("FORMS_TEXT_BLOCK_reinit")
 
-    function! g:forms#TextBlock.requestedSize() dict
+    function! FORMS_TEXT_BLOCK_requestedSize() dict
 " call forms#log("TextBlock.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -6279,8 +6444,9 @@ function! forms#loadTextBlockPrototype()
         return (len(tb) == 0) ?  [0,0] : [len(tb[0]),len(tb)]
       endif
     endfunction
+    let g:forms#TextBlock.requestedSize = function("FORMS_TEXT_BLOCK_requestedSize")
 
-    function! g:forms#TextBlock.draw(allocation) dict
+    function! FORMS_TEXT_BLOCK_draw(allocation) dict
 " call forms#log("g:forms#TextBlock.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -6303,6 +6469,7 @@ function! forms#loadTextBlockPrototype()
       endif                     
 
     endfunction
+    let g:forms#TextBlock.draw = function("FORMS_TEXT_BLOCK_draw")
   endif
 
   return g:forms#TextBlock
@@ -6365,7 +6532,7 @@ function! forms#loadSelectListPrototype()
     let g:forms#SelectList.__selections = []   " [idx, matchId]
 
 
-    function! g:forms#SelectList.init(attrs) dict
+    function! FORMS_SELECT_LIST_init(attrs) dict
 " call forms#log("g:forms#SelectList.init ")
       call call(g:forms#Leaf.init, [a:attrs], self)
 
@@ -6400,8 +6567,9 @@ function! forms#loadSelectListPrototype()
 
       return self
     endfunction
+    let g:forms#SelectList.init = function("FORMS_SELECT_LIST_init")
 
-    function! g:forms#SelectList.reinit(attrs) dict
+    function! FORMS_SELECT_LIST_reinit(attrs) dict
 " call forms#log("g:forms#SelectList.reinit TOP")
       for selection in self.__selections 
         let [_, sid] = selection
@@ -6430,12 +6598,14 @@ if 0
       endif
 endif
     endfunction
+    let g:forms#SelectList.reinit = function("FORMS_SELECT_LIST_reinit")
 
-    function! g:forms#SelectList.canFocus() dict
+    function! FORMS_SELECT_LIST_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#SelectList.canFocus = function("FORMS_SELECT_LIST_canFocus")
 
-    function! g:forms#SelectList.hotspot() dict
+    function! FORMS_SELECT_LIST_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let pos = self.__pos
         "let size = self.__size
@@ -6451,14 +6621,16 @@ endif
         endif
       endif
     endfunction
+    let g:forms#SelectList.hotspot = function("FORMS_SELECT_LIST_hotspot")
 
-    function! g:forms#SelectList.flash() dict
+    function! FORMS_SELECT_LIST_flash() dict
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
+    let g:forms#SelectList.flash = function("FORMS_SELECT_LIST_flash")
 
-    function! g:forms#SelectList.addResults(results) dict
+    function! FORMS_SELECT_LIST_addResults(results) dict
       let selections = self.__selections
       let slen = len(selections)
       if slen > 0
@@ -6482,8 +6654,9 @@ endif
       endif
 
     endfunction
+    let g:forms#SelectList.addResults = function("FORMS_SELECT_LIST_addResults")
 
-    function! g:forms#SelectList.requestedSize() dict
+    function! FORMS_SELECT_LIST_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -6505,12 +6678,14 @@ endif
         endif
       endif
     endfunction
+    let g:forms#SelectList.requestedSize = function("FORMS_SELECT_LIST_requestedSize")
 
-    function! g:forms#SelectList.selection() dict
+    function! FORMS_SELECT_LIST_selection() dict
       return self.__pos
     endfunction
+    let g:forms#SelectList.selection = function("FORMS_SELECT_LIST_selection")
 
-    function! g:forms#SelectList.handleEvent(event) dict
+    function! FORMS_SELECT_LIST_handleEvent(event) dict
 " call forms#log("g:forms#SelectList.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -6540,8 +6715,9 @@ endif
       endif
       return 0
     endfunction
+    let g:forms#SelectList.handleEvent = function("FORMS_SELECT_LIST_handleEvent")
 
-    function! g:forms#SelectList.handleChar(nr) dict
+    function! FORMS_SELECT_LIST_handleChar(nr) dict
 " call forms#log("g:forms#SelectList.handleChar")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -6593,8 +6769,9 @@ endif
 
       return handled
     endfunction
+    let g:forms#SelectList.handleChar = function("FORMS_SELECT_LIST_handleChar")
 
-    function! g:forms#SelectList.handleSelection() dict
+    function! FORMS_SELECT_LIST_handleSelection() dict
 " call forms#log("g:forms#SelectList.handleSelection")
       let selections = self.__selections
       let pos = self.__pos
@@ -6732,8 +6909,9 @@ endif
         endif
       endif
     endfunction
+    let g:forms#SelectList.handleSelection = function("FORMS_SELECT_LIST_handleSelection")
 
-    function! g:forms#SelectList.draw(allocation) dict
+    function! FORMS_SELECT_LIST_draw(allocation) dict
 " call forms#log("g:forms#SelectList.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -6826,8 +7004,9 @@ endif
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#SelectList.draw = function("FORMS_SELECT_LIST_draw")
 
-    function! g:forms#SelectList.usage() dict
+    function! FORMS_SELECT_LIST_usage() dict
       return [
            \ "A SelectList is a multi-line editor a fixed display",
            \ "  size but can hold any number of lines, each line.",
@@ -6847,6 +7026,7 @@ endif
            \ "  click."
            \ ]
     endfunction
+    let g:forms#SelectList.usage = function("FORMS_SELECT_LIST_usage")
   endif
 
   return g:forms#SelectList
@@ -6886,7 +7066,7 @@ function! forms#loadPopDownListPrototype()
     let g:forms#PopDownList.__choices = []
 
 
-    function! g:forms#PopDownList.init(attrs) dict
+    function! FORMS_POP_DOWN_LIST_init(attrs) dict
 " call forms#log("g:forms#PopDownList.init ")
       call call(g:forms#Leaf.init, [a:attrs], self)
 
@@ -6924,8 +7104,9 @@ function! forms#loadPopDownListPrototype()
 
       return self
     endfunction
+    let g:forms#PopDownList.init = function("FORMS_POP_DOWN_LIST_init")
 
-    function! g:forms#PopDownList.reinit(attrs) dict
+    function! FORMS_POP_DOWN_LIST_reinit(attrs) dict
 " call forms#log("g:forms#PopDownList.reinit TOP")
 
       let self.__pos = 0
@@ -6936,12 +7117,14 @@ function! forms#loadPopDownListPrototype()
 
       call call(g:forms#Leaf.reinit, [a:attrs], self)
     endfunction
+    let g:forms#PopDownList.reinit = function("FORMS_POP_DOWN_LIST_reinit")
 
-    function! g:forms#PopDownList.canFocus() dict
+    function! FORMS_POP_DOWN_LIST_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#PopDownList.canFocus = function("FORMS_POP_DOWN_LIST_canFocus")
 
-    function! g:forms#PopDownList.hotspot() dict
+    function! FORMS_POP_DOWN_LIST_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         let line = a.line
@@ -6949,20 +7132,23 @@ function! forms#loadPopDownListPrototype()
         call HotSpot(line, column)
       endif
     endfunction
+    let g:forms#PopDownList.hotspot = function("FORMS_POP_DOWN_LIST_hotspot")
 
-    function! g:forms#PopDownList.flash() dict
+    function! FORMS_POP_DOWN_LIST_flash() dict
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
+    let g:forms#PopDownList.flash = function("FORMS_POP_DOWN_LIST_flash")
 
-    function! g:forms#PopDownList.addResults(results) dict
+    function! FORMS_POP_DOWN_LIST_addResults(results) dict
       let tag = self.getTag()
       let [text, id] = self.__choices[self.__pos]
       let a:results[tag] = [text, id]
     endfunction
+    let g:forms#PopDownList.addResults = function("FORMS_POP_DOWN_LIST_addResults")
 
-    function! g:forms#PopDownList.requestedSize() dict
+    function! FORMS_POP_DOWN_LIST_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -6978,12 +7164,14 @@ function! forms#loadPopDownListPrototype()
         return [w,h]
       endif
     endfunction
+    let g:forms#PopDownList.requestedSize = function("FORMS_POP_DOWN_LIST_requestedSize")
 
-    function! g:forms#PopDownList.selection() dict
+    function! FORMS_POP_DOWN_LIST_selection() dict
       return self.__pos
     endfunction
+    let g:forms#PopDownList.selection = function("FORMS_POP_DOWN_LIST_selection")
 
-    function! g:forms#PopDownList.handleEvent(event) dict
+    function! FORMS_POP_DOWN_LIST_handleEvent(event) dict
 " call forms#log("g:forms#PopDownList.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -6995,8 +7183,9 @@ function! forms#loadPopDownListPrototype()
       endif
       return 0
     endfunction
+    let g:forms#PopDownList.handleEvent = function("FORMS_POP_DOWN_LIST_handleEvent")
 
-    function! g:forms#PopDownList.handleChar(nr) dict
+    function! FORMS_POP_DOWN_LIST_handleChar(nr) dict
 " call forms#log("g:forms#PopDownList.handleChar")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -7009,11 +7198,11 @@ function! forms#loadPopDownListPrototype()
         endif
       endif
 " call forms#log("g:forms#PopDownList.handleChar win_start=" .  self.__win_start)
-
       return handled
     endfunction
+    let g:forms#PopDownList.handleChar = function("FORMS_POP_DOWN_LIST_handleChar")
 
-    function! g:forms#PopDownList.handleSelection() dict
+    function! FORMS_POP_DOWN_LIST_handleSelection() dict
 "call forms#log("g:forms#PopDownList.handleSelection: TOP")
       let pos = self.__pos
       let a = self.__allocation
@@ -7042,8 +7231,9 @@ function! forms#loadPopDownListPrototype()
       endif
 "call forms#log("g:forms#PopDownList.handleSelection: BOTTOM")
     endfunction
+    let g:forms#PopDownList.handleSelection = function("FORMS_POP_DOWN_LIST_handleSelection")
 
-    function! g:forms#PopDownList.draw(allocation) dict
+    function! FORMS_POP_DOWN_LIST_draw(allocation) dict
 "call forms#log("g:forms#PopDownList.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -7066,8 +7256,9 @@ function! forms#loadPopDownListPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#PopDownList.draw = function("FORMS_POP_DOWN_LIST_draw")
 
-    function! g:forms#PopDownList.usage() dict
+    function! FORMS_POP_DOWN_LIST_usage() dict
       return [
            \ "A PopDownList is type of Button with a selection action",
            \ "  that generates a popup menu. An entry in the popup",
@@ -7083,6 +7274,7 @@ function! forms#loadPopDownListPrototype()
            \ "  mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#PopDownList.usage = function("FORMS_POP_DOWN_LIST_usage")
   endif
 
   return g:forms#PopDownList
@@ -7154,7 +7346,7 @@ function! forms#loadSliderPrototype()
     let g:forms#Slider.__on_move_action = g:forms_Util.emptyAction()
 
 
-    function! g:forms#Slider.init(attrs) dict
+    function! FORMS_SLIDER_init(attrs) dict
 " call forms#log("g:forms#Slider.init ")
       call call(g:forms#Leaf.init, [a:attrs], self)
 
@@ -7194,8 +7386,9 @@ function! forms#loadSliderPrototype()
 
       return self
     endfunction
+    let g:forms#Slider.init = function("FORMS_SLIDER_init")
 
-    function! g:forms#Slider.reinit(attrs) dict
+    function! FORMS_SLIDER_reinit(attrs) dict
 " call forms#log("g:forms#Slider.reinit TOP")
       let oldSize = self.__size
 
@@ -7211,36 +7404,42 @@ function! forms#loadSliderPrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#Slider.reinit = function("FORMS_SLIDER_reinit")
 
-    function! g:forms#Slider.delete(...) dict
+    function! FORMS_SLIDER_delete(...) dict
       call ReverseClear(self)
 
       let p = g:forms#Leaf._prototype
       call call(p.delete, [p], self)
     endfunction
+    let g:forms#Slider.delete = function("FORMS_SLIDER_delete")
 
-    function! g:forms#Slider.canFocus() dict
+    function! FORMS_SLIDER_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#Slider.canFocus = function("FORMS_SLIDER_canFocus")
 
-    function! g:forms#Slider.hotspot() dict
+    function! FORMS_SLIDER_hotspot() dict
       if (self.__status == g:IS_ENABLED)
 " call forms#log("g:forms#Slider.hotspot")
       endif
     endfunction
+    let g:forms#Slider.hotspot = function("FORMS_SLIDER_hotspot")
 
-    function! g:forms#Slider.flash() dict
+    function! FORMS_SLIDER_flash() dict
 " call forms#log("g:forms#Slider.flash")
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
+    let g:forms#Slider.flash = function("FORMS_SLIDER_flash")
 
-    function! g:forms#Slider.getRangeValue() dict
+    function! FORMS_SLIDER_getRangeValue() dict
       return self.__value
     endfunction
+    let g:forms#Slider.getRangeValue = function("FORMS_SLIDER_getRangeValue")
 
-    function! g:forms#Slider.setRangeValue(value) dict
+    function! FORMS_SLIDER_setRangeValue(value) dict
 " call forms#log("g:forms#Slider.setRangeValue: value=" . a:value)
       let [lower, upper] = self.__range
       if a:value < lower
@@ -7257,14 +7456,16 @@ function! forms#loadSliderPrototype()
         endif
       endif
     endfunction
+    let g:forms#Slider.setRangeValue = function("FORMS_SLIDER_setRangeValue")
 
-    function! g:forms#Slider.addResults(results) dict
+    function! FORMS_SLIDER_addResults(results) dict
       let tag = self.getTag()
       let value = self.__value
       let a:results[tag] = value
     endfunction
+    let g:forms#Slider.addResults = function("FORMS_SLIDER_addResults")
 
-    function! g:forms#Slider.handleEvent(event) dict
+    function! FORMS_SLIDER_handleEvent(event) dict
 " call forms#log("g:forms#Slider.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -7292,8 +7493,9 @@ function! forms#loadSliderPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Slider.handleEvent = function("FORMS_SLIDER_handleEvent")
 
-    function! g:forms#Slider.handleChar(nr) dict
+    function! FORMS_SLIDER_handleChar(nr) dict
 " call forms#log("g:forms#Slider.handleChar")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -7405,24 +7607,27 @@ function! forms#loadSliderPrototype()
 
       return handled
     endfunction
+    let g:forms#Slider.handleChar = function("FORMS_SLIDER_handleChar")
 
-    function! g:forms#Slider.handleSelection() dict
+    function! FORMS_SLIDER_handleSelection() dict
       let value = self.__value
       call self.__on_move_action.execute(value)
       if ! empty(self.__allocation)
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Slider.handleSelection = function("FORMS_SLIDER_handleSelection")
 
-    function! g:forms#Slider.value2pos() dict
+    function! FORMS_SLIDER_value2pos() dict
       let value = self.__value
       let size = self.__size
       let [lower, upper] = self.__range
 
       return value * size / (upper - lower + 1)
     endfunction
+    let g:forms#Slider.value2pos = function("FORMS_SLIDER_value2pos")
 
-    function! g:forms#Slider.usage() dict
+    function! FORMS_SLIDER_usage() dict
       return [
            \ "A Slider lets one position the hotspot and, thus, select a",
            \ "  value from the Slider's range of discrete values. A",
@@ -7444,6 +7649,7 @@ function! forms#loadSliderPrototype()
            \ "There is no selection activity.",
            \ ]
     endfunction
+    let g:forms#Slider.usage = function("FORMS_SLIDER_usage")
   endif
 
   return g:forms#Slider
@@ -7463,7 +7669,7 @@ function! forms#loadHSliderPrototype()
   if !exists("g:forms#HSlider")
     let g:forms#HSlider = forms#loadSliderPrototype().clone('forms#HSlider')
 
-    function! g:forms#HSlider.gainFocus() dict
+    function! FORMS_HSLIDER_gainFocus() dict
       if (self.__status == g:IS_ENABLED)
 " call forms#log("g:forms#HSlider.gainFocus")
         let self.__hasfocus = 1
@@ -7475,8 +7681,9 @@ function! forms#loadHSliderPrototype()
         endif
       endif
     endfunction
+    let g:forms#HSlider.gainFocus = function("FORMS_HSLIDER_gainFocus")
 
-    function! g:forms#HSlider.loseFocus() dict
+    function! FORMS_HSLIDER_loseFocus() dict
 " call forms#log("g:forms#HSlider.loseFocus")
       call ReverseHotSpotClear()
       if exists("self.__hasfocus")
@@ -7488,8 +7695,9 @@ function! forms#loadHSliderPrototype()
         call Reverse(self, a.line, self.__reverse)
       endif
     endfunction
+    let g:forms#HSlider.loseFocus = function("FORMS_HSLIDER_loseFocus")
 
-    function! g:forms#HSlider.requestedSize() dict
+    function! FORMS_HSLIDER_requestedSize() dict
 " call forms#log("g:forms#HSlider.requestedSize ")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -7497,8 +7705,9 @@ function! forms#loadHSliderPrototype()
         return [self.__size,1]
       endif
     endfunction
+    let g:forms#HSlider.requestedSize = function("FORMS_HSLIDER_requestedSize")
 
-    function! g:forms#HSlider.dimension2value(event) dict
+    function! FORMS_HSLIDER_dimension2value(event) dict
       let col = a:event.column
       let a = self.__allocation
       let column = a.column
@@ -7517,8 +7726,9 @@ function! forms#loadHSliderPrototype()
         return lower + ((pos * (upper - lower)) / (width-1))
       endif
     endfunction
+    let g:forms#HSlider.dimension2value = function("FORMS_HSLIDER_dimension2value")
 
-    function! g:forms#HSlider.draw(allocation) dict
+    function! FORMS_HSLIDER_draw(allocation) dict
 "call forms#log("g:forms#HSlider.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -7774,6 +7984,7 @@ function! forms#loadHSliderPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#HSlider.draw = function("FORMS_HSLIDER_draw")
 
   endif
 
@@ -7803,42 +8014,45 @@ function! forms#loadVSliderPrototype()
   if !exists("g:forms#VSlider")
     let g:forms#VSlider = forms#loadSliderPrototype().clone('forms#VSlider')
 
-    function! g:forms#VSlider.gainFocus() dict
+    function! FORMS_VSLIDER_gainFocus() dict
       if (self.__status == g:IS_ENABLED)
-call forms#log("g:forms#VSlider.gainFocus")
+" call forms#log("g:forms#VSlider.gainFocus")
         let self.__hasfocus = 1
         let a = self.__allocation
         call HotRegion(a)
         if exists("self.__reverse")
-call forms#log("g:forms#VSlider.gainFocus: DO REVERSE")
+" call forms#log("g:forms#VSlider.gainFocus: DO REVERSE")
           call ReverseHotSpot(self.__reverse, a.column)
         endif
       endif
     endfunction
+    let g:forms#VSlider.gainFocus = function("FORMS_VSLIDER_gainFocus")
 
-    function! g:forms#VSlider.loseFocus() dict
-call forms#log("g:forms#VSlider.loseFocus")
+    function! FORMS_VSLIDER_loseFocus() dict
+" call forms#log("g:forms#VSlider.loseFocus")
       call ReverseHotSpotClear()
       if exists("self.__hasfocus")
         unlet self.__hasfocus
       endif
       if exists("self.__reverse")
-call forms#log("g:forms#VSlider.loseFocus: DO REVERSE")
+" call forms#log("g:forms#VSlider.loseFocus: DO REVERSE")
         let a = self.__allocation
         call Reverse(self, self.__reverse, a.column)
       endif
     endfunction
+    let g:forms#VSlider.loseFocus = function("FORMS_VSLIDER_loseFocus")
 
-    function! g:forms#VSlider.requestedSize() dict
-call forms#log("g:forms#VSlider.requestedSize ")
+    function! FORMS_VSLIDER_requestedSize() dict
+" call forms#log("g:forms#VSlider.requestedSize ")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
         return [1,self.__size]
       endif
     endfunction
+    let g:forms#VSlider.requestedSize  = function("FORMS_VSLIDER_requestedSize")
 
-    function! g:forms#VSlider.dimension2value(event) dict
+    function! FORMS_VSLIDER_dimension2value(event) dict
       let ln = a:event.line
       let a = self.__allocation
       let line = a.line
@@ -7857,9 +8071,10 @@ call forms#log("g:forms#VSlider.requestedSize ")
         return lower + ((pos * (upper - lower)) / (height-1))
       endif
     endfunction
+    let g:forms#VSlider.dimension2value  = function("FORMS_VSLIDER_dimension2value")
 
-    function! g:forms#VSlider.draw(allocation) dict
-call forms#log("g:forms#VSlider.draw" .  string(a:allocation))
+    function! FORMS_VSLIDER_draw(allocation) dict
+" call forms#log("g:forms#VSlider.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
 
@@ -7877,7 +8092,7 @@ call forms#log("g:forms#VSlider.draw" .  string(a:allocation))
         let resolution = self.__resolution
 
         let full = b:forms_FullB
-call forms#log("g:forms#VSlider.draw resolution=" .  resolution)
+" call forms#log("g:forms#VSlider.draw resolution=" .  resolution)
 
         " nos possible positions = resolution * (size-1) + 1
         if resolution == 1
@@ -8111,6 +8326,7 @@ call forms#log("g:forms#VSlider.draw resolution=" .  resolution)
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#VSlider.draw  = function("FORMS_VSLIDER_draw")
   endif
 
   return g:forms#VSlider
@@ -8144,11 +8360,12 @@ function! forms#loadMonoPrototype()
     let g:forms#Mono = forms#loadGlyphPrototype().clone('forms#Mono')
     let g:forms#Mono.__body = g:forms_Util.nullGlyph()
 
-    function! g:forms#Mono.nodeType() dict
+    function! FORMS_MONO_nodeType() dict
       return g:MONO_NODE
     endfunction
+    let g:forms#Mono.nodeType  = function("FORMS_MONO_nodeType")
 
-    function! g:forms#Mono.reinit(attrs) dict
+    function! FORMS_MONO_reinit(attrs) dict
 " call forms#log("g:forms#Mono.reinit TOP")
 
       let oldBodyId = self.__body._id
@@ -8163,8 +8380,9 @@ function! forms#loadMonoPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Mono.reinit  = function("FORMS_MONO_reinit")
 
-    function! g:forms#Mono.delete(...) dict
+    function! FORMS_MONO_delete(...) dict
 " call forms#log("Mono.delete: TOP")
       if has_key(self.__body, 'delete')
         call self.__body.delete()
@@ -8174,8 +8392,9 @@ function! forms#loadMonoPrototype()
       call call(p.delete, [p], self)
 " call forms#log("Mono.delete: BOTTOM")
     endfunction
+    let g:forms#Mono.delete  = function("FORMS_MONO_delete")
 
-    function! g:forms#Mono.requestedSize() dict
+    function! FORMS_MONO_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -8184,21 +8403,26 @@ function! forms#loadMonoPrototype()
         return [w,h]
       endif
     endfunction
+    let g:forms#Mono.requestedSize  = function("FORMS_MONO_requestedSize")
 
-    function! g:forms#Mono.hide() dict
+    function! FORMS_MONO_hide() dict
       call self.__body.hide()
     endfunction
+    let g:forms#Mono.hide  = function("FORMS_MONO_hide")
 
     "-----------------------------------------------
     " mono methods
     "-----------------------------------------------
-    function! g:forms#Mono.setBody(body) dict
+    " DEPRECATED
+    function! FORMS_MONO_setBody(body) dict
       let self.__body = a:body
     endfunction
+    let g:forms#Mono.setBody  = function("FORMS_MONO_setBody")
 
-    function! g:forms#Mono.getBody() dict
+    function! FORMS_MONO_getBody() dict
       return self.__body
     endfunction
+    let g:forms#Mono.getBody  = function("FORMS_MONO_getBody")
 
   endif
 
@@ -8244,14 +8468,15 @@ function! forms#loadBoxPrototype()
     let g:forms#Box = forms#loadMonoPrototype().clone('forms#Box')
     let g:forms#Box.__mode = (&encoding == 'utf-8') ? 'light' : 'default'
 
-    function! g:forms#Box.init(attrs) dict
+    function! FORMS_BOX_init(attrs) dict
 "call forms#log("forms#Box.init TOP")
       call call(g:forms#Mono.init, [a:attrs], self)
 
       return self
     endfunction
+    let g:forms#Box.init  = function("FORMS_BOX_init")
 
-    function! g:forms#Box.reinit(attrs) dict
+    function! FORMS_BOX_reinit(attrs) dict
 "call forms#log("g:forms#Box.reinit TOP")
       let oldMode = self.__mode
 
@@ -8263,8 +8488,9 @@ function! forms#loadBoxPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Box.reinit  = function("FORMS_BOX_reinit")
 
-    function! g:forms#Box.requestedSize() dict
+    function! FORMS_BOX_requestedSize() dict
 "call forms#log("Box.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -8275,8 +8501,9 @@ function! forms#loadBoxPrototype()
         return [m + w, m + h]
       endif
     endfunction
+    let g:forms#Box.requestedSize  = function("FORMS_BOX_requestedSize")
 
-    function! g:forms#Box.draw(allocation) dict
+    function! FORMS_BOX_draw(allocation) dict
 "call forms#log("g:forms#Box.draw" .  string(a:allocation))
       " [line, column, width, height]
       let self.__allocation = a:allocation
@@ -8301,6 +8528,7 @@ function! forms#loadBoxPrototype()
       endif                     
 
     endfunction
+    let g:forms#Box.draw  = function("FORMS_BOX_draw")
 
   endif
 
@@ -8336,7 +8564,7 @@ function! forms#loadBorderPrototype()
     let g:forms#Border.__char = ''
     let g:forms#Border.__size = 1
 
-    function! g:forms#Border.init(attrs) dict
+    function! FORMS_BORDER_init(attrs) dict
 "call forms#log("forms#Border.init TOP self.__size=" .  self.__size)
       call call(g:forms#Mono.init, [a:attrs], self)
 "call forms#log("forms#Border.init BOTTOM self.__size=" .  self.__size)
@@ -8352,8 +8580,9 @@ function! forms#loadBorderPrototype()
 
       return self
     endfunction
+    let g:forms#Border.init  = function("FORMS_BORDER_init")
 
-    function! g:forms#Border.reinit(attrs) dict
+    function! FORMS_BORDER_reinit(attrs) dict
 "call forms#log("g:forms#Border.reinit TOP")
       let oldSize = self.__size
 
@@ -8368,8 +8597,9 @@ function! forms#loadBorderPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Border.reinit  = function("FORMS_BORDER_reinit")
 
-    function! g:forms#Border.requestedSize() dict
+    function! FORMS_BORDER_requestedSize() dict
 "call forms#log("Border.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -8380,8 +8610,9 @@ function! forms#loadBorderPrototype()
         return [m + w, m + h]
       endif
     endfunction
+    let g:forms#Border.requestedSize  = function("FORMS_BORDER_requestedSize")
 
-    function! g:forms#Border.draw(allocation) dict
+    function! FORMS_BORDER_draw(allocation) dict
 " call forms#log("g:forms#Border.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -8421,6 +8652,7 @@ function! forms#loadBorderPrototype()
       endif                     
 
     endfunction
+    let g:forms#Border.draw  = function("FORMS_BORDER_draw")
 
   endif
 
@@ -8461,7 +8693,7 @@ function! forms#loadDropShadowPrototype()
     let g:forms#DropShadow.__corner = 'lr'
     let g:forms#DropShadow.__highlight = 'DropShadowHi'
 
-    function! g:forms#DropShadow.init(attrs) dict
+    function! FORMS_DROP_SHADOW_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
       let c = self.__corner
@@ -8475,8 +8707,9 @@ function! forms#loadDropShadowPrototype()
 
       return self
     endfunction
+    let g:forms#DropShadow.init  = function("FORMS_DROP_SHADOW_init")
 
-    function! g:forms#DropShadow.reinit(attrs) dict
+    function! FORMS_DROP_SHADOW_reinit(attrs) dict
 "call forms#log("g:forms#DropShadow.reinit TOP")
       let oldCorner = self.__corner
 
@@ -8489,8 +8722,9 @@ function! forms#loadDropShadowPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#DropShadow.reinit  = function("FORMS_DROP_SHADOW_reinit")
 
-    function! g:forms#DropShadow.requestedSize() dict
+    function! FORMS_DROP_SHADOW_requestedSize() dict
 "call forms#log("DropShadow.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -8499,8 +8733,9 @@ function! forms#loadDropShadowPrototype()
         return [w+1, h+1]
       endif
     endfunction
+    let g:forms#DropShadow.requestedSize  = function("FORMS_DROP_SHADOW_requestedSize")
 
-    function! g:forms#DropShadow.draw(allocation) dict
+    function! FORMS_DROP_SHADOW_draw(allocation) dict
 " call forms#log("g:forms#DropShadow.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -8594,6 +8829,7 @@ function! forms#loadDropShadowPrototype()
       endif                     
 
     endfunction
+    let g:forms#DropShadow.draw  = function("FORMS_DROP_SHADOW_draw")
 
   endif
 
@@ -8635,7 +8871,7 @@ function! forms#loadFramePrototype()
     let g:forms#Frame.__set = 'outset'
     let g:forms#Frame.__highlight = 'FrameHi'
 
-    function! g:forms#Frame.init(attrs) dict
+    function! FORMS_FRAME_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
       let c = self.__corner
@@ -8649,8 +8885,9 @@ function! forms#loadFramePrototype()
 
       return self
     endfunction
+    let g:forms#Frame.init  = function("FORMS_FRAME_init")
 
-    function! g:forms#Frame.reinit(attrs) dict
+    function! FORMS_FRAME_reinit(attrs) dict
 "call forms#log("g:forms#Frame.reinit TOP")
       let oldCorner = self.__corner
       let oldSet = self.__set
@@ -8667,20 +8904,22 @@ function! forms#loadFramePrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Frame.reinit  = function("FORMS_FRAME_reinit")
 
-    function! g:forms#Frame.requestedSize() dict
+    function! FORMS_FRAME_requestedSize() dict
 "call forms#log("Frame.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
         let [w,h] = self.__body.requestedSize()
-call forms#log("g:forms#Frame.requestedSize: ".string([w+2, h+2]))
+" call forms#log("g:forms#Frame.requestedSize: ".string([w+2, h+2]))
         return [w+2, h+2]
       endif
     endfunction
+    let g:forms#Frame.requestedSize  = function("FORMS_FRAME_requestedSize")
 
-    function! g:forms#Frame.draw(allocation) dict
-call forms#log("g:forms#Frame.draw" .  string(a:allocation))
+    function! FORMS_FRAME_draw(allocation) dict
+" call forms#log("g:forms#Frame.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
 
@@ -8735,6 +8974,7 @@ call forms#log("g:forms#Frame.draw" .  string(a:allocation))
       endif                     
 
     endfunction
+    let g:forms#Frame.draw  = function("FORMS_FRAME_draw")
 
   endif
 
@@ -8768,7 +9008,7 @@ function! forms#loadBackgroundPrototype()
     let g:forms#Background = forms#loadMonoPrototype().clone('forms#Background')
     let g:forms#Background.__char = ' '
 
-    function! g:forms#Background.init(attrs) dict
+    function! FORMS_BACKGROUND_init(attrs) dict
 "call forms#log("forms#Background.init TOP")
 "call forms#log("forms#Background.init attrs=" . string(a:attrs))
       call call(g:forms#Mono.init, [a:attrs], self)
@@ -8782,8 +9022,9 @@ function! forms#loadBackgroundPrototype()
 
       return self
     endfunction
+    let g:forms#Background.init  = function("FORMS_BACKGROUND_init")
 
-    function! g:forms#Background.reinit(attrs) dict
+    function! FORMS_BACKGROUND_reinit(attrs) dict
 "call forms#log("g:forms#Background.reinit TOP")
       let oldChar = self.__char
 
@@ -8795,8 +9036,9 @@ function! forms#loadBackgroundPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Background.reinit  = function("FORMS_BACKGROUND_reinit")
 
-    function! g:forms#Background.requestedSize() dict
+    function! FORMS_BACKGROUND_requestedSize() dict
 " call forms#log("Background.requestedSize: TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -8806,8 +9048,9 @@ function! forms#loadBackgroundPrototype()
         return [w,h]
       endif
     endfunction
+    let g:forms#Background.requestedSize  = function("FORMS_BACKGROUND_requestedSize")
 
-    function! g:forms#Background.draw(allocation) dict
+    function! FORMS_BACKGROUND_draw(allocation) dict
 "call forms#log("g:forms#Background.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -8837,6 +9080,7 @@ function! forms#loadBackgroundPrototype()
       endif                     
 
     endfunction
+    let g:forms#Background.draw  = function("FORMS_BACKGROUND_draw")
   endif
 
   return g:forms#Background
@@ -8870,7 +9114,7 @@ function! forms#loadMinWidthPrototype()
     let g:forms#MinWidth = forms#loadMonoPrototype().clone('forms#MinWidth')
     let g:forms#MinWidth.__width = -1
 
-    function! g:forms#MinWidth.reinit(attrs) dict
+    function! FORMS_MIN_WIDTH_reinit(attrs) dict
 " call forms#log("g:forms#MinWidth.reinit TOP")
       let oldWidth = self.__width
 
@@ -8882,8 +9126,9 @@ function! forms#loadMinWidthPrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#MinWidth.reinit  = function("FORMS_MIN_WIDTH_reinit")
 
-    function! g:forms#MinWidth.requestedSize() dict
+    function! FORMS_MIN_WIDTH_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -8893,8 +9138,9 @@ function! forms#loadMinWidthPrototype()
         return [w,childheight]
       endif
     endfunction
+    let g:forms#MinWidth.requestedSize  = function("FORMS_MIN_WIDTH_requestedSize")
 
-    function! g:forms#MinWidth.draw(allocation) dict
+    function! FORMS_MIN_WIDTH_draw(allocation) dict
 " call forms#log("g:forms#MinWidth.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -8906,6 +9152,7 @@ function! forms#loadMinWidthPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#MinWidth.draw  = function("FORMS_MIN_WIDTH_draw")
   endif
 
   return g:forms#MinWidth
@@ -8939,7 +9186,7 @@ function! forms#loadMinHeightPrototype()
     let g:forms#MinHeight = forms#loadMonoPrototype().clone('forms#MinHeight')
     let g:forms#MinHeight.__height = -1
 
-    function! g:forms#MinHeight.reinit(attrs) dict
+    function! FORMS_MIN_HEIGHT_reinit(attrs) dict
 " call forms#log("g:forms#MinHeight.reinit TOP")
       let oldHeight = self.__height
 
@@ -8951,8 +9198,9 @@ function! forms#loadMinHeightPrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#MinHeight.reinit  = function("FORMS_MIN_HEIGHT_reinit")
 
-    function! g:forms#MinHeight.requestedSize() dict
+    function! FORMS_MIN_HEIGHT_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -8962,8 +9210,9 @@ function! forms#loadMinHeightPrototype()
         return [childwidth, h]
       endif
     endfunction
+    let g:forms#MinHeight.requestedSize  = function("FORMS_MIN_HEIGHT_requestedSize")
 
-    function! g:forms#MinHeight.draw(allocation) dict
+    function! FORMS_MIN_HEIGHT_draw(allocation) dict
 " call forms#log("g:forms#MinHeight.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -8975,6 +9224,7 @@ function! forms#loadMinHeightPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#MinHeight.draw  = function("FORMS_MIN_HEIGHT_draw")
   endif
 
   return g:forms#MinHeight
@@ -9010,7 +9260,7 @@ function! forms#loadMinSizePrototype()
     let g:forms#MinSize.__width = -1
     let g:forms#MinSize.__height = -1
 
-    function! g:forms#MinSize.reinit(attrs) dict
+    function! FORMS_MIN_SIZE_reinit(attrs) dict
 " call forms#log("g:forms#MinSize.reinit TOP")
       let oldWidth = self.__width
       let oldHeight = self.__height
@@ -9026,8 +9276,9 @@ function! forms#loadMinSizePrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#MinSize.reinit  = function("FORMS_MIN_SIZE_reinit")
 
-    function! g:forms#MinSize.requestedSize() dict
+    function! FORMS_MIN_SIZE_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -9039,8 +9290,9 @@ function! forms#loadMinSizePrototype()
         return [w,h]
       endif
     endfunction
+    let g:forms#MinSize.requestedSize  = function("FORMS_MIN_SIZE_requestedSize")
 
-    function! g:forms#MinSize.draw(allocation) dict
+    function! FORMS_MIN_SIZE_draw(allocation) dict
 " call forms#log("g:forms#MinSize.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9053,6 +9305,7 @@ function! forms#loadMinSizePrototype()
       endif                     
 
     endfunction
+    let g:forms#MinSize.draw  = function("FORMS_MIN_SIZE_draw")
   endif
 
   return g:forms#MinSize
@@ -9089,15 +9342,16 @@ function! forms#loadHAlignPrototype()
     let g:forms#HAlign.__width = -1
     let g:forms#HAlign.__alignment = 'L'
 
-    function! g:forms#HAlign.init(attrs) dict
+    function! FORMS_HALIGN_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
       call g:forms_Util.checkHAlignment(self.__alignment, "HAlign.init")
 
       return self
     endfunction
+    let g:forms#HAlign.init  = function("FORMS_HALIGN_init")
 
-    function! g:forms#HAlign.reinit(attrs) dict
+    function! FORMS_HALIGN_reinit(attrs) dict
 " call forms#log("g:forms#HAlign.reinit TOP")
       let oldWidth = self.__width
       let oldAlignment = self.__alignment
@@ -9113,8 +9367,9 @@ function! forms#loadHAlignPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#HAlign.reinit  = function("FORMS_HALIGN_reinit")
 
-    function! g:forms#HAlign.requestedSize() dict
+    function! FORMS_HALIGN_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -9122,8 +9377,9 @@ function! forms#loadHAlignPrototype()
         return (self.__width <= w) ? [w,h] : [self.__width,h]
       endif
     endfunction
+    let g:forms#HAlign.requestedSize  = function("FORMS_HALIGN_requestedSize")
 
-    function! g:forms#HAlign.draw(allocation) dict
+    function! FORMS_HALIGN_draw(allocation) dict
 " call forms#log("g:forms#HAlign.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9151,6 +9407,7 @@ function! forms#loadHAlignPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#HAlign.draw  = function("FORMS_HALIGN_draw")
 
   endif
 
@@ -9188,15 +9445,16 @@ function! forms#loadVAlignPrototype()
     let g:forms#VAlign.__height = -1
     let g:forms#VAlign.__alignment = 'T'
 
-    function! g:forms#VAlign.init(attrs) dict
+    function! FORMS_VALIGN_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
       call g:forms_Util.checkVAlignment(self.__alignment, "VAlign.init")
 
       return self
     endfunction
+    let g:forms#VAlign.init  = function("FORMS_VALIGN_init")
 
-    function! g:forms#VAlign.reinit(attrs) dict
+    function! FORMS_VALIGN_reinit(attrs) dict
 " call forms#log("g:forms#VAlign.reinit TOP")
       let oldHeight = self.__height
       let oldAlignment = self.__alignment
@@ -9212,8 +9470,9 @@ function! forms#loadVAlignPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#VAlign.reinit  = function("FORMS_VALIGN_reinit")
 
-    function! g:forms#VAlign.requestedSize() dict
+    function! FORMS_VALIGN_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -9221,8 +9480,9 @@ function! forms#loadVAlignPrototype()
         return (self.__height <= h) ? [w,h] : [w,self.__height]
       endif
     endfunction
+    let g:forms#VAlign.requestedSize  = function("FORMS_VALIGN_requestedSize")
 
-    function! g:forms#VAlign.draw(allocation) dict
+    function! FORMS_VALIGN_draw(allocation) dict
 " call forms#log("g:forms#VAlign.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9251,6 +9511,7 @@ function! forms#loadVAlignPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#VAlign.draw  = function("FORMS_VALIGN_draw")
 
   endif
 
@@ -9294,7 +9555,7 @@ function! forms#loadHVAlignPrototype()
     let g:forms#HVAlign.__height = -1
     let g:forms#HVAlign.__valignment = 'T'
 
-    function! g:forms#HVAlign.init(attrs) dict
+    function! FORMS_HVALIGN_init(attrs) dict
 " call forms#log("g:forms#HVAlign.init TOP ")
       call call(g:forms#Mono.init, [a:attrs], self)
 
@@ -9304,8 +9565,9 @@ function! forms#loadHVAlignPrototype()
 " call forms#log("g:forms#HVAlign.init BOTTOM ")
       return self
     endfunction
+    let g:forms#HVAlign.init  = function("FORMS_HVALIGN_init")
 
-    function! g:forms#HVAlign.reinit(attrs) dict
+    function! FORMS_HVALIGN_reinit(attrs) dict
 "call forms#log("g:forms#HVAlign.reinit TOP")
       let oldWidth = self.__width
       let oldHeight = self.__height
@@ -9329,8 +9591,9 @@ function! forms#loadHVAlignPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#HVAlign.reinit  = function("FORMS_HVALIGN_reinit")
 
-    function! g:forms#HVAlign.requestedSize() dict
+    function! FORMS_HVALIGN_requestedSize() dict
 " call forms#log("g:forms#HVAlign.requestedSize TOP ")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -9346,8 +9609,9 @@ function! forms#loadHVAlignPrototype()
         return [w,h]
       endif
     endfunction
+    let g:forms#HVAlign.requestedSize  = function("FORMS_HVALIGN_requestedSize")
 
-    function! g:forms#HVAlign.draw(allocation) dict
+    function! FORMS_HVALIGN_draw(allocation) dict
 " call forms#log("g:forms#HVAlign.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9385,6 +9649,7 @@ function! forms#loadHVAlignPrototype()
 
 " call forms#log("g:forms#HVAlign.draw BOTTOM ")
     endfunction
+    let g:forms#HVAlign.draw  = function("FORMS_HVALIGN_draw")
   endif
 
   return g:forms#HVAlign
@@ -9423,7 +9688,7 @@ function! forms#loadButtonPrototype()
     let g:forms#Button.__selected = 0
     let g:forms#Button.__highlight = 1
 
-    function! g:forms#Button.init(attrs) dict
+    function! FORMS_BUTTON_init(attrs) dict
 " call forms#log("g:forms#Button.init TOP ")
       call call(g:forms#Mono.init, [a:attrs], self)
 
@@ -9440,12 +9705,11 @@ function! forms#loadButtonPrototype()
         " throw "Button.init: Must have either an action or command attribute: " . string(a:attrs)
       endif
 
-
-" call forms#log("g:forms#HVAlign.init BOTTOM ")
       return self
     endfunction
+    let g:forms#Button.init  = function("FORMS_BUTTON_init")
 
-    function! g:forms#Button.reinit(attrs) dict
+    function! FORMS_BUTTON_reinit(attrs) dict
 " call forms#log("g:forms#Botton.reinit TOP")
       if exists("self.__action")
         unlet self.__action
@@ -9457,24 +9721,28 @@ function! forms#loadButtonPrototype()
 
       call call(g:forms#Mono.reinit, [a:attrs], self)
     endfunction
+    let g:forms#Button.reinit  = function("FORMS_BUTTON_reinit")
 
-    function! g:forms#Button.canFocus() dict
+    function! FORMS_BUTTON_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#Button.canFocus  = function("FORMS_BUTTON_canFocus")
 
-    function! g:forms#Button.hotspot() dict
+    function! FORMS_BUTTON_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         call HotSpot(a.line, a.column)
       endif
     endfunction
+    let g:forms#Button.hotspot  = function("FORMS_BUTTON_hotspot")
 
-    function! g:forms#Button.addResults(results) dict
+    function! FORMS_BUTTON_addResults(results) dict
       let tag = self.getTag()
       let a:results[tag] = self.__selected
     endfunction
+    let g:forms#Button.addResults  = function("FORMS_BUTTON_addResults")
 
-    function! g:forms#Button.handleEvent(event) dict
+    function! FORMS_BUTTON_handleEvent(event) dict
 " call forms#log("g:forms#Button.handleEvent: " .  string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -9485,8 +9753,9 @@ function! forms#loadButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Button.handleEvent  = function("FORMS_BUTTON_handleEvent")
 
-    function! g:forms#Button.handleChar(nr) dict
+    function! FORMS_BUTTON_handleChar(nr) dict
 " call forms#log("g:forms#Button.handleChar: " .  string(a:nr))
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
@@ -9497,8 +9766,9 @@ function! forms#loadButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Button.handleChar  = function("FORMS_BUTTON_handleChar")
 
-    function! g:forms#Button.doSelect() dict
+    function! FORMS_BUTTON_doSelect() dict
       if (self.__status == g:IS_ENABLED)
         let self.__selected = 1
         call ButtonFlashHi(self.__allocation)
@@ -9515,8 +9785,9 @@ function! forms#loadButtonPrototype()
         endif
       endif
     endfunction
+    let g:forms#Button.doSelect  = function("FORMS_BUTTON_doSelect")
 
-    function! g:forms#Button.draw(allocation) dict
+    function! FORMS_BUTTON_draw(allocation) dict
 " call forms#log("g:forms#Button.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9532,8 +9803,9 @@ function! forms#loadButtonPrototype()
       endif                     
 
     endfunction
+    let g:forms#Button.draw  = function("FORMS_BUTTON_draw")
 
-    function! g:forms#Button.usage() dict
+    function! FORMS_BUTTON_usage() dict
       return [
            \ "A Button on selection performs an action or command.",
            \ "  Selection is with keyboard <CR> or <Space>,",
@@ -9541,6 +9813,7 @@ function! forms#loadButtonPrototype()
            \ "There is no navigation activity.",
            \ ]
     endfunction
+    let g:forms#Button.usage  = function("FORMS_BUTTON_usage")
   endif
 
   return g:forms#Button
@@ -9584,7 +9857,7 @@ function! forms#loadToggleButtonPrototype()
     let g:forms#ToggleButton.__on_deselection_action = g:forms_Util.emptyAction()
 
 
-    function! g:forms#ToggleButton.init(attrs) dict
+    function! FORMS_TOGGLE_BUTTON_init(attrs) dict
 "call forms#log("forms#ToggleButton.init TOP")
       call call(g:forms#Leaf.init, [a:attrs], self)
 
@@ -9602,8 +9875,9 @@ function! forms#loadToggleButtonPrototype()
 
       return self
     endfunction
+    let g:forms#ToggleButton.init  = function("FORMS_TOGGLE_BUTTON_init")
 
-    function! g:forms#ToggleButton.reinit(attrs) dict
+    function! FORMS_TOGGLE_BUTTON_reinit(attrs) dict
 "call forms#log("g:forms#ToggleButton.reinit TOP")
       if exists('self.__group')
         if has_key(self.__group, 'delete')
@@ -9617,8 +9891,9 @@ function! forms#loadToggleButtonPrototype()
 
       call call(g:forms#Mono.reinit, [a:attrs], self)
     endfunction
+    let g:forms#ToggleButton.reinit  = function("FORMS_TOGGLE_BUTTON_reinit")
 
-    function! g:forms#ToggleButton.delete(...) dict
+    function! FORMS_TOGGLE_BUTTON_delete(...) dict
 "call forms#log("ToggleButton.delete: TOP")
       if has_key(self, '__group')
         if has_key(self.__group, 'delete')
@@ -9630,23 +9905,27 @@ function! forms#loadToggleButtonPrototype()
       call call(p.delete, [p], self)
 "call forms#log("ToggleButton.delete: BOTTOM")
     endfunction
+    let g:forms#ToggleButton.delete  = function("FORMS_TOGGLE_BUTTON_delete")
 
-    function! g:forms#ToggleButton.canFocus() dict
+    function! FORMS_TOGGLE_BUTTON_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#ToggleButton.canFocus  = function("FORMS_TOGGLE_BUTTON_canFocus")
 
-    function! g:forms#ToggleButton.hotspot() dict
+    function! FORMS_TOGGLE_BUTTON_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         call HotSpot(self.__allocation.line, self.__allocation.column)
       endif
     endfunction
+    let g:forms#ToggleButton.hotspot  = function("FORMS_TOGGLE_BUTTON_hotspot")
 
-    function! g:forms#ToggleButton.addResults(results) dict
+    function! FORMS_TOGGLE_BUTTON_addResults(results) dict
       let tag = self.getTag()
       let a:results[tag] = self.__selected
     endfunction
+    let g:forms#ToggleButton.addResults  = function("FORMS_TOGGLE_BUTTON_addResults")
 
-    function! g:forms#ToggleButton.handleEvent(event) dict
+    function! FORMS_TOGGLE_BUTTON_handleEvent(event) dict
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -9661,8 +9940,9 @@ function! forms#loadToggleButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#ToggleButton.handleEvent  = function("FORMS_TOGGLE_BUTTON_handleEvent")
 
-    function! g:forms#ToggleButton.handleChar(nr) dict
+    function! FORMS_TOGGLE_BUTTON_handleChar(nr) dict
 "call forms#log("g:forms#ToggleButton.handleChar: " .  string(a:nr))
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
@@ -9679,8 +9959,9 @@ function! forms#loadToggleButtonPrototype()
       endif
       return 0
     endfunction
+    let g:forms#ToggleButton.handleChar  = function("FORMS_TOGGLE_BUTTON_handleChar")
 
-    function! g:forms#ToggleButton.setValue(value) dict
+    function! FORMS_TOGGLE_BUTTON_setValue(value) dict
       let oldvalue = self.__selected
       let self.__selected = a:value
       if oldvalue != a:value
@@ -9692,17 +9973,20 @@ function! forms#loadToggleButtonPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#ToggleButton.setValue  = function("FORMS_TOGGLE_BUTTON_setValue")
 
-    function! g:forms#ToggleButton.getValue() dict
+    function! FORMS_TOGGLE_BUTTON_getValue() dict
       return self.__selected
     endfunction
+    let g:forms#ToggleButton.getValue  = function("FORMS_TOGGLE_BUTTON_getValue")
 
     " TODO is this method needed/used
-    function! g:forms#ToggleButton.selected() dict
+    function! FORMS_TOGGLE_BUTTON_selected() dict
 "call forms#log("g:forms#ToggleButton.selected")
     endfunction
+    let g:forms#ToggleButton.selected  = function("FORMS_TOGGLE_BUTTON_selected")
 
-    function! g:forms#ToggleButton.draw(allocation) dict
+    function! FORMS_TOGGLE_BUTTON_draw(allocation) dict
 " call forms#log("g:forms#ToggleButton.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9718,8 +10002,9 @@ function! forms#loadToggleButtonPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#ToggleButton.draw  = function("FORMS_TOGGLE_BUTTON_draw")
 
-    function! g:forms#ToggleButton.usage() dict
+    function! FORMS_TOGGLE_BUTTON_usage() dict
       return [
            \ "A ToggleButton is similar to a RadioButton. It has two states:",
            \ "  selected or not selected.",
@@ -9730,6 +10015,7 @@ function! forms#loadToggleButtonPrototype()
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#ToggleButton.usage  = function("FORMS_TOGGLE_BUTTON_usage")
 
   endif
 
@@ -9763,37 +10049,43 @@ function! forms#loadViewerPrototype()
   if !exists("g:forms#Viewer")
     let g:forms#Viewer = forms#loadMonoPrototype().clone('forms#Viewer')
 
-    function! g:forms#Viewer.delete(...) dict
+    function! FORMS_VIEWER_delete(...) dict
 " call forms#log("Viewer.delete: TOP")
       let p = g:forms#Viewer._prototype
       call call(p.delete, [p], self)
 " call forms#log("Viewer.delete: BOTTOM")
     endfunction
+    let g:forms#Viewer.delete  = function("FORMS_VIEWER_delete")
 
-    function! g:forms#Viewer.canFocus() dict
+    function! FORMS_VIEWER_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#Viewer.canFocus  = function("FORMS_VIEWER_canFocus")
 
-    function! g:forms#Viewer.hotspot() dict
+    function! FORMS_VIEWER_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
         call HotSpot(a.line, a.column)
       endif
     endfunction
+    let g:forms#Viewer.hotspot  = function("FORMS_VIEWER_hotspot")
 
-    function! g:forms#Viewer.unGetChar(event) 
+    function! FORMS_VIEWER_unGetChar(event) dict
       call forms#PrependInput(a:event) 
     endfunction
+    let g:forms#Viewer.unGetChar  = function("FORMS_VIEWER_unGetChar")
 
-    function! g:forms#Viewer.clearInputStream() 
+    function! FORMS_VIEWER_clearInputStream() dict
       call forms#ClearVimInputStream()
     endfunction
+    let g:forms#Viewer.clearInputStream  = function("FORMS_VIEWER_clearInputStream")
 
-    function! g:forms#Viewer.getInput() 
+    function! FORMS_VIEWER_getInput() dict
       return self.mapInput(forms#GetInput())
     endfunction
+    let g:forms#Viewer.getInput  = function("FORMS_VIEWER_getInput")
 
-    function! g:forms#Viewer.mapInput(input) 
+    function! FORMS_VIEWER_mapInput(input) dict 
       if type(a:input) == g:self#DICTIONARY_TYPE | return a:input | endif
 
       let nr = a:input
@@ -9846,8 +10138,9 @@ function! forms#loadViewerPrototype()
         return nr
       endif
     endfunction
+    let g:forms#Viewer.mapInput  = function("FORMS_VIEWER_mapInput")
 
-    function! g:forms#Viewer.handleEvent(event) dict
+    function! FORMS_VIEWER_handleEvent(event) dict
 " call forms#log("g:forms#Viewer.handleEvent: " .  string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -9878,8 +10171,9 @@ function! forms#loadViewerPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Viewer.handleEvent  = function("FORMS_VIEWER_handleEvent")
 
-    function! g:forms#Viewer.handleChar(nr) dict
+    function! FORMS_VIEWER_handleChar(nr) dict
 " call forms#log("g:forms#Viewer.handleChar: " .  string(a:nr))
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
@@ -9890,8 +10184,9 @@ function! forms#loadViewerPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Viewer.handleChar  = function("FORMS_VIEWER_handleChar")
 
-    function! g:forms#Viewer.draw(allocation) dict
+    function! FORMS_VIEWER_draw(allocation) dict
 " call forms#log("g:forms#Viewer.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -9905,15 +10200,18 @@ function! forms#loadViewerPrototype()
       endif                     
 
     endfunction
+    let g:forms#Viewer.draw  = function("FORMS_VIEWER_draw")
 
-    function! g:forms#Viewer.generateResults(glyph, results)
+    function! FORMS_VIEWER_generateResults(glyph, results) dict
       call forms#GenerateResults(a:glyph, a:results)
     endfunction
+    let g:forms#Viewer.generateResults  = function("FORMS_VIEWER_generateResults")
 
     " find all glyphs whose allocation includes the point (line, column)
-    function! g:forms#Viewer.select(glyph, line, column, slist)
+    function! FORMS_VIEWER_select(glyph, line, column, slist) dict
       call forms#Select(a:glyph, a:line, a:column, a:slist)
     endfunction
+    let g:forms#Viewer.select  = function("FORMS_VIEWER_select")
 
     "-------------------------------------------------------------------
     " Viewer.run
@@ -9922,7 +10220,7 @@ function! forms#loadViewerPrototype()
     "     event is returned
     "   when Viewer is not at top of stack, then nothing is returned
     "-------------------------------------------------------------------
-    function! g:forms#Viewer.run() dict
+    function! FORMS_VIEWER_run() dict
       let a = self.__allocation
 
       " Create a list of all glyphs that can have focus. Maybe empty.
@@ -10264,7 +10562,8 @@ endif
               if exists('focus')
                 if focus.handleEvent(event)
                   for w in forms#ViewerRedrawListCopyAndClear() 
-" call forms#log("g:forms#Viewer.run call e redraw")
+" call forms#log("g:forms#Viewer.run call e redraw: w.tag=".w.getTag())
+" call forms#log("g:forms#Viewer.run call e redraw: w.kind=".w.getKind())
                     call w.redraw()
                   endfor
                   call focus.hotspot()
@@ -10278,8 +10577,8 @@ endif
           elseif type(input) == g:self#NUMBER_TYPE || type(input) == g:self#STRING_TYPE
             let nr = input
             let c = nr2char(nr)
-call forms#log("g:forms#Viewer.run nr=".string(nr))
-call forms#log("g:forms#Viewer.run c=".string(c))
+" call forms#log("g:forms#Viewer.run nr=".string(nr))
+" call forms#log("g:forms#Viewer.run c=".string(c))
 
             if g:forms_window_dump_enabled
               if c == ''
@@ -10329,8 +10628,9 @@ call forms#log("g:forms#Viewer.run c=".string(c))
 
       endtry
     endfunction
+    let g:forms#Viewer.run  = function("FORMS_VIEWER_run")
 
-    function! g:forms#Viewer.usage() dict
+    function! FORMS_VIEWER_usage() dict
       return [
            \ "A Viewer can gain focus and has child glyphs that can then",
            \ "  have focus. It is the basic glyph unit of input control.",
@@ -10346,6 +10646,7 @@ call forms#log("g:forms#Viewer.run c=".string(c))
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#Viewer.usage  = function("FORMS_VIEWER_usage")
   endif
 
   return g:forms#Viewer
@@ -10414,7 +10715,7 @@ function! forms#loadFormPrototype()
     let g:forms#Form.__halignment = 'C'
     let g:forms#Form.__valignment = 'C'
 
-    function! g:forms#Form.init(attrs) dict
+    function! FORMS_FORM_init(attrs) dict
       call call(g:forms#Viewer.init, [a:attrs], self)
 
       call g:forms_Util.checkHAlignment(self.__halignment, "Form.init")
@@ -10422,8 +10723,9 @@ function! forms#loadFormPrototype()
 
       return self
     endfunction
+    let g:forms#Form.init  = function("FORMS_FORM_init")
 
-    function! g:forms#Form.reinit(attrs) dict
+    function! FORMS_FORM_reinit(attrs) dict
 " call forms#log("g:forms#Form.reinit TOP")
       let oldXScreen = self.__x_screen
       let oldYScreen = self.__y_screen
@@ -10448,13 +10750,14 @@ function! forms#loadFormPrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#Form.reinit  = function("FORMS_FORM_reinit")
 
 
     " Form.run
     " return result Dictionary
     "   On Submit, Dictionary contains result data
     "   On Cancel or Exit, Dictionary is empty
-    function! g:forms#Form.run() dict
+    function! FORMS_FORM_run() dict
 "call forms#log("g:forms#Form.run TOP")
 
       "==============================================
@@ -10923,6 +11226,7 @@ function! forms#loadFormPrototype()
         endtry
       endif
     endfunction
+    let g:forms#Form.run  = function("FORMS_FORM_run")
 
   endif
 
@@ -10968,7 +11272,7 @@ function! forms#loadDebugPrototype()
     let g:forms#Debug = forms#loadMonoPrototype().clone('forms#Debug')
     let g:forms#Debug.__msg = ''
 
-    function! g:forms#Debug.init(attrs) dict
+    function! FORMS_DEBUG_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
 
       " Use id for all logging
@@ -11002,6 +11306,7 @@ function! forms#loadDebugPrototype()
 
       return self
     endfunction
+    let g:forms#Debug.init  = function("FORMS_DEBUG_init")
   endif
 
   return g:forms#Debug
@@ -11043,18 +11348,20 @@ function! forms#loadPolyPrototype()
     let g:forms#Poly.__children = []
     let g:forms#Poly.__children_request_size = []
 
-    function! g:forms#Poly.nodeType() dict
+    function! FORMS_POLY_nodeType() dict
       return g:POLY_NODE
     endfunction
+    let g:forms#Poly.nodeType  = function("FORMS_POLY_nodeType")
 
-    function! g:forms#Poly.init(attrs) dict
+    function! FORMS_POLY_init(attrs) dict
 " call forms#log("g:forms#Poly.init TOP")
       call call(g:forms#Glyph.init, [a:attrs], self)
 
       return self
     endfunction
+    let g:forms#Poly.init  = function("FORMS_POLY_init")
 
-    function! g:forms#Poly.reinit(attrs) dict
+    function! FORMS_POLY_reinit(attrs) dict
 " call forms#log("g:forms#Poly.reinit TOP")
       let oldChildSize = len(self.__children)
 
@@ -11069,8 +11376,9 @@ function! forms#loadPolyPrototype()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Poly.reinit  = function("FORMS_POLY_reinit")
 
-    function! g:forms#Poly.delete(...) dict
+    function! FORMS_POLY_delete(...) dict
 " call forms#log("Poly.delete: TOP")
       for child in self.__children
         if has_key(child, 'delete')
@@ -11082,53 +11390,65 @@ function! forms#loadPolyPrototype()
       call call(p.delete, [p], self)
 " call forms#log("Poly.delete: BOTTOM")
     endfunction
+    let g:forms#Poly.delete  = function("FORMS_POLY_delete")
 
-    function! g:forms#Poly.hide()
+    function! FORMS_POLY_hide() dict
       for child in self.__children
         call child.hide()
       endfor
     endfunction
+    let g:forms#Poly.hide  = function("FORMS_POLY_hide")
 
-    function! g:forms#Poly.setChildStatus(index, status) dict
+    function! FORMS_POLY_setChildStatus(index, status) dict
       call self.__children[a:index].setStatus(a:status)
     endfunction
+    let g:forms#Poly.setChildStatus  = function("FORMS_POLY_setChildStatus")
 
-    function! g:forms#Poly.children() dict
+    function! FORMS_POLY_children() dict
       return self.__children
     endfunction
+    let g:forms#Poly.children  = function("FORMS_POLY_children")
 
-    function! g:forms#Poly.size() dict
+    function! FORMS_POLY_size() dict
       return len(self.__children)
     endfunction
+    let g:forms#Poly.size  = function("FORMS_POLY_size")
 
-    function! g:forms#Poly.prepend(child) dict
+    function! FORMS_POLY_prepend(child) dict
       call insert(self.__children, a:child)
     endfunction
+    let g:forms#Poly.prepend  = function("FORMS_POLY_prepend")
 
-    function! g:forms#Poly.setAt(child, index) dict
+    function! FORMS_POLY_setAt(child, index) dict
       let self.__children[a:index] = a:child
     endfunction
+    let g:forms#Poly.setAt  = function("FORMS_POLY_setAt")
 
-    function! g:forms#Poly.insertAt(child, index) dict
+    function! FORMS_POLY_insertAt(child, index) dict
       call insert(self.__children, a:child, a:index)
     endfunction
+    let g:forms#Poly.insertAt  = function("FORMS_POLY_insertAt")
 
-    function! g:forms#Poly.removeAt(index) dict
+    function! FORMS_POLY_removeAt(index) dict
       call remove(self.__children, a:index)
     endfunction
+    let g:forms#Poly.removeAt  = function("FORMS_POLY_removeAt")
 
-    function! g:forms#Poly.append(child) dict
+    function! FORMS_POLY_append(child) dict
 "call forms#log("Poly.append: TOP")
       call add(self.__children, a:child)
     endfunction
+    let g:forms#Poly.append  = function("FORMS_POLY_append")
 
-    function! g:forms#Poly.indexOf(child) dict
+    function! FORMS_POLY_indexOf(child) dict
       return index(self.__children, a:child)
     endfunction
+    let g:forms#Poly.indexOf  = function("FORMS_POLY_indexOf")
 
-    function! g:forms#Poly.childAt(index) dict
+    function! FORMS_POLY_childAt(index) dict
       return self.__children[a:index]
     endfunction
+    let g:forms#Poly.childAt  = function("FORMS_POLY_childAt")
 
   endif
 
@@ -11159,7 +11479,7 @@ function! forms#loadHPolyPrototype()
     let g:forms#HPoly.__win_start = 0
 
 
-    function! g:forms#HPoly.init(attrs) dict
+    function! FORMS_HPOLY_init(attrs) dict
 " call forms#log("g:forms#HPoly.init TOP")
       call call(g:forms#Poly.init, [a:attrs], self)
 
@@ -11176,8 +11496,9 @@ function! forms#loadHPolyPrototype()
 
       return self
     endfunction
+    let g:forms#HPoly.init  = function("FORMS_HPOLY_init")
 
-    function! g:forms#HPoly.reinit(attrs) dict
+    function! FORMS_HPOLY_reinit(attrs) dict
 " call forms#log("g:forms#HPoly.reinit TOP")
       unlet self.__alignments
       if exists("self.__mode")
@@ -11190,9 +11511,10 @@ function! forms#loadHPolyPrototype()
 
       call forms#ViewerRedrawListAdd(self) 
     endfunction
+    let g:forms#HPoly.reinit  = function("FORMS_HPOLY_reinit")
 
     " delay loading alignments since menu items are loaded after Poly.init
-    function! g:forms#HPoly.loadAlignments(attrs) dict
+    function! FORMS_HPOLY_loadAlignments(attrs) dict
       if ! exists("self.__alignment")
         return
       endif
@@ -11202,7 +11524,7 @@ function! forms#loadHPolyPrototype()
       let alignments = []
 
       let nos_children = len(self.__children)
-" call forms#log("g:forms#HPoly.init nos_children=".nos_children)
+" call forms#log("g:forms#HPoly.loadAlignments nos_children=".nos_children)
       let cnt = 0
       while cnt < nos_children
         call add(alignments, alignment)
@@ -11211,7 +11533,7 @@ function! forms#loadHPolyPrototype()
 
       if has_key(a:attrs, 'alignments')
         let adata = a:attrs['alignments']
-" call forms#log("g:forms#HPoly.init: adata=" .  string(adata))
+" call forms#log("g:forms#HPoly.loadAlignments: adata=" .  string(adata))
         if type(adata) != g:self#LIST_TYPE
           throw "HPoly.init: alignments attribute must be list type"
         endif
@@ -11232,9 +11554,10 @@ function! forms#loadHPolyPrototype()
 
       unlet self.__alignment
     endfunction
+    let g:forms#HPoly.loadAlignments  = function("FORMS_HPOLY_loadAlignments")
 
 
-    function! g:forms#HPoly.requestedSize() dict
+    function! FORMS_HPOLY_requestedSize() dict
 "call forms#log("g:forms#HPoly.requestedSize TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -11260,8 +11583,9 @@ function! forms#loadHPolyPrototype()
         return [width, height]
       endif
     endfunction
+    let g:forms#HPoly.requestedSize  = function("FORMS_HPOLY_requestedSize")
 
-    function! g:forms#HPoly.drawBoxes() dict
+    function! FORMS_HPOLY_drawBoxes() dict
       if exists("self.__mode")
         let a = self.__allocation
         let children_request_size =  self.__children_request_size
@@ -11277,8 +11601,9 @@ function! forms#loadHPolyPrototype()
         endif
       endif
     endfunction
+    let g:forms#HPoly.drawBoxes  = function("FORMS_HPOLY_drawBoxes")
 
-    function! g:forms#HPoly.draw(allocation) dict
+    function! FORMS_HPOLY_draw(allocation) dict
 "call forms#log("g:forms#HPoly.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -11346,6 +11671,7 @@ function! forms#loadHPolyPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#HPoly.draw  = function("FORMS_HPOLY_draw")
 
   endif
 
@@ -11384,7 +11710,7 @@ function! forms#loadVPolyPrototype()
     let g:forms#VPoly.__size = -1
     let g:forms#VPoly.__win_start = 0
 
-    function! g:forms#VPoly.init(attrs) dict
+    function! FORMS_VPOLY_init(attrs) dict
 " call forms#log("g:forms#VPoly.init: TOP")
       call call(g:forms#Poly.init, [a:attrs], self)
 
@@ -11403,8 +11729,9 @@ function! forms#loadVPolyPrototype()
 
       return self
     endfunction
+    let g:forms#VPoly.init  = function("FORMS_VPOLY_init")
 
-    function! g:forms#VPoly.reinit(attrs) dict
+    function! FORMS_VPOLY_reinit(attrs) dict
 " call forms#log("g:forms#VPoly.reinit TOP")
       unlet self.__alignments
       if exists("self.__mode")
@@ -11417,9 +11744,10 @@ function! forms#loadVPolyPrototype()
 
       call forms#ViewerRedrawListAdd(self) 
     endfunction
+    let g:forms#VPoly.reinit  = function("FORMS_VPOLY_reinit")
 
     " delay loading alignments since menu items are loaded after Poly.init
-    function! g:forms#VPoly.loadAlignments(attrs) dict
+    function! FORMS_VPOLY_loadAlignments(attrs) dict
       if ! exists("self.__alignment")
         return
       endif
@@ -11429,7 +11757,7 @@ function! forms#loadVPolyPrototype()
       let alignments = []
 
       let nos_children = len(self.__children)
-" call forms#log("g:forms#VPoly.init: nos_children=".nos_children)
+" call forms#log("g:forms#VPoly.loadAlignments: nos_children=".nos_children)
       let cnt = 0
       while cnt < nos_children
         call add(alignments, alignment)
@@ -11438,7 +11766,7 @@ function! forms#loadVPolyPrototype()
 
       if has_key(a:attrs, 'alignments')
         let adata = a:attrs['alignments']
-" call forms#log("g:forms#VPoly.init: adata=" .  string(adata))
+" call forms#log("g:forms#VPoly.loadAlignments: adata=" .  string(adata))
         if type(adata) != g:self#LIST_TYPE
           throw "VPoly.init: alignments attribute must be list type"
         endif
@@ -11460,12 +11788,13 @@ function! forms#loadVPolyPrototype()
       unlet self.__alignment
 
     endfunction
+    let g:forms#VPoly.loadAlignments  = function("FORMS_VPOLY_loadAlignments")
 
     "-----------------------------------------------
     " vpoly methods
     "-----------------------------------------------
 
-    function! g:forms#VPoly.requestedSize() dict
+    function! FORMS_VPOLY_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -11492,8 +11821,9 @@ function! forms#loadVPolyPrototype()
         return [width, height]
       endif
     endfunction
+    let g:forms#VPoly.requestedSize  = function("FORMS_VPOLY_requestedSize")
 
-    function! g:forms#VPoly.drawBoxes() dict
+    function! FORMS_VPOLY_drawBoxes() dict
       if exists("self.__mode")
         let a = self.__allocation
         let children_request_size =  self.__children_request_size
@@ -11509,8 +11839,9 @@ function! forms#loadVPolyPrototype()
         endif
       endif
     endfunction
+    let g:forms#VPoly.drawBoxes  = function("FORMS_VPOLY_drawBoxes")
 
-    function! g:forms#VPoly.draw(allocation) dict
+    function! FORMS_VPOLY_draw(allocation) dict
 " call forms#log("g:forms#VPoly.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -11581,6 +11912,7 @@ function! forms#loadVPolyPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#VPoly.draw  = function("FORMS_VPOLY_draw")
   endif
 
   return g:forms#VPoly
@@ -11623,7 +11955,7 @@ function! forms#loadDeckPrototype()
     let g:forms#Deck.__valignment = 'T'
     let g:forms#Deck.__card = 0
 
-    function! g:forms#Deck.init(attrs) dict
+    function! FORMS_DECK_init(attrs) dict
       call call(g:forms#Poly.init, [a:attrs], self)
 
       call g:forms_Util.checkHAlignment(self.__halignment, "Deck.init")
@@ -11638,8 +11970,9 @@ function! forms#loadDeckPrototype()
 
       return self
     endfunction
+    let g:forms#Deck.init  = function("FORMS_DECK_init")
 
-    function! g:forms#Deck.reinit(attrs) dict
+    function! FORMS_DECK_reinit(attrs) dict
 " call forms#log("g:forms#Deck.reinit TOP")
       let oldHAlignment = self.__halignment
       let oldVAlignment = self.__valignment
@@ -11658,16 +11991,18 @@ function! forms#loadDeckPrototype()
       elseif oldCard != self.__card
       endif
     endfunction
+    let g:forms#Deck.reinit  = function("FORMS_DECK_reinit")
 
     "-----------------------------------------------
     " deck methods
     "-----------------------------------------------
     "
-    function! g:forms#Deck.getCard() dict
+    function! FORMS_DECK_getCard() dict
       return self.__card
     endfunction
+    let g:forms#Deck.getCard  = function("FORMS_DECK_getCard")
 
-    function! g:forms#Deck.setCard(card) dict
+    function! FORMS_DECK_setCard(card) dict
       if a:card < 0 
         throw "Deck.setCard: card less than 0 " . card
       elseif a:card >= len(self.__children)
@@ -11680,14 +12015,15 @@ function! forms#loadDeckPrototype()
 
         let self.__card = a:card
         if exists("self.__textblock")
-call forms#log("g:forms#Deck.setCard add textblock")
+" call forms#log("g:forms#Deck.setCard add textblock")
           call forms#ViewerRedrawListAdd(self.__textblock) 
         endif
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#Deck.setCard  = function("FORMS_DECK_setCard")
 
-    function! g:forms#Deck.requestedSize() dict
+    function! FORMS_DECK_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -11706,8 +12042,9 @@ call forms#log("g:forms#Deck.setCard add textblock")
         return [width, height]
       endif
     endfunction
+    let g:forms#Deck.requestedSize  = function("FORMS_DECK_requestedSize")
 
-    function! g:forms#Deck.draw(allocation) dict
+    function! FORMS_DECK_draw(allocation) dict
 " call forms#log("g:forms#Deck.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -11765,6 +12102,7 @@ call forms#log("g:forms#Deck.setCard add textblock")
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#Deck.draw  = function("FORMS_DECK_draw")
 
   endif
 
@@ -11805,7 +12143,7 @@ function! forms#loadFixedLayout()
     let g:forms#FixedLayout.__x_positions = []
     let g:forms#FixedLayout.__y_positions = []
 
-    function! g:forms#FixedLayout.reinit(attrs) dict
+    function! FORMS_FIXED_LAYOUT_reinit(attrs) dict
 " call forms#log("g:forms#FixedLayout.reinit TOP")
       let oldWidht = self.__width
       let oldHeight = self.__height
@@ -11825,12 +12163,13 @@ function! forms#loadFixedLayout()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#FixedLayout.reinit  = function("FORMS_FIXED_LAYOUT_reinit")
 
     "-----------------------------------------------
     " glyph methods
     "-----------------------------------------------
 
-    function! g:forms#FixedLayout.requestedSize() dict
+    function! FORMS_FIXED_LAYOUT_requestedSize() dict
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
@@ -11874,8 +12213,9 @@ function! forms#loadFixedLayout()
         return [l:w, l:h]
       endif
     endfunction
+    let g:forms#FixedLayout.requestedSize  = function("FORMS_FIXED_LAYOUT_requestedSize")
 
-    function! g:forms#FixedLayout.draw(allocation) dict
+    function! FORMS_FIXED_LAYOUT_draw(allocation) dict
 " call forms#log("g:forms#FixedLayout.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -11910,65 +12250,78 @@ function! forms#loadFixedLayout()
       endif                     
 " call forms#log("FixedLayout.draw: BOTTOM")
     endfunction
+    let g:forms#FixedLayout.draw  = function("FORMS_FIXED_LAYOUT_draw")
 
 
     "-----------------------------------------------
     " fixed layout methods
     "-----------------------------------------------
-    function! g:forms#FixedLayout.getWidth() dict
+    function! FORMS_FIXED_LAYOUT_getWidth() dict
       return self.__width
     endfunction
+    let g:forms#FixedLayout.getWidth  = function("FORMS_FIXED_LAYOUT_getWidth")
 
-    function! g:forms#FixedLayout.getHeight() dict
+    function! FORMS_FIXED_LAYOUT_getHeight() dict
       return self.__height
     endfunction
+    let g:forms#FixedLayout.getHeight  = function("FORMS_FIXED_LAYOUT_getHeight")
 
-    function! g:forms#FixedLayout.childrenXPositions() dict
+    function! FORMS_FIXED_LAYOUT_childrenXPositions() dict
       return self.__x_positions
     endfunction
-    function! g:forms#FixedLayout.childrenYPositions() dict
+    let g:forms#FixedLayout.childrenXPositions  = function("FORMS_FIXED_LAYOUT_childrenXPositions")
+
+    function! FORMS_FIXED_LAYOUT_childrenYPositions() dict
       return self.__y_positions
     endfunction
+    let g:forms#FixedLayout.childrenYPositions  = function("FORMS_FIXED_LAYOUT_childrenYPositions")
 
-    function! g:forms#FixedLayout.childrenXPositionAt(index) dict
+    function! FORMS_FIXED_LAYOUT_childrenXPositionAt(index) dict
       return self.__x_positions[index]
     endfunction
-    function! g:forms#FixedLayout.childrenYPositionAt(index) dict
+    let g:forms#FixedLayout.childrenXPositionAt  = function("FORMS_FIXED_LAYOUT_childrenXPositionAt")
+
+    function! FORMS_FIXED_LAYOUT_childrenYPositionAt(index) dict
       return self.__y_positions[index]
     endfunction
+    let g:forms#FixedLayout.childrenYPositionAt  = function("FORMS_FIXED_LAYOUT_childrenYPositionAt")
     
     "-----------------------------------------------
     " poly methods
     "-----------------------------------------------
 
-    function! g:forms#FixedLayout.prepend(child, x, y) dict
+    function! FORMS_FIXED_LAYOUT_prepend(child, x, y) dict
       " call self.super().prepend(a:child)
       call call(self.super().prepend, [a:child], self)
       call insert(self.__x_positions, a:x)
       call insert(self.__y_positions, a:y)
     endfunction
+    let g:forms#FixedLayout.prepend  = function("FORMS_FIXED_LAYOUT_prepend")
 
-    function! g:forms#FixedLayout.setAt(child, index, x, y) dict
+    function! FORMS_FIXED_LAYOUT_setAt(child, index, x, y) dict
       call call(self.super().setAt, [a:child, a:index], self)
       let self.__x_positions[a:index] = a:x
       let self.__y_positions[a:index] = a:y
     endfunction
+    let g:forms#FixedLayout.setAt  = function("FORMS_FIXED_LAYOUT_setAt")
 
-    function! g:forms#FixedLayout.insertAt(child, index, x, y) dict
+    function! FORMS_FIXED_LAYOUT_insertAt(child, index, x, y) dict
       " call self.super().insertAt(a:child, a:index)
       call call(self.super().insertAt, [a:child, a:index], self)
       call insert(self.__x_positions, a:x, a:index)
       call insert(self.__y_positions, a:y, a:index)
     endfunction
+    let g:forms#FixedLayout.insertAt  = function("FORMS_FIXED_LAYOUT_insertAt")
 
-    function! g:forms#FixedLayout.removeAt(index) dict
+    function! FORMS_FIXED_LAYOUT_removeAt(index) dict
       " call self.super().removeAt(a:index)
       call call(self.super().removeAt, [a:index], self)
       call remove(self.__x_positions, a:index)
       call remove(self.__y_positions, a:index)
     endfunction
+    let g:forms#FixedLayout.removeAt  = function("FORMS_FIXED_LAYOUT_removeAt")
 
-    function! g:forms#FixedLayout.append(child, x, y) dict
+    function! FORMS_FIXED_LAYOUT_append(child, x, y) dict
 " call forms#log("FixedLayout.append: TOP")
       " call self.super().append(a:child)
       call call(self.super().append, [a:child], self)
@@ -11977,6 +12330,7 @@ function! forms#loadFixedLayout()
       call add(self.__y_positions, a:y)
 " call forms#log("FixedLayout.append: BOTTOM")
     endfunction
+    let g:forms#FixedLayout.append  = function("FORMS_FIXED_LAYOUT_append")
 
   endif
 
@@ -12015,7 +12369,7 @@ function! forms#loadMenuBar()
     " char to [button position, mnemonic index]
     let g:forms#MenuBar.__mnemonics = {}
 
-    function! g:forms#MenuBar.init(attrs) dict
+    function! FORMS_MENUBAR_init(attrs) dict
 " call forms#log("g:forms#MenuBar.init TOP")
       " call call(g:forms#HPoly.init, [a:attrs], self)
 
@@ -12175,8 +12529,9 @@ function! forms#loadMenuBar()
 
       return self
     endfunction
+    let g:forms#MenuBar.init  = function("FORMS_MENUBAR_init")
 
-    function! g:forms#MenuBar.reinit(attrs) dict
+    function! FORMS_MENUBAR_reinit(attrs) dict
 " call forms#log("g:forms#MenuBar.reinit TOP")
       let oldFull = self.__full
 
@@ -12190,18 +12545,21 @@ function! forms#loadMenuBar()
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
+    let g:forms#MenuBar.reinit  = function("FORMS_MENUBAR_reinit")
 
-    function! g:forms#MenuBar.delete(...) dict
+    function! FORMS_MENUBAR_delete(...) dict
       " TODO must delete action functions
       let p = g:forms#MenuBar._prototype
       call call(p.delete, [p], self)
     endfunction
+    let g:forms#MenuBar.delete  = function("FORMS_MENUBAR_delete")
 
-    function! g:forms#MenuBar.canFocus() dict
+    function! FORMS_MENUBAR_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#MenuBar.canFocus  = function("FORMS_MENUBAR_canFocus")
 
-    function! g:forms#MenuBar.hotspot() dict
+    function! FORMS_MENUBAR_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let pos = self.__pos
 "   call forms#log("g:forms#MenuBar.hotspot pos=" . pos)
@@ -12211,19 +12569,21 @@ function! forms#loadMenuBar()
           let child = self.__children[pos]
           let a = child.__allocation
           call GlyphHilight(child, "MenuHotSpotHi", a)
-          call self.higlightMnemonicHotSpot(pos)
+          call self.highlightMnemonicHotSpot(pos)
         endif
       endif
     endfunction
+    let g:forms#MenuBar.hotspot  = function("FORMS_MENUBAR_hotspot")
 
-    function! g:forms#MenuBar.flash() dict
+    function! FORMS_MENUBAR_flash() dict
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
+    let g:forms#MenuBar.flash  = function("FORMS_MENUBAR_flash")
 
-    function! g:forms#MenuBar.handleEvent(event) dict
-call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
+    function! FORMS_MENUBAR_handleEvent(event) dict
+" call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -12247,7 +12607,7 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
           if found
             if pos != self.__pos
               call GlyphDeleteHi(self.__children[self.__pos])
-              call self.higlightMnemonic(self.__pos)
+              call self.highlightMnemonic(self.__pos)
               let self.__pos = pos
             else
               call children[pos].handleEvent(a:event) 
@@ -12273,8 +12633,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       endif
       return 0
     endfunction
+    let g:forms#MenuBar.handleEvent  = function("FORMS_MENUBAR_handleEvent")
 
-    function! g:forms#MenuBar.handleChar(nr) dict
+    function! FORMS_MENUBAR_handleChar(nr) dict
 " call forms#log("g:forms#MenuBar.handleChar")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -12314,7 +12675,7 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
             if p != self.__pos
               let child = self.__children[self.__pos]
               call GlyphDeleteHi(child)
-              call self.higlightMnemonic(self.__pos)
+              call self.highlightMnemonic(self.__pos)
               let self.__pos = p
               let handled = 1
             endif
@@ -12324,35 +12685,41 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
 
       return handled
     endfunction
+    let g:forms#MenuBar.handleChar  = function("FORMS_MENUBAR_handleChar")
 
-    function! g:forms#MenuBar.doPreviousFocus() dict
+    function! FORMS_MENUBAR_doPreviousFocus() dict
       call self.doFocus(self.getPreviousFocus())
     endfunction
+    let g:forms#MenuBar.doPreviousFocus  = function("FORMS_MENUBAR_doPreviousFocus")
     
-    function! g:forms#MenuBar.doNextFocus() dict
+    function! FORMS_MENUBAR_doNextFocus() dict
       call self.doFocus(self.getNextFocus())
     endfunction
+    let g:forms#MenuBar.doNextFocus  = function("FORMS_MENUBAR_doNextFocus")
 
-    function! g:forms#MenuBar.doFirstFocus() dict
+    function! FORMS_MENUBAR_doFirstFocus() dict
       call self.doFocus(self.getFirstFocus())
     endfunction
+    let g:forms#MenuBar.doFirstFocus  = function("FORMS_MENUBAR_doFirstFocus")
 
-    function! g:forms#MenuBar.doLastFocus() dict
+    function! FORMS_MENUBAR_doLastFocus() dict
       call self.doFocus(self.getLastFocus())
     endfunction
+    let g:forms#MenuBar.doLastFocus  = function("FORMS_MENUBAR_doLastFocus")
 
-    function! g:forms#MenuBar.doFocus(pos) dict
+    function! FORMS_MENUBAR_doFocus(pos) dict
       if a:pos < 0
         call self.flash()
       else
         call GlyphDeleteHi(self.__children[self.__pos])
-        call self.higlightMnemonic(self.__pos)
+        call self.highlightMnemonic(self.__pos)
         let self.__pos = a:pos
       endif
     endfunction
+    let g:forms#MenuBar.doFocus  = function("FORMS_MENUBAR_doFocus")
 
 
-    function! g:forms#MenuBar.getPreviousFocus() dict
+    function! FORMS_MENUBAR_getPreviousFocus() dict
       let pos = self.__pos
       let children = self.__children
 
@@ -12367,8 +12734,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       
       return -1
     endfunction
+    let g:forms#MenuBar.getPreviousFocus  = function("FORMS_MENUBAR_getPreviousFocus")
 
-    function! g:forms#MenuBar.getNextFocus() dict
+    function! FORMS_MENUBAR_getNextFocus() dict
       let pos = self.__pos
       let children = self.__children
       let len = len(children)
@@ -12384,8 +12752,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       
       return -1
     endfunction
+    let g:forms#MenuBar.getNextFocus  = function("FORMS_MENUBAR_getNextFocus")
 
-    function! g:forms#MenuBar.getFirstFocus() dict
+    function! FORMS_MENUBAR_getFirstFocus() dict
       let children = self.__children
       let len = len(children)
 
@@ -12400,8 +12769,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       
       return -1
     endfunction
+    let g:forms#MenuBar.getFirstFocus  = function("FORMS_MENUBAR_getFirstFocus")
 
-    function! g:forms#MenuBar.getLastFocus() dict
+    function! FORMS_MENUBAR_getLastFocus() dict
       let children = self.__children
       let len = len(children)
 
@@ -12416,8 +12786,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       
       return -1
     endfunction
+    let g:forms#MenuBar.getLastFocus  = function("FORMS_MENUBAR_getLastFocus")
 
-    function! g:forms#MenuBar.higlightMnemonic(pos) dict
+    function! FORMS_MENUBAR_highlightMnemonic(pos) dict
       let child = self.__children[a:pos]
       let mnemonics = self.__mnemonics
       for [pos, mindex] in values(mnemonics)
@@ -12433,8 +12804,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
         endif
       endfor
     endfunction
+    let g:forms#MenuBar.highlightMnemonic  = function("FORMS_MENUBAR_highlightMnemonic")
 
-    function! g:forms#MenuBar.higlightMnemonicHotSpot(pos) dict
+    function! FORMS_MENUBAR_highlightMnemonicHotSpot(pos) dict
       let child = self.__children[a:pos]
       let mnemonics = self.__mnemonics
       for [pos, mindex] in values(mnemonics)
@@ -12450,9 +12822,10 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
         endif
       endfor
     endfunction
+    let g:forms#MenuBar.highlightMnemonicHotSpot  = function("FORMS_MENUBAR_highlightMnemonicHotSpot")
 
 
-    function! g:forms#MenuBar.draw(allocation) dict
+    function! FORMS_MENUBAR_draw(allocation) dict
 " call forms#log("g:forms#MenuBar.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -12493,8 +12866,9 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
       endif                     
 
     endfunction
+    let g:forms#MenuBar.draw  = function("FORMS_MENUBAR_draw")
 
-    function! g:forms#MenuBar.usage() dict
+    function! FORMS_MENUBAR_usage() dict
       return [
            \ "A MenuBar displays buttons for pop down sub-menus.",
            \ "Navigation between MenuBar buttons using keyboard",
@@ -12505,6 +12879,7 @@ call forms#log("g:forms#MenuBar.handleEvent event=" . string(a:event))
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#MenuBar.usage  = function("FORMS_MENUBAR_usage")
 
   endif
 
@@ -12548,7 +12923,7 @@ function! forms#loadMenuPrototype()
     let g:forms#Menu.__mnemonics = {}
     let g:forms#Menu.__required_left_space = 0
 
-    function! g:forms#Menu.init(attrs) dict
+    function! FORMS_MENU_init(attrs) dict
 " call forms#log("g:forms#Menu.init TOP")
       " call call(g:forms#VPoly.init, [a:attrs], self)
 
@@ -13068,8 +13443,9 @@ function! forms#loadMenuPrototype()
 
       return self
     endfunction
+    let g:forms#Menu.init  = function("FORMS_MENU_init")
 
-    function! g:forms#Menu.reinit(attrs) dict
+    function! FORMS_MENU_reinit(attrs) dict
 " call forms#log("g:forms#Menu.reinit TOP")
       let oldRLS = self.__required_left_space
 
@@ -13084,8 +13460,9 @@ function! forms#loadMenuPrototype()
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
+    let g:forms#Menu.reinit  = function("FORMS_MENU_reinit")
 
-    function! g:forms#Menu.requestedSize() dict
+    function! FORMS_MENU_requestedSize() dict
       let [w,h] = call(g:forms#VPoly.requestedSize, [], self)
       if self.__size < 0
         return [w, h]
@@ -13093,12 +13470,13 @@ function! forms#loadMenuPrototype()
         return [w, self.__size]
       endif
     endfunction
+    let g:forms#Menu.requestedSize  = function("FORMS_MENU_requestedSize")
 
     "-----------------------------------------------
     " status method
     "-----------------------------------------------
     
-    function! g:forms#Menu.setChildStatus(index, status) dict
+    function! FORMS_MENU_setChildStatus(index, status) dict
 " call forms#log("g:forms#Menu.setChildStatus TOP")
       let child = self.__children[a:index]
       let oldstatus = child.__status
@@ -13121,12 +13499,14 @@ function! forms#loadMenuPrototype()
         endif
       endif
     endfunction
+    let g:forms#Menu.setChildStatus  = function("FORMS_MENU_setChildStatus")
 
-    function! g:forms#Menu.canFocus() dict
+    function! FORMS_MENU_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
+    let g:forms#Menu.canFocus  = function("FORMS_MENU_canFocus")
 
-    function! g:forms#Menu.hotspot() dict
+    function! FORMS_MENU_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let pos = self.__pos
 " call forms#log("g:forms#Menu.hotspot pos=" . pos)
@@ -13140,18 +13520,20 @@ function! forms#loadMenuPrototype()
 "call forms#log("g:forms#Menu.hotspot pos=" . pos)
 "call forms#log("g:forms#Menu.hotspot a=" . string(a))
           call GlyphHilight(child, "MenuHotSpotHi", a)
-          call self.higlightMnemonicHotSpot(pos)
+          call self.highlightMnemonicHotSpot(pos)
         endif
       endif
     endfunction
+    let g:forms#Menu.hotspot  = function("FORMS_MENU_hotspot")
 
-    function! g:forms#Menu.flash() dict
+    function! FORMS_MENU_flash() dict
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
+    let g:forms#Menu.flash  = function("FORMS_MENU_flash")
 
-    function! g:forms#Menu.handleEvent(event) dict
+    function! FORMS_MENU_handleEvent(event) dict
 " call forms#log("g:forms#Menu.handleEvent event=" . string(a:event))
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
@@ -13178,7 +13560,7 @@ function! forms#loadMenuPrototype()
           if flist[pos].canfocus
             if pos != self.__pos
               call GlyphDeleteHi(self.__children[self.__pos])
-              call self.higlightMnemonic(self.__pos)
+              call self.highlightMnemonic(self.__pos)
               let self.__pos = pos
             else
               call flist[pos].target.handleEvent(a:event) 
@@ -13204,8 +13586,9 @@ function! forms#loadMenuPrototype()
       endif
       return 0
     endfunction
+    let g:forms#Menu.handleEvent  = function("FORMS_MENU_handleEvent")
 
-    function! g:forms#Menu.handleChar(nr) dict
+    function! FORMS_MENU_handleChar(nr) dict
 " call forms#log("g:forms#Menu.handleChar")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
@@ -13253,7 +13636,7 @@ function! forms#loadMenuPrototype()
               if p != self.__pos
                 let child = self.__children[self.__pos]
                 call GlyphDeleteHi(child)
-                call self.higlightMnemonic(self.__pos)
+                call self.highlightMnemonic(self.__pos)
                 let self.__pos = p
                 let handled = 1
               endif
@@ -13264,7 +13647,7 @@ function! forms#loadMenuPrototype()
                 if p != self.__pos
                   let child = self.__children[self.__pos]
                   call GlyphDeleteHi(child)
-                  call self.higlightMnemonic(self.__pos)
+                  call self.highlightMnemonic(self.__pos)
                   let self.__pos = p
                   let handled = 1
                   break
@@ -13304,8 +13687,9 @@ function! forms#loadMenuPrototype()
 
       return handled
     endfunction
+    let g:forms#Menu.handleChar  = function("FORMS_MENU_handleChar")
 
-    function! g:forms#Menu.doPageDown() dict
+    function! FORMS_MENU_doPageDown() dict
       let size = self.__size
       if size > 0
         let p = self.getNextFocus()
@@ -13330,8 +13714,9 @@ function! forms#loadMenuPrototype()
         call self.flash()
       endif
     endfunction
+    let g:forms#Menu.doPageDown  = function("FORMS_MENU_doPageDown")
 
-    function! g:forms#Menu.doPageUp() dict
+    function! FORMS_MENU_doPageUp() dict
       let size = self.__size
       if size > 0
 " call forms#log("g:forms#Menu.doPageUp pos=" .  self.__pos)
@@ -13359,36 +13744,42 @@ function! forms#loadMenuPrototype()
         call self.flash()
       endif
     endfunction
+    let g:forms#Menu.doPageUp  = function("FORMS_MENU_doPageUp")
 
-    function! g:forms#Menu.doPreviousFocus() dict
+    function! FORMS_MENU_doPreviousFocus() dict
       call self.doFocus(self.getPreviousFocus())
     endfunction
+    let g:forms#Menu.doPreviousFocus  = function("FORMS_MENU_doPreviousFocus")
     
-    function! g:forms#Menu.doNextFocus() dict
+    function! FORMS_MENU_doNextFocus() dict
       call self.doFocus(self.getNextFocus())
     endfunction
+    let g:forms#Menu.doNextFocus  = function("FORMS_MENU_doNextFocus")
 
-    function! g:forms#Menu.doFirstFocus() dict
+    function! FORMS_MENU_doFirstFocus() dict
       call self.doFocus(self.getFirstFocus())
     endfunction
+    let g:forms#Menu.doFirstFocus  = function("FORMS_MENU_doFirstFocus")
 
-    function! g:forms#Menu.doLastFocus() dict
+    function! FORMS_MENU_doLastFocus() dict
       call self.doFocus(self.getLastFocus())
     endfunction
+    let g:forms#Menu.doLastFocus  = function("FORMS_MENU_doLastFocus")
 
-    function! g:forms#Menu.doFocus(pos) dict
+    function! FORMS_MENU_doFocus(pos) dict
       if a:pos < 0
         call self.flash()
       else
         if self.__pos >= 0
           call GlyphDeleteHi(self.__children[self.__pos])
         endif
-        call self.higlightMnemonic(self.__pos)
+        call self.highlightMnemonic(self.__pos)
         let self.__pos = a:pos
       endif
     endfunction
+    let g:forms#Menu.doFocus  = function("FORMS_MENU_doFocus")
 
-    function! g:forms#Menu.getPreviousFocus() dict
+    function! FORMS_MENU_getPreviousFocus() dict
       let pos = self.__pos
       let flist = self.__focuslist
 
@@ -13403,8 +13794,9 @@ function! forms#loadMenuPrototype()
       
       return -1
     endfunction
+    let g:forms#Menu.getPreviousFocus  = function("FORMS_MENU_getPreviousFocus")
 
-    function! g:forms#Menu.getNextFocus() dict
+    function! FORMS_MENU_getNextFocus() dict
       let pos = self.__pos
       let flist = self.__focuslist
       let len = len(flist)
@@ -13420,8 +13812,9 @@ function! forms#loadMenuPrototype()
       
       return -1
     endfunction
+    let g:forms#Menu.getNextFocus  = function("FORMS_MENU_getNextFocus")
 
-    function! g:forms#Menu.getFirstFocus() dict
+    function! FORMS_MENU_getFirstFocus() dict
       let flist = self.__focuslist
       let len = len(flist)
 
@@ -13436,8 +13829,9 @@ function! forms#loadMenuPrototype()
       
       return -1
     endfunction
+    let g:forms#Menu.getFirstFocus  = function("FORMS_MENU_getFirstFocus")
 
-    function! g:forms#Menu.getLastFocus() dict
+    function! FORMS_MENU_getLastFocus() dict
       let flist = self.__focuslist
       let len = len(flist)
 
@@ -13452,11 +13846,12 @@ function! forms#loadMenuPrototype()
       
       return -1
     endfunction
+    let g:forms#Menu.getLastFocus  = function("FORMS_MENU_getLastFocus")
 
 
 
 
-    function! g:forms#Menu.higlightMnemonic(pos) dict
+    function! FORMS_MENU_highlightMnemonic(pos) dict
       let child = self.__children[a:pos]
       let mnemonics = self.__mnemonics
       let left_offset = self.__required_left_space
@@ -13476,8 +13871,9 @@ function! forms#loadMenuPrototype()
       endfor
 
     endfunction
+    let g:forms#Menu.highlightMnemonic  = function("FORMS_MENU_highlightMnemonic")
 
-    function! g:forms#Menu.higlightMnemonicHotSpot(pos) dict
+    function! FORMS_MENU_highlightMnemonicHotSpot(pos) dict
       let child = self.__children[a:pos]
       let mnemonics = self.__mnemonics
       let left_offset = self.__required_left_space
@@ -13497,8 +13893,9 @@ function! forms#loadMenuPrototype()
       endfor
 
     endfunction
+    let g:forms#Menu.highlightMnemonicHotSpot  = function("FORMS_MENU_highlightMnemonicHotSpot")
 
-    function! g:forms#Menu.draw(allocation) dict
+    function! FORMS_MENU_draw(allocation) dict
 "call forms#log("g:forms#Menu.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -13567,8 +13964,9 @@ function! forms#loadMenuPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#Menu.draw  = function("FORMS_MENU_draw")
 
-    function! g:forms#Menu.usage() dict
+    function! FORMS_MENU_usage() dict
       return [
            \ "A Menu displays menu items: buttons, separators,",
            \ "  labels, checkboxes, radiobuttons and sub-menu buttons.",
@@ -13583,6 +13981,7 @@ function! forms#loadMenuPrototype()
            \ "  or with a mouse <LeftMouse> click."
            \ ]
     endfunction
+    let g:forms#Menu.usage  = function("FORMS_MENU_usage")
 
   endif
 
@@ -13647,7 +14046,7 @@ function! forms#loadGridPrototype()
 
     let g:forms#Grid.__needToLoadCache = 1
 
-    function! g:forms#Grid.delete(...) dict
+    function! FORMS_GRID_delete(...) dict
 "call forms#log("Grid.delete: TOP")
       for minor in self.major()
         for child in minor
@@ -13661,24 +14060,28 @@ function! forms#loadGridPrototype()
       call call(p.delete, [p], self)
 "call forms#log("Grid.delete: BOTTOM")
     endfunction
+    let g:forms#Grid.delete  = function("FORMS_GRID_delete")
 
-    function! g:forms#Grid.hide() dict
+    function! FORMS_GRID_hide() dict
       for minor in self.major()
         for child in minor
           call child.hide()
         endfor
       endfor
     endfunction
+    let g:forms#Grid.hide  = function("FORMS_GRID_hide")
 
-    function! g:forms#Grid.nodeType() dict
+    function! FORMS_GRID_nodeType() dict
       return g:GRID_NODE
     endfunction
+    let g:forms#Grid.nodeType  = function("FORMS_GRID_nodeType")
 
-    function! g:forms#Grid.major() dict
+    function! FORMS_GRID_major() dict
       return self.__grid
     endfunction
+    let g:forms#Grid.major  = function("FORMS_GRID_major")
 
-    function! g:forms#Grid.init(attrs) dict
+    function! FORMS_GRID_init(attrs) dict
 "call forms#log("g:forms#Grid.init TOP")
       call call(g:forms#Glyph.init, [a:attrs], self)
 
@@ -13876,8 +14279,9 @@ function! forms#loadGridPrototype()
 "call forms#log("g:forms#Grid.init BOTTOM")
       return self
     endfunction
+    let g:forms#Grid.init  = function("FORMS_GRID_init")
 
-    function! g:forms#Grid.reinit(attrs) dict
+    function! FORMS_GRID_reinit(attrs) dict
 " call forms#log("g:forms#Grid.reinit TOP")
       let oldRLS = self.__required_left_space
 
@@ -13905,8 +14309,9 @@ function! forms#loadGridPrototype()
       " TODO too strong?
       call forms#PrependUniqueInput({'type': 'ReSize'})
     endfunction
+    let g:forms#Grid.reinit  = function("FORMS_GRID_reinit")
 
-    function! g:forms#Grid.requestedSize() dict
+    function! FORMS_GRID_requestedSize() dict
 " call forms#log("g:forms#Grid.requesting TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
@@ -14061,9 +14466,10 @@ function! forms#loadGridPrototype()
         return [total_width, total_height]
       endif
     endfunction
+    let g:forms#Grid.requestedSize  = function("FORMS_GRID_requestedSize")
 
 
-    function! g:forms#Grid.drawBoxes() dict
+    function! FORMS_GRID_drawBoxes() dict
       if exists("self.__mode")
         let a = self.__allocation
         let column_width = self.__max_column_width
@@ -14071,10 +14477,11 @@ function! forms#loadGridPrototype()
         call forms#DrawBoxes(self.__mode, a, column_width, row_height)
       endif
     endfunction
+    let g:forms#Grid.drawBoxes  = function("FORMS_GRID_drawBoxes")
 
 
 
-    function! g:forms#Grid.draw(allocation) dict
+    function! FORMS_GRID_draw(allocation) dict
 " call forms#log("g:forms#Grid.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
@@ -14242,6 +14649,7 @@ function! forms#loadGridPrototype()
         call AugmentGlyphHilight(self, "DisableHi", a)
       endif                     
     endfunction
+    let g:forms#Grid.draw  = function("FORMS_GRID_draw")
   endif
 
   return g:forms#Grid
