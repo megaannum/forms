@@ -243,6 +243,11 @@ declared in the .vimrc file with:
 
 then, there ought not be a problem.
 
+## Linux urxvt256c & Vim
+
+Forms simply works on the version of rxvt that supports Unicode and 256
+colors, urxvt256c.
+
 ## Linux GVim
 
 Some testing has been done on the Linux GVim platform and all of the

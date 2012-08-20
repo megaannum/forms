@@ -18,18 +18,20 @@ For Vim instructions on installing this 'txt' file, enter:
       2.2 Dependency                             |forms-dependency|
       2.3 Directory layout                       |forms-directory-layout|
   3. Options                                 |forms-options|
-      3.1 Window Dump 
-      3.1 Log File
-      3.1 Gui Font
+      3.1 Window Text Dump 
+      3.2 Window Image 
+      3.3 Log File
+      3.4 Gui Font
   4. Mappings                                |forms-mappings|
   5. Fonts                                   |forms-fonts|
   6. Colors                                  |forms-colors|
   7. Highlights                              |forms-highlights|
   8. Supported Platforms                     |forms-platforms|
     8.1 Linux Xterm & Vim
-    8.2 Linux GVim
-    8.3 Mac GVim
-    8.4 Windows GVim
+    8.2 Linux urxvt256c & Vim
+    8.3 Linux GVim
+    8.4 Mac GVim
+    8.5 Windows GVim
   9. Glyphs                                  |forms-glyphs|
   10. Examples                               |forms-examples|
   11. FAQ                                    |forms-faq|
@@ -162,7 +164,7 @@ The {Forms} library has a small number of configuration options. If a user
 wished to tailor the configuration, the option should be defined prior to
 loading the {Forms} library code.
 
-Window Dump ~
+Window Text Dump ~
 
 When a form is displayed it is possible to take a window snapshot placing
 the text into a file. To do this the user enters <C-W>. Normally, 
@@ -186,6 +188,30 @@ Set window dump file name: >
     let g:forms_window_dump_file = "some_file_name"
 
 The default value for the dump file name is "VIM_WINDOW".
+Invoking this will overwrite any existing file.
+
+Window Image  ~
+
+On Unix XTerms or Rxvt terminal emulator it is possible to take a 
+'png' image of a Forms window. Simply enter <C-R> and the Forms
+library invokes the Unix command: >
+
+    import -window $WINDOWID {g:forms_window_image_file}.png
+
+where g:forms_window_image_file is the option for the name
+of the image file. The default value is "VIM_IMAGE".
+Normally, control-r maps to the 'redo' command, but in Forms it
+creates a window image.
+
+Enable window image: >
+    let g:forms_window_image_enabled = g:self#IS_TRUE
+Disable window image: >
+    let g:forms_window_image_enabled = g:self#IS_FALSE
+
+The default setting if true (1), window images are enabled.
+Invoking this will overwrite any existing file.
+If the executable 'import' does not exist, taking such an image
+is disabled.
 
 Log File~
 
@@ -380,16 +406,21 @@ file >
     set t_Co=256
 then, there ought not be a problem.
 
-8.2 Linux GVim ~
+8.2 Linux urxvt256c & Vim ~
+
+{Forms} simply works on the version of rxvt that supports Unicode and 256
+colors, urxvt256c.
+
+8.3 Linux GVim ~
 
 Some testing has been done on the Linux GVim platform and all of the
 demonstration forms seem to work as expected.
 
-8.3 Mac GVim ~
+8.4 Mac GVim ~
 
 No testing has been done on the Mac GVim configure. Feedback is welcome.
 
-8.4 Windows GVim ~
+8.5 Windows GVim ~
 
 No testing has been done on the Windows GVim configure. Feedback is welcome.
 

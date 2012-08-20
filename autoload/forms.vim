@@ -97,10 +97,24 @@ endif
 if ! exists("g:forms_window_dump_file") || g:self#IN_DEVELOPMENT_MODE
   let g:forms_window_dump_file = "VIM_WINDOW"
 endif
-" Enable/Disable screen dump. 
+" Enable/Disable window text dump. 
 " A window dump occurs when <C-W> is entered.
 if ! exists("g:forms_window_dump_enabled") || g:self#IN_DEVELOPMENT_MODE
   let g:forms_window_dump_enabled = g:self#IS_TRUE
+endif
+
+" If window image is enabled, the file to be used
+if ! exists("g:forms_window_image_file") || g:self#IN_DEVELOPMENT_MODE
+  let g:forms_window_image_file = "VIM_IMAGE"
+endif
+" Enable/Disable window image creation. 
+" A window image occurs when <C-R> is entered.
+if ! exists("g:forms_window_image_enabled") || g:self#IN_DEVELOPMENT_MODE
+  if executable("import")
+    let g:forms_window_image_enabled = g:self#IS_TRUE
+  else
+    let g:forms_window_image_enabled = g:self#IS_FALSE
+  endif
 endif
 
 " ++++++++++++++++++++++++++++++++++++++++++++
@@ -5329,8 +5343,8 @@ function! forms#loadFixedLengthFieldPrototype()
           let self.__clearInitText = g:self#IS_FALSE
         endif
 
-        let c = nr2char(a:nr)
 if 0
+        let c = nr2char(a:nr)
         if a:nr >= 32 && a:nr < 127
           let txt = join(self.__txtbuf, '')
           if self.__pos < strchars(txt)
@@ -10596,6 +10610,12 @@ endif
             if g:forms_window_dump_enabled
               if c == ''
                 execute ":w! ".g:forms_window_dump_file
+              endif
+            endif
+            if g:forms_window_image_enabled
+              if c == ''
+                let cmd = 'import -window $WINDOWID ' . g:forms_window_image_file . '.png'
+                call system(cmd)
               endif
             endif
 
