@@ -136,8 +136,8 @@ In your .vimrc, add self as shown below:
 
       ....
 
-      let g:vim_addon_manager.plugin_sources['self'] = {'type': 'git', 'url': 'git://github.com/megaannum/self.git'}
-      let g:vim_addon_manager.plugin_sources['forms'] = {'type': 'git', 'url': 'git://github.com/megaannum/forms.git'}
+      let g:vim_addon_manager.plugin_sources['self'] = {'type': 'git', 'url': 'git://github.com/megaannum/self'}
+      let g:vim_addon_manager.plugin_sources['forms'] = {'type': 'git', 'url': 'git://github.com/megaannum/forms'}
 
 
       let plugins = [
@@ -264,6 +264,10 @@ No testing has been done on the Windows GVim configure. Feedback is welcome.
 ## Vim
 
 [Vim location](http://www.vim.org/scripts/script.php?script_id=4150)
+
+## Tutorial
+
+There is a Forms tutorial which can be accessed at [Forms tutorial](https://github.com/megaannum/forms/blob/master/tutorial/forms/Tutorial.md).
 
 ## Acknowledgements and thanks
 
