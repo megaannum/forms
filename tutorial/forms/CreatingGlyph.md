@@ -15,20 +15,19 @@ the Glyph would like to occupy when drawn.
 The allocation contains the key/values for 'line', 'column', 'width', 
 and 'height'. A 'draw()' method generally follows this template:
 
+        function SomeGlyph.draw(allocation) dict
+          let self.__allocation = a:allocation
+          if self.__status != g:IS_INVISIBLE
+            " Code to draw Glyph
+          endif
 
-    function SomeGlyph.draw(allocation) dict
-      let self.__allocation = a:allocation
-      if self.__status != g:IS_INVISIBLE
-        " Code to draw Glyph
-      endif
-
-      " For interactive Glyphs
-      if self.__status == g:IS_DISABLED
-        " Code to 'color' the Glyph as "disabled"
-        " A "disabled" is one that can not accept focus
-        call AugmentGlyphHilight(self, "DisableHi", a)
-      endif
-    endfunction
+          " For interactive Glyphs
+          if self.__status == g:IS_DISABLED
+            " Code to 'color' the Glyph as "disabled"
+            " A "disabled" is one that can not accept focus
+            call AugmentGlyphHilight(self, "DisableHi", a)
+          endif
+        endfunction
 
 It is *critically* important when rendering a Glyph, that the Forms library
 can and does use multi-byte characters, UTF-8; that some character
