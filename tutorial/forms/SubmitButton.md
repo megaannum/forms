@@ -94,36 +94,36 @@ If the return value is an Event of 'type' 'Submit', that is, a 'Submit'
 Event, then the 'generateResults()' method is called which directly
 in turn calls the Function forms#GenerateResults():
 
-  function! forms#GenerateResults(glyph, results)
-    let nodeType = a:glyph.nodeType()
-    if nodeType == g:LEAF_NODE
-      call a:glyph.addResults(a:results)
+    function! forms#GenerateResults(glyph, results)
+      let nodeType = a:glyph.nodeType()
+      if nodeType == g:LEAF_NODE
+        call a:glyph.addResults(a:results)
 
-    elseif nodeType == g:MONO_NODE
-      call a:glyph.addResults(a:results)
+      elseif nodeType == g:MONO_NODE
+        call a:glyph.addResults(a:results)
 
-      call forms#GenerateResults(a:glyph.getBody(), a:results)
+        call forms#GenerateResults(a:glyph.getBody(), a:results)
 
-    elseif nodeType == g:POLY_NODE
-      call a:glyph.addResults(a:results)
+      elseif nodeType == g:POLY_NODE
+        call a:glyph.addResults(a:results)
 
-      for child in a:glyph.children()
-        call forms#GenerateResults(child, a:results)
-      endfor
-
-    elseif nodeType == g:GRID_NODE
-      call a:glyph.addResults(a:results)
-
-      for minor in a:glyph.major()
-        for child in minor
+        for child in a:glyph.children()
           call forms#GenerateResults(child, a:results)
         endfor
-      endfor
 
-    else
-      throw "Unknown glyph nodeType " . nodeType
-    endif
-  endfunction
+      elseif nodeType == g:GRID_NODE
+        call a:glyph.addResults(a:results)
+
+        for minor in a:glyph.major()
+          for child in minor
+            call forms#GenerateResults(child, a:results)
+          endfor
+        endfor
+
+      else
+        throw "Unknown glyph nodeType " . nodeType
+      endif
+    endfunction
 
 Note that this code recursively walks the Glyph tree visiting
 each child Glyph and calling each child Glyph's 'addResults()'
