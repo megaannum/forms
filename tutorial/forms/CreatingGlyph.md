@@ -15,6 +15,7 @@ the Glyph would like to occupy when drawn.
 The allocation contains the key/values for 'line', 'column', 'width', 
 and 'height'. A 'draw()' method generally follows this template:
 
+
     function SomeGlyph.draw(allocation) dict
       let self.__allocation = a:allocation
       if self.__status != g:IS_INVISIBLE
@@ -71,6 +72,7 @@ attributes. This approach should be used is some fundamental aspect of a
 Glyph, some attribute that one expects to be constant, needs to be changed.
 Consider the Label's 'reinit()' method which changes the Label's text:
 
+
     function! FORMS_LABEL_reinit(attrs) dict
       let oldText = self.__text
       let self.__text = ''
@@ -122,6 +124,7 @@ characters and Events. So, an interactive Glyph needs to define the methods:
   A Glyph can be enabled, disabled or invisible. If the Glyph is enabled, then
 and only then can it have focus, so the 'canFocus()' method should look like:
 
+
     function SomeGlyph.canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
@@ -146,12 +149,13 @@ error.
 while the Form is handling an 'Submit' Event to enter the Glyph's data into
 the 'results' Dictionary;
 
+
     function! SomeGlyph(results) dict
       let tag = self.getTag()
       let a:results[tag] = self.__some_data
     endfunction
 
-If the Glyph has multiple chunks of data, the value entered into the
+  If the Glyph has multiple chunks of data, the value entered into the
 'results' should be a ordered List of those chunks.
 
 * handleChar(nr)
@@ -173,7 +177,7 @@ the 'usage()' method should be defined:
   A Generic description of how a user interacts with the Glyph possible 
 including what keyboard and mouse events are handled.
 
-## Non=Interactive
+## Non-Interactive
 
 When a Glyph is non-interactive, none of the above methods needs to be 
 defined.
