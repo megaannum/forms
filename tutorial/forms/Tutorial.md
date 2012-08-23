@@ -22,7 +22,6 @@ response to keyboard and/or mouse events while a non-interactive Glyph
 does not. Well, thats mostly true. All Glyph's respond to a right mouse click,
 <RightMouse>, and displays context sensitive information in a popup.
 
-TODO
 For more detail see [Glyph Overview](https://github.com/megaannum/forms/blob/master/tutorial/forms/GlyphOverview.md)
 
 ## Code Structure
@@ -147,7 +146,6 @@ Not all Glyphs have to add a tag/result pair. Mostly, Editors, Radiobuttons,
 ToggleButtons, Sliders, and other interactive Glyphs that maintain user
 entered state are the ones that add such tag/result pairs.
 
-TODO
 For more detail see [Submit Button](https://github.com/megaannum/forms/blob/master/tutorial/forms/SubmitButton.md)
 
 ## Events (Submit Cancel)
@@ -160,7 +158,6 @@ Traditional forms can be:
 
 In each of these cases, the Buttons either generate a Submit Event or a Cancel Event and place the Event at the front of the input queue.
 
-TODO
 For more detail see [Events](https://github.com/megaannum/forms/blob/master/tutorial/forms/Events.md)
 
 ## Linking Glyphs
@@ -206,12 +203,24 @@ middle it does call the Viewer's version of the 'run()' method.
 
 For more detail see [Form](https://github.com/megaannum/forms/blob/master/tutorial/forms/Form.md)
 
-## Modifying an existing Glyph
+## Modifying an Existing Glyph
 
-TODO
+Sometimes an existing Glyph has most of what a developer wants and,
+with some minor adjustments, it would be just right. So, does one
+create a whole new Glyph Prototype or does one simply create a
+clone of the existing Prototype and then modify that Object.
+Of course, its a trade off. 
+
 For more detail see [Modifying Glyph](https://github.com/megaannum/forms/blob/master/tutorial/forms/ModifyingGlyph.md)
 
 ## Creating a new Glyph
+
+When creating a new Glyph kind for general usage, there are a number of
+things that must be considered. Is it a container Glyph which is to say,
+is it a Mono, Poly or Grid Glyph or is it a Leaf Glyph. Will it be
+an interactive Glyph of non-interactive. Will it handle Events.
+Will it work only if UTF-8 characters are available. Does it create 
+any highlighting. Can its size change during usage.
 
 TODO
 For more detail see [Creating Glyph](https://github.com/megaannum/forms/blob/master/tutorial/forms/CreatingGlyph.md)   

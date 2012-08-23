@@ -448,7 +448,7 @@ inheritance framework ({Self.vim} is the {Forms} library's sole dependency).
 
 At the base of the Glyph inheritance tree is the Glyph (forms#Glyph) which
 has the Self Object Prototype as its prototype. The Glyph prototype has
-method that define the behavior of all derived Glyph types as well as
+methods that define the behavior of all derived Glyph types as well as
 inheriting the Self Object's methods. When the term {Glyph} is used, much
 of the time it refers to an object that is based upon the Glyph Prototype.
 
