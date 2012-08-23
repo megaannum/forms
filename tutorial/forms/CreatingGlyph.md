@@ -54,13 +54,13 @@ own 'init()', which, of course, would call its Prototype's 'init()',
 in order to check the values of the attributes have been set to and
 make sure that all attributes that need to be set are set.
 
-    function SomeGlyph.init(attrs) dict
-      " call Prototype init method
-      call call(self.__prototype.init, [a:attrs], self)
-      " check attribute values, throw exception if bad
-      ...
-      return self
-    endfunction
+        function SomeGlyph.init(attrs) dict
+          " call Prototype init method
+          call call(self.__prototype.init, [a:attrs], self)
+          " check attribute values, throw exception if bad
+          ...
+          return self
+        endfunction
   
 Very important, remember that the 'init()' method returns 'self'.
 
@@ -71,19 +71,18 @@ attributes. This approach should be used is some fundamental aspect of a
 Glyph, some attribute that one expects to be constant, needs to be changed.
 Consider the Label's 'reinit()' method which changes the Label's text:
 
+        function! FORMS_LABEL_reinit(attrs) dict
+          let oldText = self.__text
+          let self.__text = ''
 
-    function! FORMS_LABEL_reinit(attrs) dict
-      let oldText = self.__text
-      let self.__text = ''
+          call call(g:forms#Leaf.reinit, [a:attrs], self)
 
-      call call(g:forms#Leaf.reinit, [a:attrs], self)
-
-      if oldText != self.__text
-        call forms#PrependUniqueInput({'type': 'ReSize'})
-      else
-        call forms#ViewerRedrawListAdd(self)
-      endif
-    endfunction
+          if oldText != self.__text
+            call forms#PrependUniqueInput({'type': 'ReSize'})
+          else
+            call forms#ViewerRedrawListAdd(self)
+          endif
+        endfunction
 
 Generally, the text associated with a Label is expected not to change.
 In the above, the old value of the text is saved and then the Label's
@@ -123,10 +122,9 @@ characters and Events. So, an interactive Glyph needs to define the methods:
   A Glyph can be enabled, disabled or invisible. If the Glyph is enabled, then
 and only then can it have focus, so the 'canFocus()' method should look like:
 
-
-    function SomeGlyph.canFocus() dict
-      return (self.__status == g:IS_ENABLED)
-    endfunction
+        function SomeGlyph.canFocus() dict
+          return (self.__status == g:IS_ENABLED)
+        endfunction
 
 * gainFocus()
   Sometimes a Glyph needs to take some action when it first gains focus.
@@ -148,11 +146,10 @@ error.
 while the Form is handling an 'Submit' Event to enter the Glyph's data into
 the 'results' Dictionary;
 
-
-    function! SomeGlyph(results) dict
-      let tag = self.getTag()
-      let a:results[tag] = self.__some_data
-    endfunction
+        function! SomeGlyph(results) dict
+          let tag = self.getTag()
+          let a:results[tag] = self.__some_data
+        endfunction
 
   If the Glyph has multiple chunks of data, the value entered into the
 'results' should be a ordered List of those chunks.
