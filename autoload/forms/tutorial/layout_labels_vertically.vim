@@ -29,7 +29,7 @@ function! forms#tutorial#layout_labels_vertically#Make()
                             \ ],
                             \ 'alignment':'C',
                             \ 'alignments': [[2,'L'], [4,'R']]
-                              })
+                            \ })
 
     let form = forms#newForm({'body': vpoly })
     function! form.purpose() dict
