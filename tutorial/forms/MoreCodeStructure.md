@@ -3,7 +3,7 @@
 In this example, a Form will created that has a couple of interactive
 Glyphs (editor, group of toggle buttons and group of radio buttons)
 which can generate data for the user. Then if 'Cancel'
-is selected (or <Esc> is pressed) no results will be returned. But,
+is selected (or &ltEsc> is pressed) no results will be returned. But,
 if 'Submit' is selected, a Dictionary holding the Glyph tag names
 as keys and the associated values will be echo to the command line.
 
@@ -136,7 +136,7 @@ Normally, code would be present to take the results and execute other
 code using those results.
 
 
-The full code for this do-nothing Form can be found in: [Results](https://github.com/megaannum/forms/blob/master/forms/tutorial/results.vim)
+The full code for this do-nothing Form can be found in: [Results](https://github.com/megaannum/forms/blob/master/autoload/forms/tutorial/results.vim)
 
 This Results Form can be run by entering:
 

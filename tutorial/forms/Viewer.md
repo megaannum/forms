@@ -9,7 +9,7 @@ first Glyph in that list is the Glyph that currently has focus.
 
 Also, the Viewer is pushed onto the Forms' Viewer Stack. Some events
 are handled differently if the Viewer is the only Viewer in the
-Stack or not. Also, when a <LeftMouse> click occurs outside of the
+Stack or not. Also, when a &ltLeftMouse> click occurs outside of the
 current Viewer, but still within the boundaries of the Form, then
 Viewers are popped off the Viewer Stack until a Viewer is found
 that contains the line/column position of the mouse click and it
@@ -39,7 +39,7 @@ The following is a list of the Event types:
 * Exit
   - Action: exit current viewer, if top viewer, no results data
   - Also used as top-of-stack return value for Viewer
-  - The character <Esc> is mapped to Exit
+  - The character &ltEsc> is mapped to Exit
 * Cancel 
   - Action: exit form, no results data
   - Also used as top-of-stack return value for Viewer
@@ -49,33 +49,33 @@ The following is a list of the Event types:
   - Action: generate context help Form with application specific help/info
      and developer tools
   - Data: optional Point [line, column]
-  - The character <RightMouse> is mapped to Context
+  - The character &ltRightMouse> is mapped to Context
 * Drag
   - Action: none
-  - The character <LeftDrag> is mapped to Drag
+  - The character &ltLeftDrag> is mapped to Drag
 * Release
   - Action: none
-  - The character <LeftRelease> is mapped to Release
+  - The character &ltLeftRelease> is mapped to Release
 * NewFocus
   - Action: find new focus based upon mouse coordinates
-  - The character <LeftMouse> is mapped to NewFocus
+  - The character &ltLeftMouse> is mapped to NewFocus
   - Also, if a Viewer is the target of a Select Event, it is mapped
     to NewFocus
 * NextFocus
   - Action: go to next focus
-  - The characters <Tab>, <C-n> and <Down> is mapped to NextFocus
-  - The mouse <ScrollWheelDown> event is mapped to NextFocus
+  - The characters &ltTab>, &ltC-n> and &ltDown> is mapped to NextFocus
+  - The mouse &ltScrollWheelDown> event is mapped to NextFocus
 * PrevFocus
   - Action: go to previous focus
-  - The characters <S-Tab>, <C-p> and <Up> is mapped to PrevFocus
+  - The characters &ltS-Tab>, &ltC-p> and &ltUp> is mapped to PrevFocus
       (Note: could not test S-Tab on my system.)
-  - The mouse <ScrollWheelUp> event is mapped to PrevFocus
+  - The mouse &ltScrollWheelUp> event is mapped to PrevFocus
 * FirstFocus
   - Action: go to first focus glyph
-  - The character <Home> is mapped to FirstFocus
+  - The character &ltHome> is mapped to FirstFocus
 * LastFocus
   - Action: go to last focus glyph
-  - The character <End> is mapped to LastFocus
+  - The character &ltEnd> is mapped to LastFocus
 * ReDraw
   - Action: redraw Form in window
 * ReDrawAll
@@ -92,7 +92,7 @@ The following is a list of the Event types:
 * SelectDouble
   - Action: a left mouse double click occured
   - Data: Point [line, column]
-  - The mouse <2-LeftMouse> event is mapped to SelectDouble
+  - The mouse &lt2-LeftMouse> event is mapped to SelectDouble
 * Sleep
   - Action: Viewer Event handling sleeps for given time.
   - Data: time: Number (e.g., 10) or String (Number+'m' e.g., 200m)
@@ -128,5 +128,5 @@ and the 'run()' method returns.
 
 It is possible to have a Viewer none of whose descendant Glyphs can
 accept focus. In that case, its is a display-only Viewer and the
-only thing a user can do is enter <Esc> to exit the Viewer or
-enter <Ctrl-H> which will provide context-sensitive-help.
+only thing a user can do is enter &ltEsc> to exit the Viewer or
+enter &ltCtrl-H> which will provide context-sensitive-help.

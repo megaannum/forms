@@ -108,7 +108,7 @@ determine if a Glyph has been rendered at least once.
 A Form Glyph is a Viewer Glyph; the Form 'run()' method calls the Viewer 'run()'
 method. The Viewer 'run()' method returns one of the following Event types:
 
-* Exit: Character <Esc> maps to 'Exit' and Form returns empty Dictionary.
+* Exit: Character &ltEsc> maps to 'Exit' and Form returns empty Dictionary.
 * ReSize: The size of the form has changed, the window text is recaptured and the Viewer 'run()' method is called again. 
 * Command: A command to execute on the command-line, and an empty Dictionary is
 returned.

@@ -116,7 +116,7 @@ This code is placed into a function:
       " label code
     endfunction
 
-The full code for the Label can be found in: [Editor Slider](https://github.com/megaannum/forms/blob/maseter/autoload/forms/tutorial/editor_slider.vim)
+The full code for the Label can be found in: [Editor Slider](https://github.com/megaannum/forms/blob/master/autoload/forms/tutorial/editor_slider.vim)
 
 To run the label code, source the editor_slider.vim file and then enter
 
