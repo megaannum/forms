@@ -3,7 +3,7 @@
 In this example, a Form will created that has a couple of interactive
 Glyphs (editor, group of toggle buttons and group of radio buttons)
 which can generate data for the user. Then if 'Cancel'
-is selected (or &ltEsc> is pressed) no results will be returned. But,
+is selected (or &lt;Esc> is pressed) no results will be returned. But,
 if 'Submit' is selected, a Dictionary holding the Glyph tag names
 as keys and the associated values will be echo to the command line.
 

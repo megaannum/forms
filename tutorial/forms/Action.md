@@ -100,11 +100,11 @@ in general, how an active Form would launch a sub-Form:
         \ 'action': subformAction})
 
 Here, when the 'subformbutton' is selected (with a mouse 'Select' Event or
-a keyboard &ltCR>/&ltSpace>), the 'LaunchSubFormFunc' is called
+a keyboard &lt;CR>/&lt;Space>), the 'LaunchSubFormFunc' is called
 and a new sub-Form is run. When the sub-Form stops running, exits its 'run()'
 method, control is returned to the 'LaunchSubFormFunc' function, which in 
 this case, simply exits and control is returned to the Form/Viewer that
-originally passed the 'Select' Event (or keyboard &ltCR>/&ltSpace>) to the Button.
+originally passed the 'Select' Event (or keyboard &lt;CR>/&lt;Space>) to the Button.
 
 The Event/Action model is pretty simple to follow.
 

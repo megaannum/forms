@@ -56,15 +56,15 @@ is ignored by the Form. There are some user character/mouse inputs
 that the Form its self responses to. 
 
 One such character, in particular, is very relevant for this Form and that 
-is the &ltEsc> character. To stop this Form from running, since it has 
-no explicit 'close' or 'submit' Button, is to press the &ltEsc> key.
+is the &lt;Esc> character. To stop this Form from running, since it has 
+no explicit 'close' or 'submit' Button, is to press the &lt;Esc> key.
 
-The &ltCntl-H> keyboard entry is also handled by the Form. It the way of
+The &lt;Cntl-H> keyboard entry is also handled by the Form. It the way of
 invoking context-sensitive-help from the keyboard. Any 'purpose' information
 associated with the Form will be displayed in an information dialog.
 
-Additionally, the Form responds to a &ltRightMouse> click. Like the keyboard
-&ltCntl-H>, this will display Form context-sensitive-help. If
+Additionally, the Form responds to a &lt;RightMouse> click. Like the keyboard
+&lt;Cntl-H>, this will display Form context-sensitive-help. If
 the mouse click was over an interactive Glyph, a Glyph that can have 
 focus, then, both Glyph usage Help is displayed and any purpose Help 
 associated with the Glyph is also displayed.

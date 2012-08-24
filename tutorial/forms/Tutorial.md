@@ -20,7 +20,7 @@ A Glyph can be be interactive (have focus) or non-interactive.
 An interactive Glyph
 response to keyboard and/or mouse events while a non-interactive Glyph
 does not. Well, thats mostly true. All Glyph's respond to a right mouse click,
-&ltRightMouse>, and displays context sensitive information in a popup.
+&lt;RightMouse>, and displays context sensitive information in a popup.
 
 For more detail see [Glyph Overview](https://github.com/megaannum/forms/blob/master/tutorial/forms/GlyphOverview.md)
 
@@ -91,7 +91,7 @@ For more detail see [Boxes](https://github.com/megaannum/forms/blob/master/tutor
 ## Action
 
 Associated with many interactive Glyphs are Actions. When you click a button,
-its Action executes. When you enter &ltCR> on a line editor, its Action executes.
+its Action executes. When you enter &lt;CR> on a line editor, its Action executes.
 When a slider is moved, its Action executes. All interactive Glyphs with
 Actions execute the Action provided by the developer or executes its
 default Action, the NoOp-Action that does nothing.
@@ -118,8 +118,8 @@ For more detail see [Command](https://github.com/megaannum/forms/blob/master/tut
 ## Button
 
 A Button is an interactive Glyph. A Button can have an Action Object associated
-with it or a command String. When it is selected (&ltCR>, &ltSpace>
-or &ltRightMouse>), if the Button has an  Action, that Action executes.
+with it or a command String. When it is selected (&lt;CR>, &lt;Space>
+or &lt;RightMouse>), if the Button has an  Action, that Action executes.
 If the Button has a command, the Button creates an Event of type "Command"
 with an additional entry of key "command" and value the Button's command
 String and places the Command Event at the front of the input queue.
