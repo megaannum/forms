@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 July 19
 
 Author:      Richard Emberson 
-Version:     1.3
+Version:     1.5
 Title:       Forms Library
 Homepage:    TODO
 
@@ -939,11 +939,17 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.5   - Fix: ~
+    Refactored code, Color utilities and Terminal code in separate files
+    Refactored code, Highlighting values defined and generated
+    Corrected XTerm colors
+    Added urxvt 88 color suport (Color Util and Forms Highlight)
+    Added Konsole and urxvt256c
+    Note: Konsole does not draw UTF-8 9608 2588 FULL BLOCK correctly
 1.4   - Fix: ~
     Changed Glyph 'kind' to node type and method kind() to nodeType().
     Adjusted to use Self Version 2.1 '_kind' rather than '_type' attribute.
     Glyph methods are now named not numbered.
-
 1.3   - Fix: ~
     Better support for both 'light' and 'dard' backgrounds.
     Added simple visual test scripts and 'Sleep' Event.

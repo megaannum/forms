@@ -80,7 +80,7 @@ function!  forms#dialog#color#Make(with_pallet)
 " call forms#log("CCSlider2InfoAction.execute: rgbtxt=".rgbtxt)
     call self.rgbeditor.setText(rgbtxt)
 
-    let n = g:ColorUtil().ConvertRGB2IntNew(rn,gn,bn)
+    let n = forms#color#term#ConvertRGB_2_Int(rn,gn,bn)
 " call forms#log("CCSlider2InfoAction.execute: n=".n)
     call self.neditor.setText(n)
 
@@ -122,7 +122,7 @@ function!  forms#dialog#color#Make(with_pallet)
       return
     endif
 
-    let n = g:ColorUtil().ConvertRGB2IntNew(rn,gn,bn)
+    let n = forms#color#term#ConvertRGB_2_Int(rn,gn,bn)
 " call forms#log("CCSlider2InfoAction.execute: n=".n)
     call self.neditor.setText(n)
 
@@ -160,7 +160,7 @@ function!  forms#dialog#color#Make(with_pallet)
   function! CCNEditor2OthersAction(...) dict
     let n = "".a:1
 " call forms#log("CCNEditor2OthersAction.execute: n=".n)
-    let rgbtxt = g:ColorUtil().ConvertInt2RGB(n)
+    let rgbtxt = forms#color#term#ConvertInt_2_RGB(n)
 " call forms#log("CCNEditor2OthersAction.execute: rgbtxt=".rgbtxt)
 
     call self.rgbeditor.setText(rgbtxt)
@@ -223,9 +223,15 @@ function!  forms#dialog#color#Make(with_pallet)
 
   "----
 
+if has("gui_running") || &t_Co == 256
   :hi CCRedHi    cterm=NONE ctermbg=196 guibg=#ff0000
   :hi CCGreenHi  cterm=NONE ctermbg=46  guibg=#00ff00
   :hi CCBlueHi   cterm=NONE ctermbg=21  guibg=#0000ff
+elseif &t_Co == 88
+  :hi CCRedHi    cterm=NONE ctermbg=64 guibg=#ff0000
+  :hi CCGreenHi  cterm=NONE ctermbg=28  guibg=#00ff00
+  :hi CCBlueHi   cterm=NONE ctermbg=19  guibg=#0000ff
+endif
 
   "----
   let rhsa = forms#newAction({ 'execute': function("CCSliderAction")})
@@ -808,13 +814,13 @@ endif
         let tintf = str2float(tinttxt)
         let shadetxt = block.shadeeditor.getText()
         let shadef = str2float(shadetxt)
-        let [rn1,gn1,bn1] = g:ColorUtil().TintRGB(tintf, a:rn, a:gn, a:bn)
-        let [rn1,gn1,bn1] = g:ColorUtil().ShadeRGB(shadef, rn1, gn1, bn1)
+        let [rn1,gn1,bn1] = forms#color#util#TintRGB(tintf, a:rn, a:gn, a:bn)
+        let [rn1,gn1,bn1] = forms#color#util#ShadeRGB(shadef, rn1, gn1, bn1)
       else
         let [rn1,gn1,bn1] = [a:rn, a:gn, a:bn]
       endif
 
-      let n1 = g:ColorUtil().ConvertRGB2IntNew(rn1,gn1,bn1)
+      let n1 = forms#color#term#ConvertRGB_2_Int(rn1,gn1,bn1)
       let rgbtxt1 = printf('%02x%02x%02x',rn1,gn1,bn1)
       if((0.5*rn1+gn1+0.3*bn1)>220)
         let ctermfg = "0"
@@ -977,7 +983,7 @@ endif
 
       call self.cmmonochromaticdraction.execute(rn, gn, bn)
 
-      let [rn,gn,bn] = g:ColorUtil().ComplimentRGBusingHSV(rn, gn, bn)
+      let [rn,gn,bn] = forms#color#util#ComplimentRGBusingHSV(rn, gn, bn)
       call self.ccdraction.execute(rn, gn, bn)
 
 " call forms#log("CCComplimentaryAction.execute: BOTTOM")
@@ -1114,7 +1120,7 @@ endif
       call self.scmmonochromaticdraction.execute(rn, gn, bn)
 
       let shift = g:forms#dialog#color#splitComplimentaryShiftInit
-      let [rgb1,rgb2] = g:ColorUtil().SplitComplimentaryRGBusingHSV(shift, rn, gn, bn)
+      let [rgb1,rgb2] = forms#color#util#SplitComplimentaryRGBusingHSV(shift, rn, gn, bn)
       let [rn1,gn1,bn1] = rgb1
       let [rn2,gn2,bn2] = rgb2
 
@@ -1272,7 +1278,7 @@ endif
       call self.acmmonochromaticdraction.execute(rn, gn, bn)
 
       let shift = g:forms#dialog#color#analogicShiftInit
-      let [rgb1,rgb2] = g:ColorUtil().AnalogicRGBusingHSV(shift, rn, gn, bn)
+      let [rgb1,rgb2] = forms#color#util#AnalogicRGBusingHSV(shift, rn, gn, bn)
       let [rn1,gn1,bn1] = rgb1
       let [rn2,gn2,bn2] = rgb2
 
@@ -1458,7 +1464,7 @@ endif
       call self.aacmmonochromaticdraction.execute(rn, gn, bn)
 
       let shift = g:forms#dialog#color#accentedAnalogicShiftInit
-      let [rgb1,rgb2] = g:ColorUtil().AnalogicRGBusingHSV(shift, rn, gn, bn)
+      let [rgb1,rgb2] = forms#color#util#AnalogicRGBusingHSV(shift, rn, gn, bn)
       let [rn1,gn1,bn1] = rgb1
       let [rn2,gn2,bn2] = rgb2
       " analogic 1
@@ -1467,7 +1473,7 @@ endif
       call self.aa2ccdraction.execute(rn2, gn2, bn2)
 
       " comp
-      let [rn,gn,bn] = g:ColorUtil().ComplimentRGBusingHSV(rn, gn, bn)
+      let [rn,gn,bn] = forms#color#util#ComplimentRGBusingHSV(rn, gn, bn)
       call self.aaccdraction.execute(rn, gn, bn)
 
 " call forms#log("AACCComplimentaryAction.execute: BOTTOM")
@@ -1632,7 +1638,7 @@ endif
 
       call self.tmmonochromaticdraction.execute(rn, gn, bn)
 
-      let [rgb1,rgb2] = g:ColorUtil().TriadicRGBusingHSV(rn, gn, bn)
+      let [rgb1,rgb2] = forms#color#util#TriadicRGBusingHSV(rn, gn, bn)
       let [rn1,gn1,bn1] = rgb1
       let [rn2,gn2,bn2] = rgb2
       " triadic 1
@@ -1816,7 +1822,7 @@ endif
       call self.dcmmonochromaticdraction.execute(rn, gn, bn)
 
       let shift = g:forms#dialog#color#doubleComplimentaryShiftInit
-      let [m,c,cm] = g:ColorUtil().DoubleContrastRGBusingHSV(shift, rn, gn, bn)
+      let [m,c,cm] = forms#color#util#DoubleContrastRGBusingHSV(shift, rn, gn, bn)
       let [mrn,mgn,mbn] = m
       let [crn,cgn,cbn] = c
       let [cmrn,cmgn,cmbn] = cm

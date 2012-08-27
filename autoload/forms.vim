@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 06/30/2012
-" Version:       1.3
+" Version:       1.5
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -81,7 +81,7 @@ set cpo&vim
 " ------------------------------------------------------------ 
 if !exists("*forms#reload")
   if g:self#IN_DEVELOPMENT_MODE
-    function forms#reload() 
+    function! forms#reload() 
       call self#reload('forms#')
       call self#reload('self#')
     endfunction
@@ -163,6 +163,181 @@ augroup END
 
 function! s:LoadeHighlights() 
 
+
+if &background == 'light' 
+  let backgroundColor = 'dadada'
+  let hotspotColor = '00ff00'
+  let flashColor = 'ffff87'
+  let toggleselectedColor = '5fffff'
+  let selectedColor = '5fffff'
+  let buttonColor = 'bcbcbc'
+  let buttonflashColor = '767676'
+
+  " Frame
+  " derive FrameHi values from BackgroundHi values
+  let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
+  let frameTintAjust = 0.28
+  let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
+  let framefgColor = printf('%02x%02x%02x',rt,gt,bt)
+  let frameShadeAjust = 0.15
+  let [rs, gs, bs] = forms#color#util#ShadeRGB(frameShadeAjust, r, g, b)
+  let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
+
+  " DropShadow
+  " derive DropShadowHi values from BackgroundHi values
+  let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
+  let dropshadowShadeAjust = 0.135
+  let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
+  let dropshadowfgColor = printf('%02x%02x%02x',rs,gs,bs)
+  let dropshadowbgColor = backgroundColor
+
+  let disableColor = 'ffaf00'
+  let menuColor = backgroundColor
+  let menumnemonicColor = backgroundColor
+  let menuhotspotColor = 'ff00d7'
+  let menumnemonichotspotColor = 'ff00d7'
+
+else " &background == 'dark'
+
+  "let backgroundColor = '303030'
+  let backgroundColor = '5c5c5c'
+  let hotspotColor = '00ff00'
+  let flashColor = 'ffff87'
+  let toggleselectedColor = '5fffff'
+  let selectedColor = '5fffff'
+  let buttonColor = '585858'
+  let buttonflashColor = '9e9e9e'
+
+  " :hi FrameHi             gui=NONE guifg=#3a3a3a guibg=#262626
+  " Frame
+  " derive FrameHi values from BackgroundHi values
+"let g:forms_log_enabled = g:self#IS_TRUE
+"call forms#log("FRAME COLOR")
+"call forms#log("backgroundColor=".backgroundColor)
+  let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
+  let frameTintAjust = 0.28
+  let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
+  let framefgColor = printf('%02x%02x%02x',rt,gt,bt)
+"call forms#log("framefgColor=".framefgColor)
+  " let frameShadeAjust = 0.15
+  let frameShadeAjust = 0.5
+  let [rs, gs, bs] = forms#color#util#ShadeRGB(frameShadeAjust, r, g, b)
+  let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
+"call forms#log("framebgColor=".framebgColor)
+"let g:forms_log_enabled = g:self#IS_FALSE
+
+" light  :hi DropShadowHi        gui=NONE guibg=#dadada guifg=#bcbcbc
+       " :hi DropShadowHi        gui=NONE guibg=#303030 guifg=#080808
+  " DropShadow
+  " derive DropShadowHi values from BackgroundHi values
+"let g:forms_log_enabled = g:self#IS_TRUE
+"call forms#log("DROPSHADOW COLOR")
+"call forms#log("backgroundColor=".backgroundColor)
+  let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
+  "let dropshadowShadeAjust = 0.135
+  let dropshadowShadeAjust = 0.5
+  let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
+  let dropshadowfgColor = printf('%02x%02x%02x',rs,gs,bs)
+"call forms#log("dropshadowfgColor=".dropshadowfgColor)
+  let dropshadowbgColor = backgroundColor
+"let g:forms_log_enabled = g:self#IS_FALSE
+
+  let disableColor = 'ffaf00'
+  let menuColor = backgroundColor
+  let menumnemonicColor = backgroundColor
+  let menuhotspotColor = 'ff00d7'
+  let menumnemonichotspotColor = 'ff00d7'
+
+endif " background
+
+if has("gui_running")
+
+  execute "hi ReverseHi           gui=reverse guibg=#" . backgroundColor
+  execute "hi HotSpotHi           gui=NONE guibg=#" . hotspotColor
+  execute "hi ReverseHotSpotHi    gui=reverse guibg=#" . hotspotColor
+  execute "hi FlashHi             gui=NONE guibg=#" . flashColor
+
+  execute "hi ToggleSelectedHi    gui=NONE guibg=#" . toggleselectedColor
+  execute "hi SelectedHi          gui=bold guibg=#" . selectedColor
+
+  execute "hi ButtonHi            gui=NONE guibg=#" . buttonColor
+  execute "hi ButtonFlashHi       gui=NONE guibg=#" . buttonflashColor
+
+  execute "hi BackgroundHi        gui=NONE guibg=#" . backgroundColor
+
+  execute "hi FrameHi             gui=NONE guifg=#".framefgColor." guibg=#" . framebgColor
+  execute "hi DropShadowHi        gui=NONE guibg=#".dropshadowbgColor." guifg=#" . dropshadowfgColor
+
+  execute "hi DisableHi           gui=NONE guibg=#" . disableColor
+
+  execute "hi MenuHi              gui=NONE guibg=#" . menuColor
+  execute "hi MenuMnemonicHi      gui=underline guibg=#" . menumnemonicColor
+  execute "hi MenuHotSpotHi       gui=NONE guibg=#" . menuhotspotColor
+  execute "hi MenuMnemonicHotSpotHi  gui=underline guibg=#" . menumnemonichotspotColor
+
+else
+  let backgroundNumber = forms#color#term#ConvertRGBTxt_2_Int(backgroundColor)
+  execute "hi ReverseHi           cterm=reverse ctermbg=" . backgroundNumber
+
+  let hotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(hotspotColor)
+  execute "hi HotSpotHi           cterm=NONE ctermbg=" . hotspotNumber
+  execute "hi ReverseHotSpotHi    cterm=reverse ctermbg=" . hotspotNumber
+
+  let flashNumber = forms#color#term#ConvertRGBTxt_2_Int(flashColor)
+  execute "hi FlashHi             cterm=NONE ctermbg=" . flashNumber
+
+  let toggleselectedNumber = forms#color#term#ConvertRGBTxt_2_Int(toggleselectedColor)
+  execute "hi ToggleSelectedHi   cterm=bold ctermbg=" toggleselectedNumber
+
+  let selectedNumber = forms#color#term#ConvertRGBTxt_2_Int(selectedColor)
+  execute "hi SelectedHi          cterm=bold ctermbg=" . selectedNumber
+
+  let buttonNumber = forms#color#term#ConvertRGBTxt_2_Int(buttonColor)
+  execute "hi ButtonHi            cterm=NONE ctermbg=" . buttonNumber
+
+  let buttonflashNumber = forms#color#term#ConvertRGBTxt_2_Int(buttonflashColor)
+  execute "hi ButtonFlashHi       cterm=NONE ctermbg=" . buttonflashNumber
+
+  execute "hi BackgroundHi        cterm=NONE ctermbg=" . backgroundNumber
+
+"let g:forms_log_enabled = g:self#IS_TRUE
+"call forms#log("FRAME")
+"call forms#log("backgroundNumber=".backgroundNumber)
+  let framefgNumber = forms#color#term#ConvertRGBTxt_2_Int(framefgColor)
+"call forms#log("framefgNumber=".framefgNumber)
+  let framebgNumber = forms#color#term#ConvertRGBTxt_2_Int(framebgColor)
+"call forms#log("framebgNumber=".framebgNumber)
+  execute "hi FrameHi             cterm=NONE ctermfg=".framefgNumber." ctermbg=" . framebgNumber
+"let g:forms_log_enabled = g:self#IS_FALSE
+
+"let g:forms_log_enabled = g:self#IS_TRUE
+"call forms#log("DROPSHADOW")
+"call forms#log("backgroundNumber=".backgroundNumber)
+  let dropshadowfgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowfgColor)
+  let dropshadowbgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowbgColor)
+"call forms#log("dropshadowfgNumber=".dropshadowfgNumber)
+  execute "hi DropShadowHi        cterm=NONE ctermbg=".dropshadowbgNumber." ctermfg=" . dropshadowfgNumber
+"let g:forms_log_enabled = g:self#IS_FALSE
+
+
+  let disableNumber = forms#color#term#ConvertRGBTxt_2_Int(disableColor)
+  execute "hi DisableHi           cterm=NONE ctermbg=" . disableNumber
+
+  let menuNumber = forms#color#term#ConvertRGBTxt_2_Int(menuColor)
+  execute "hi MenuHi              cterm=None ctermbg=" . menuNumber
+
+  let menumnemonicNumber = forms#color#term#ConvertRGBTxt_2_Int(menumnemonicColor)
+  execute "hi MenuMnemonicHi      cterm=underline ctermbg=" . menumnemonicNumber
+
+  let menuhotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(menuhotspotColor)
+  execute "hi MenuHotSpotHi       cterm=None ctermbg=" . menuhotspotNumber
+
+  let menumnemonichotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(menumnemonichotspotColor)
+  execute "hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=" . menumnemonichotspotNumber
+endif
+
+if 0
+
 if &background == 'light' 
 
 if has("gui_running")
@@ -173,7 +348,7 @@ if has("gui_running")
   :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
   :hi FlashHi             gui=NONE guibg=#ffff87
 
-  :hi ToggleSelectionHi   gui=NONE guibg=#5fffff
+  :hi ToggleSelectedHi   gui=NONE guibg=#5fffff
 
   :hi SelectedHi          gui=bold guibg=#5fffff
 
@@ -203,7 +378,7 @@ elseif &t_Co == 256
   :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
   :hi FlashHi             cterm=NONE ctermbg=228 
 
-  :hi ToggleSelectionHi   cterm=bold ctermbg=87 
+  :hi ToggleSelectedHi   cterm=bold ctermbg=87 
 
   :hi SelectedHi          cterm=bold ctermbg=87 
 
@@ -224,7 +399,35 @@ elseif &t_Co == 256
   :hi MenuHotSpotHi       cterm=None ctermbg=200 
   :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 
 
-else " t_Co < 256
+elseif &t_Co == 88
+
+  :hi ReverseHi           cterm=reverse ctermbg=86
+  :hi HotSpotHi           cterm=NONE ctermbg=28
+  :hi ReverseHotSpotHi    cterm=reverse ctermbg=28
+  :hi FlashHi             cterm=NONE ctermbg=77
+
+  :hi ToggleSelectedHi   cterm=bold ctermbg=47 
+
+  :hi SelectedHi          cterm=bold ctermbg=47 
+
+  :hi ButtonHi            cterm=NONE ctermbg=85
+  :hi ButtonFlashHi       cterm=NONE ctermbg=82
+
+  :hi BackgroundHi        cterm=NONE ctermbg=86 
+
+  :hi FrameHi             cterm=NONE ctermfg=87 ctermbg=86
+
+  :hi DropShadowHi        cterm=NONE ctermbg=86 ctermfg=85
+
+  :hi DisableHi           cterm=NONE ctermbg=72
+
+  :hi MenuHi              cterm=None ctermbg=86 
+  :hi MenuMnemonicHi      cterm=underline ctermbg=86 
+
+  :hi MenuHotSpotHi       cterm=None ctermbg=13
+  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=13
+
+else " t_Co < 88
 
   " TODO: I have no idea if these values look ok
   :hi ReverseHi           cterm=reverse ctermbg=LightGrey
@@ -232,7 +435,7 @@ else " t_Co < 256
   :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
   :hi FlashHi             ctermbg=LightYellow
 
-  :hi ToggleSelectionHi   cterm=bold ctermbg=LightBlue
+  :hi ToggleSelectedHi   cterm=bold ctermbg=LightBlue
 
   :hi SelectedHi          cterm=bold ctermbg=LightBlue
 
@@ -258,7 +461,7 @@ if has("gui_running")
   :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
   :hi FlashHi             gui=NONE guibg=#ffff87
 
-  :hi ToggleSelectionHi   gui=bold guibg=#5fffff
+  :hi ToggleSelectedHi   gui=bold guibg=#5fffff
 
   :hi SelectedHi          gui=bold guibg=#5fffff
 
@@ -286,7 +489,7 @@ elseif &t_Co == 256
   :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
   :hi FlashHi             cterm=NONE ctermbg=228 
 
-  :hi ToggleSelectionHi   cterm=bold ctermbg=87 
+  :hi ToggleSelectedHi   cterm=bold ctermbg=87 
 
   :hi SelectedHi          cterm=bold ctermbg=87 
 
@@ -316,7 +519,7 @@ else " t_Co < 256
   :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
   :hi FlashHi             ctermbg=LightYellow
 
-  :hi ToggleSelectionHi   cterm=bold ctermbg=LightBlue
+  :hi ToggleSelectedHi   cterm=bold ctermbg=LightBlue
 
   :hi SelectedHi          cterm=bold ctermbg=LightBlue
 
@@ -334,6 +537,8 @@ else " t_Co < 256
 endif
 
 endif " background
+
+endif " if 0
 
 endfunction
 
@@ -651,7 +856,7 @@ function! ButtonGroupAddHi(buttongroup, allocation)
   call ButtonGroupDeleteHi(a:buttongroup)
 
   let pattern = GetMatchRange(a:allocation)
-  let a:buttongroup.__selectId = matchadd("ToggleSelectionHi", pattern)
+  let a:buttongroup.__selectId = matchadd("ToggleSelectedHi", pattern)
 endfunction
 
 " ------------------------------------------------------------ 
@@ -1965,1464 +2170,6 @@ if !exists("g:forms_Util")
   let g:forms_Util.drawHVAlign = function("FORMS_UTIL_drawHVAlign")
 
 endif
-
-
-"-------------------------------------------------------------------------------
-" Forms Color Utilities: {{{1
-"  Gets Color Utility object that has numerous support methods
-"    This utility deals with rgb and xterm 256 color values.
-"  parameters: NONE
-"-------------------------------------------------------------------------------
-if g:self#IN_DEVELOPMENT_MODE
-  if exists("g:FCU")
-    unlet g:FCU
-  endif
-endif
-function! g:ColorUtil()
-  if !exists("g:FCU")
-    let g:FCU = { }
-
-    " ------------------------------------------------------------ 
-    " Define Int2RGB Dictionary: {{{2
-    " ------------------------------------------------------------ 
-    let g:FCU.Int2RGB = {
-        \ '0': '000000',
-        \ '1': '800000',
-        \ '2': '008000',
-        \ '3': '808000',
-        \ '4': '000080',
-        \ '5': '800080',
-        \ '6': '008080',
-        \ '7': 'c0c0c0',
-        \ '8': '808080',
-        \ '9': 'ff0000',
-        \ '10': '00ff00',
-        \ '11': 'ffff00',
-        \ '12': '0000ff',
-        \ '13': 'ff00ff',
-        \ '14': '00ffff',
-        \ '15': 'ffffff',
-        \ '16': '000000',
-        \ '17': '00005f',
-        \ '18': '000087',
-        \ '19': '0000af',
-        \ '20': '0000d7',
-        \ '21': '0000ff',
-        \ '22': '005f00',
-        \ '23': '005f5f',
-        \ '24': '005f87',
-        \ '25': '005faf',
-        \ '26': '005fd7',
-        \ '27': '005fff',
-        \ '28': '008700',
-        \ '29': '00875f',
-        \ '30': '008787',
-        \ '31': '0087af',
-        \ '32': '0087d7',
-        \ '33': '0087ff',
-        \ '34': '00af00',
-        \ '35': '00af5f',
-        \ '36': '00af87',
-        \ '37': '00afaf',
-        \ '38': '00afd7',
-        \ '39': '00afff',
-        \ '40': '00d700',
-        \ '41': '00d75f',
-        \ '42': '00d787',
-        \ '43': '00d7af',
-        \ '44': '00d7d7',
-        \ '45': '00d7ff',
-        \ '46': '00ff00',
-        \ '47': '00ff5f',
-        \ '48': '00ff87',
-        \ '49': '00ffaf',
-        \ '50': '00ffd7',
-        \ '51': '00ffff',
-        \ '52': '5f0000',
-        \ '53': '5f005f',
-        \ '54': '5f0087',
-        \ '55': '5f00af',
-        \ '56': '5f00d7',
-        \ '57': '5f00ff',
-        \ '58': '5f5f00',
-        \ '59': '5f5f5f',
-        \ '60': '5f5f87',
-        \ '61': '5f5faf',
-        \ '62': '5f5fd7',
-        \ '63': '5f5fff',
-        \ '64': '5f8700',
-        \ '65': '5f875f',
-        \ '66': '5f8787',
-        \ '67': '5f87af',
-        \ '68': '5f87d7',
-        \ '69': '5f87ff',
-        \ '70': '5faf00',
-        \ '71': '5faf5f',
-        \ '72': '5faf87',
-        \ '73': '5fafaf',
-        \ '74': '5fafd7',
-        \ '75': '5fafff',
-        \ '76': '5fd700',
-        \ '77': '5fd75f',
-        \ '78': '5fd787',
-        \ '79': '5fd7af',
-        \ '80': '5fd7d7',
-        \ '81': '5fd7ff',
-        \ '82': '5fff00',
-        \ '83': '5fff5f',
-        \ '84': '5fff87',
-        \ '85': '5fffaf',
-        \ '86': '5fffd7',
-        \ '87': '5fffff',
-        \ '88': '870000',
-        \ '89': '87005f',
-        \ '90': '870087',
-        \ '91': '8700af',
-        \ '92': '8700d7',
-        \ '93': '8700ff',
-        \ '94': '875f00',
-        \ '95': '875f5f',
-        \ '96': '875f87',
-        \ '97': '875faf',
-        \ '98': '875fd7',
-        \ '99': '875fff',
-        \ '100': '878700',
-        \ '101': '87875f',
-        \ '102': '878787',
-        \ '103': '8787af',
-        \ '104': '8787d7',
-        \ '105': '8787ff',
-        \ '106': '87af00',
-        \ '107': '87af5f',
-        \ '108': '87af87',
-        \ '109': '87afaf',
-        \ '110': '87afd7',
-        \ '111': '87afff',
-        \ '112': '87d700',
-        \ '113': '87d75f',
-        \ '114': '87d787',
-        \ '115': '87d7af',
-        \ '116': '87d7d7',
-        \ '117': '87d7ff',
-        \ '118': '87ff00',
-        \ '119': '87ff5f',
-        \ '120': '87ff87',
-        \ '121': '87ffaf',
-        \ '122': '87ffd7',
-        \ '123': '87ffff',
-        \ '124': 'af0000',
-        \ '125': 'af005f',
-        \ '126': 'af0087',
-        \ '127': 'af00af',
-        \ '128': 'af00d7',
-        \ '129': 'af00ff',
-        \ '130': 'af5f00',
-        \ '131': 'af5f5f',
-        \ '132': 'af5f87',
-        \ '133': 'af5faf',
-        \ '134': 'af5fd7',
-        \ '135': 'af5fff',
-        \ '136': 'af8700',
-        \ '137': 'af875f',
-        \ '138': 'af8787',
-        \ '139': 'af87af',
-        \ '140': 'af87d7',
-        \ '141': 'af87ff',
-        \ '142': 'afaf00',
-        \ '143': 'afaf5f',
-        \ '144': 'afaf87',
-        \ '145': 'afafaf',
-        \ '146': 'afafd7',
-        \ '147': 'afafff',
-        \ '148': 'afd700',
-        \ '149': 'afd75f',
-        \ '150': 'afd787',
-        \ '151': 'afd7af',
-        \ '152': 'afd7d7',
-        \ '153': 'afd7ff',
-        \ '154': 'afff00',
-        \ '155': 'afff5f',
-        \ '156': 'afff87',
-        \ '157': 'afffaf',
-        \ '158': 'afffd7',
-        \ '159': 'afffff',
-        \ '160': 'd70000',
-        \ '161': 'd7005f',
-        \ '162': 'd70087',
-        \ '163': 'd700af',
-        \ '164': 'd700d7',
-        \ '165': 'd700ff',
-        \ '166': 'd75f00',
-        \ '167': 'd75f5f',
-        \ '168': 'd75f87',
-        \ '169': 'd75faf',
-        \ '170': 'd75fd7',
-        \ '171': 'd75fff',
-        \ '172': 'd78700',
-        \ '173': 'd7875f',
-        \ '174': 'd78787',
-        \ '175': 'd787af',
-        \ '176': 'd787d7',
-        \ '177': 'd787ff',
-        \ '178': 'd7af00',
-        \ '179': 'd7af5f',
-        \ '180': 'd7af87',
-        \ '181': 'd7afaf',
-        \ '182': 'd7afd7',
-        \ '183': 'd7afff',
-        \ '184': 'd7d700',
-        \ '185': 'd7d75f',
-        \ '186': 'd7d787',
-        \ '187': 'd7d7af',
-        \ '188': 'd7d7d7',
-        \ '189': 'd7d7ff',
-        \ '190': 'd7ff00',
-        \ '191': 'd7ff5f',
-        \ '192': 'd7ff87',
-        \ '193': 'd7ffaf',
-        \ '194': 'd7ffd7',
-        \ '195': 'd7ffff',
-        \ '196': 'ff0000',
-        \ '197': 'ff005f',
-        \ '198': 'ff0087',
-        \ '199': 'ff00af',
-        \ '200': 'ff00d7',
-        \ '201': 'ff00ff',
-        \ '202': 'ff5f00',
-        \ '203': 'ff5f5f',
-        \ '204': 'ff5f87',
-        \ '205': 'ff5faf',
-        \ '206': 'ff5fd7',
-        \ '207': 'ff5fff',
-        \ '208': 'ff8700',
-        \ '209': 'ff875f',
-        \ '210': 'ff8787',
-        \ '211': 'ff87af',
-        \ '212': 'ff87d7',
-        \ '213': 'ff87ff',
-        \ '214': 'ffaf00',
-        \ '215': 'ffaf5f',
-        \ '216': 'ffaf87',
-        \ '217': 'ffafaf',
-        \ '218': 'ffafd7',
-        \ '219': 'ffafff',
-        \ '220': 'ffd700',
-        \ '221': 'ffd75f',
-        \ '222': 'ffd787',
-        \ '223': 'ffd7af',
-        \ '224': 'ffd7d7',
-        \ '225': 'ffd7ff',
-        \ '226': 'ffff00',
-        \ '227': 'ffff5f',
-        \ '228': 'ffff87',
-        \ '229': 'ffffaf',
-        \ '230': 'ffffd7',
-        \ '231': 'ffffff',
-        \ '232': '080808',
-        \ '233': '121212',
-        \ '234': '1c1c1c',
-        \ '235': '262626',
-        \ '236': '303030',
-        \ '237': '3a3a3a',
-        \ '238': '444444',
-        \ '239': '4e4e4e',
-        \ '240': '585858',
-        \ '241': '626262',
-        \ '242': '6c6c6c',
-        \ '243': '767676',
-        \ '244': '808080',
-        \ '245': '8a8a8a',
-        \ '246': '949494',
-        \ '247': '9e9e9e',
-        \ '248': 'a8a8a8',
-        \ '249': 'b2b2b2',
-        \ '250': 'bcbcbc',
-        \ '251': 'c6c6c6',
-        \ '252': 'd0d0d0',
-        \ '253': 'dadada',
-        \ '254': 'e4e4e4',
-        \ '255': 'eeeeee'
-        \ }
-
-    " ------------------------------------------------------------ 
-    " Generate RGB2Int Dictionary: {{{2
-    " ------------------------------------------------------------ 
-    let g:FCU.RGB2Int = {}
-    for [key, value] in items(g:FCU.Int2RGB)
-      let g:FCU.RGB2Int[value] = key
-    endfor
-
-    " ------------------------------------------------------------ 
-    " ParseRGB: {{{2
-    "  Parses arguments into List of Number
-    "  parameters:
-    "    rgb     : String rgb value "0fe012"
-    "              String rgb with '#' value "#0fe012"
-    "              List ["r","g", "b"] triplet of Strings ["0f","e0","12"]
-    "              List [rn,gn, bn] triplet of Numbers (0 <= n < 256)
-    "              List [rf,gf, bf] triplet of Floats (0.0 <= f < 256.0)
-    "              String r value "0f"
-    "              Number (0 <= n < 256) representing r value
-    "              Float (0.0 <= f < 256.0) representing r value
-    "    g       : optional 
-    "              String g value "e0"
-    "              Number (0 <= n < 256)
-    "              Float (0.0 <= f < 256.0)
-    "    b       : optional
-    "              String b value "12"
-    "              Number (0 <= n < 256)
-    "              Float (0.0 <= f < 256.0)
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ParseRGB(rgb, ...) dict
-"call forms#log("ParseRGB: TOP rgb=". string(a:rgb) . " a:0=" . a:0)
-"let start = reltime()
-      let needs_extra_args = g:self#IS_FALSE
-
-      if type(a:rgb) == g:self#STRING_TYPE
-        " remove hash
-        let rgb = (a:rgb[0] == '#') ? a:rgb[1:] : a:rgb
-
-        if len(rgb) == 2
-          let rs = rgb
-          let rn = str2nr(rs, 16)
-          let needs_extra_args = g:self#IS_TRUE
-
-        elseif len(rgb) == 6
-          let rs = rgb[0:1]
-          let gs = rgb[2:3]
-          let bs = rgb[4:5]
-          let rn = str2nr(rs, 16)
-          let gn = str2nr(gs, 16)
-          let bn = str2nr(bs, 16)
-
-        else
-          throw "ColorUtil.ParseRGB Bad String rgb value: ".  string(a:rgb)
-        endif
-
-      elseif type(a:rgb) == g:self#LIST_TYPE
-        let rgb = a:rgb
-        if len(rgb) != 3
-          throw "ColorUtil.ParseRGB Bad List rgb value: ".  string(rgb)
-        endif
-
-        let rx = rgb[0]
-        if type(rx) == g:self#NUMBER_TYPE
-          let rn = rx
-        elseif type(rx) == g:self#FLOAT_TYPE
-          let rn = float2nr(rx)
-        elseif type(rx) == g:self#STRING_TYPE
-          let rs = rx
-          let rn = str2nr(rs, 16)
-        else
-          throw "ColorUtil.ParseRGB Bad List r type: ".  string(rgb)
-        endif
-
-        let gx = rgb[1]
-        if type(gx) == g:self#NUMBER_TYPE
-          let gn = gx
-        elseif type(gx) == g:self#FLOAT_TYPE
-          let gn = float2nr(gx)
-        elseif type(gx) == g:self#STRING_TYPE
-          let gs = gx
-          let gn = str2nr(gs, 16)
-        else
-          throw "ColorUtil.ParseRGB Bad List g type: " . string(rgb)
-        endif
-
-        let bx = rgb[2]
-        if type(bx) == g:self#NUMBER_TYPE
-          let bn = bx
-        elseif type(bx) == g:self#FLOAT_TYPE
-          let bn = float2nr(bx)
-        elseif type(bx) == g:self#STRING_TYPE
-          let bs = bx
-          let bn = str2nr(bs, 16)
-        else
-          throw "ColorUtil.ParseRGB Bad List b type: " . string(rgb)
-        endif
-
-      elseif type(a:rgb) == g:self#NUMBER_TYPE
-        let rn = a:rgb
-        let needs_extra_args = g:self#IS_TRUE
-
-      elseif type(a:rgb) == g:self#FLOAT_TYPE
-        let rn = float2nr(a:rgb)
-        let needs_extra_args = g:self#IS_TRUE
-
-      else
-        throw "ColorUtil.ParseRGB Bad rgb type: " . string(a:rgb)
-      endif
-
-      if needs_extra_args == g:self#IS_TRUE
-        if a:0 != 2
-          throw "ColorUtil.ParseRGB requires 2 additional arugments: a:0=".  a:0)
-        endif
-
-        let gx = a:1
-        if type(gx) == g:self#NUMBER_TYPE
-          let gn = gx
-        elseif type(gx) == g:self#FLOAT_TYPE
-          let gn = float2nr(gx)
-        elseif type(gx) == g:self#STRING_TYPE
-          let gs = gx
-          let gn = str2nr(gs, 16)
-        else
-          throw "ColorUtil.ParseRGB Bad g type: ".  string(gx)
-        endif
-
-        let bx = a:2
-        if type(bx) == g:self#NUMBER_TYPE
-          let bn = bx
-        elseif type(bx) == g:self#FLOAT_TYPE
-          let bn = float2nr(bx)
-        elseif type(bx) == g:self#STRING_TYPE
-          let bs = bx
-          let bn = str2nr(bs, 16)
-        else
-          throw "ColorUtil.ParseRGB Bad b type: " . string(bx)
-        endif
-
-      endif
-"call forms#log("ParseRGB: time=". reltimestr(reltime(start)))
-
-      return [rn,gn,bn]
-    endfunction
-    let g:FCU.ParseRGB = function("FORMS_COLOR_UTIL_ParseRGB")
-
-    " ------------------------------------------------------------ 
-    " TintRGB: {{{2
-    "  Brighten rgb color returns Number triplet
-    "  sat/val      brighten/darken
-    "  '0.25:1',      0.75:0,0
-    "  '0.5:1',       0.5:0.0
-    "  '0.666:0.666', 0.33: -0.33
-    "  '0.666:0.333', 0.33: -0.66
-    "  '0.5:0.75',    0.5: -0.25
-    "  '0.25:0.87'    0.75: -0.13
-    " brighten 
-    " adjust saturation
-    " 1.0      0
-    " 0.5     50
-    " 0.0    100
-    "  parameters:
-    "    adjust : Float used to brighten or darken rgb color 
-    "              value must be between 0 <= adujst <= 1
-    "              if value < 0 treated as value = 0
-    "              if value > 1 treated as value = 1
-    "              zero values unchanged
-    "              positive values brighten
-    "    rn    : Parameters accepted by ParseRGB
-    "    gn    : Parameters accepted by ParseRGB
-    "    bn    : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_TintRGB(adjust, rn, gn, bn) dict
-      let adjust = a:adjust
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-      if adjust <= 0.0
-        return [rn,gn,bn]
-      elseif adjust >= 1.0
-        return [255,255,255]
-      else
-        " float2nr drops part after decimal point
-        let rn = float2nr(rn + ((256 - rn) * adjust))
-        let gn = float2nr(gn + ((256 - gn) * adjust))
-        let bn = float2nr(bn + ((256 - bn) * adjust))
-        return [rn,gn,bn]
-      endif
-    endfunction
-    let g:FCU.TintRGB = function("FORMS_COLOR_UTIL_TintRGB")
-
-    " ------------------------------------------------------------ 
-    " ShadeRGB: {{{2
-    "  Darken rgb color returns Number triplet
-    "  sat/val      brighten/darken
-    "  '0.5:1',       0.5:0.0
-    "  '0.25:1',      0.75:0,0
-    "  '0.666:0.666', 0.33: -0.33
-    "  '0.666:0.333', 0.33: -0.66
-    "  '0.5:0.75',    0.5: -0.25
-    "  '0.25:0.87'    0.75: -0.13
-    " darken 
-    " adjust value
-    "  1.0    100
-    "  0.5     50
-    "  0.0      0
-    "  parameters:
-    "    adjust : Float used to brighten or darken rgb color 
-    "              value must be between 0 <= adujst <= 1
-    "              if value < 0 treated as value = 0
-    "              if value > 1 treated as value = 1
-    "              negative values darken
-    "              zero values unchanged
-    "              positive values brighten
-    "    rgb    : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ShadeRGB(adjust, rn, gn, bn) dict
-      let adjust = a:adjust
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-      if adjust <= 0.0
-        return [rn,gn,bn]
-      elseif adjust >= 1.0
-        return [0,0,0]
-      else
-        let f = 1.0 - adjust
-        " float2nr drops part after decimal point
-        let rn = float2nr(rn * f)
-        let gn = float2nr(gn * f)
-        let bn = float2nr(bn * f)
-        return [rn,gn,bn]
-      endif
-    endfunction
-    let g:FCU.ShadeRGB = function("FORMS_COLOR_UTIL_ShadeRGB")
-
-    
-    " ------------------------------------------------------------ 
-    " BrightnessRGB: {{{2
-    "  Brighten or darken rgb color returns Number triplet
-    "  sat/val      brighten/darken
-    "  '0.5:1',       0.5:0.0
-    "  '0.25:1',      0.75:0,0
-    "  '0.666:0.666', 0.33: -0.33
-    "  '0.666:0.333', 0.33: -0.66
-    "  '0.5:0.75',    0.5: -0.25
-    "  '0.25:0.87'    0.75: -0.13
-    "  parameters:
-    "    adjust : Float used to brighten or darken rgb color 
-    "              value must be between -1 <= adujst <= 1
-    "              negative values darken
-    "              zero values unchanged
-    "              positive values brighten
-    "    rgb    : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! g:FCU.BrightnessRGBXX(adjust, rgb, ...) dict
-" call forms#log("BrightnessRGB: TOP rgb=". string(a:rgb)." a:0=".a:0)
-      if a:0 == 0
-        let [rn,gn,bn] = self.ParseRGB(a:rgb)
-      elseif a:0 == 2
-        let [rn,gn,bn] = self.ParseRGB(a:rgb, a:000[0], a:000[1])
-      else
-          throw "ColorUtil.BrightnessRGB: Wrong number of additional arguments: " . a:0
-      endif
-    endfunction
-
-    function! FORMS_COLOR_UTIL_BrightnessRGB(adjust, rn, gn, bn) dict
-      let adjust = a:adjust
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-      if adjust >= 0
-        " brighten 
-        " adjust saturation
-        " 1.0      0
-        " 0.5     50
-        " 0.0    100
-        let rn = float2nr(rn + ((255 - rn) * adjust))
-        let gn = float2nr(gn + ((255 - gn) * adjust))
-        let bn = float2nr(bn + ((255 - bn) * adjust))
-      else
-        " darken 
-        " adjust value
-        " -1.0     0
-        " -0.5    50
-        " -0.0   100
-        let f = adjust + 1.0
-        let rn = float2nr(rn * f)
-        let gn = float2nr(gn * f)
-        let bn = float2nr(bn * f)
-      endif
-
-      return [rn,gn,bn]
-    endfunction
-    let g:FCU.BrightnessRGB = function("FORMS_COLOR_UTIL_BrightnessRGB")
-
-    " ------------------------------------------------------------ 
-    " MergerRGBs: {{{2
-    "  Take "average" of two rgb strings
-    "    Returns List rgb-average of parameter.
-    "  parameters:
-    "    rgb1 : Parameters accepted by ParseRGB
-    "    rgb2 : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_MergerRGBs(rgb1, rgb2) dict
-" call forms#log("MergerRGBs: TOP rgb1=". a:rgb1)
-" call forms#log("MergerRGBs: TOP rgb2=". a:rgb2)
-      let [rn1,gn1,bn1] = self.ParseRGB(a:rgb1)
-      let [rn2,gn2,bn2] = self.ParseRGB(a:rgb2)
-
-      let rn = (rn1+rn2)/2
-      let gn = (gn1+gn2)/2
-      let bn = (bn1+bn2)/2
-
-      return [rn, gn, bn]
-    endfunction
-    let g:FCU.MergerRGBs = function("FORMS_COLOR_UTIL_MergerRGBs")
-
-    " ------------------------------------------------------------ 
-    " ShiftHue: {{{2
-    "  Shift hue by given adjustment
-    "  parameters:
-    "    shift : -0.5 <= float <= 0.5
-    "    hue   : hue to be adjusted
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ShiftHue(shift, hue) dict
-" let hues = printf("%f",a:hue)
-" call forms#log("ShiftHue: TOP hue=". hues)
-      let hc = a:hue + a:shift
-      if (hc >= 1.0) 
-        let hc -= 1.0
-      elseif (hc < 0.0) 
-        let hc += 1.0
-      endif
-      return hc
-    endfunction
-    let g:FCU.ShiftHue = function("FORMS_COLOR_UTIL_ShiftHue")
-
-    " ------------------------------------------------------------ 
-    " ConvertRGB2HSL: {{{2
-    "  Converts an rgb String HSL triplet [h,s,l]
-    "     with values 0.0 <= v <= 1.0
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertRGB2HSL(rn, gn, bn) dict
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-" call forms#log("ConvertRGB2HSL: rn,gn,bn=".rn.",".gn.",".bn)
-      let rf = (0.0 + rn)/255
-      let gf = (0.0 + gn)/255
-      let bf = (0.0 + bn)/255
-      
-      let minn = min([rn,gn,bn])
-      let maxn = max([rn,gn,bn])
-
-      let minf = (0.0 + minn)/255
-      let maxf = (0.0 + maxn)/255
-      let delf = maxf - minf
-" let mins = printf("%f",minf)
-" let maxs = printf("%f",maxf)
-" call forms#log("ConvertRGB2HSL: min,max=".mins.",".maxs)
-
-      let l = (maxf + minf)/2.0
-
-      if delf == 0
-        let h = 0.0
-        let s = 0.0
-      else
-          if l < 0.5
-            let s = delf/(maxf + minf)
-          else
-            let s = delf/(2 - maxf - minf)
-          endif
-
-          if rn == maxn
-            let h = ((gf - bf)/delf) + ((gf < bf)? 6 : 0)
-          elseif gn == maxn
-            let h = ((bf - rf)/delf) + 2
-          else 
-            let h = ((rf - gf)/delf) + 4
-          endif
-
-          let h = h / 6
-if 0
-          let delfhalf = delf/2
-          
-          let dr = (((maxf - rf)/6) + delfhalf)/delf
-          let dg = (((maxf - gf)/6) + delfhalf)/delf
-          let db = (((maxf - bf)/6) + delfhalf)/delf
-
-          if rn == maxn
-            let h = db - dg
-          elseif gn == maxn
-            let h = 0.3333333 + dr - db
-          else
-            let h = 0.6666666 + dg - dr
-          endif
-
-          if h < 0
-            let h += 1
-          elseif h > 1 
-            let h -= 1
-          endif
-endif
-      endif
-      return [h,s,l]
-    endfunction
-    let g:FCU.ConvertRGB2HSL = function("FORMS_COLOR_UTIL_ConvertRGB2HSL")
-
-    " ------------------------------------------------------------ 
-    " ReduceHSL: {{{2
-    "  Generates HSL triplets one for each pair of Floats in List.
-    "  parameters:
-    "    h           : hue
-    "    s           : saturation
-    "    l           : value
-    "    adjustments : List of List of Float pair to be applied to s and l
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ReduceHSL(h,s,l, adjustments) dict
-      let r = []
-      for adj in a:adjustments
-        let sadj = a[0]
-        let vadj = a[1]
-        call add(r, [a:h, a:s * sadj, a:l * vadj])
-      endfor
-      return r
-    endfunction
-    let g:FCU.ReduceHSL = function("FORMS_COLOR_UTIL_ReduceHSL")
-
-    " ------------------------------------------------------------ 
-    " ConvertHSL2RGB: {{{2
-    "  Converts HSL Float triplet to RGB Float triplet 
-    "  parameters:
-    "    h           : hue
-    "    s           : saturation
-    "    l           : value
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertHSL2RGB(h,s,l) dict
-"let hstr = printf("%f",a:h)
-"let sstr = printf("%f",a:s)
-"let lstr = printf("%f",a:l)
-" call forms#log("ConvertHSL2RGB: TOP h,s,l=". hstr.",".sstr.",".lstr)
-      let h = a:h
-      let s = a:s
-      let l = a:l
-
-      if s == 0.0
-" call forms#log("ConvertHSL2RGB: IF")
-        let r = 255.0 * l
-        let g = 255.0 * l
-        let b = 255.0 * l
-      else
-" call forms#log("ConvertHSL2RGB: ELSE")
-        if l < 0.5
-          let v2 = l * (1 + s)
-        else
-          let v2 = (l + s) - (s * l)
-        endif
-
-        " let v1 = l - v2
-        let v1 = 2 * l - v2
-
-        function! Hue2RGB(v1, v2, vh)
-          let vh = a:vh
-          if vh < 0
-            let vh += 1
-          elseif vh > 1
-            let vh -= 1
-          endif
-
-          if (6 * vh) < 1
-            return a:v1 + (a:v2 - a:v1) * 6 * vh
-          elseif (2 * vh) < 1
-            return a:v2
-          elseif (3 * vh) < 2
-            return a:v1 + (a:v2 - a:v1) * (0.6666666 - vh) * 6
-          else
-            return a:v1
-          endif
-        endfunction
-
-        let r = 255 * Hue2RGB(v1, v2, h + 0.3333333)
-        let g = 255 * Hue2RGB(v1, v2, h)
-        let b = 255 * Hue2RGB(v1, v2, h - 0.3333333)
-
-      endif
-      return [r,g,b]
-    endfunction
-    let g:FCU.ConvertHSL2RGB = function("FORMS_COLOR_UTIL_ConvertHSL2RGB")
-
-    " ------------------------------------------------------------ 
-    " ShiftHueRGBusingHSL: {{{2
-    "  ShiftHues rgb returns rgb triplet using HSL
-    "  parameters:
-    "    shift : -0.5 <= float <= 0.5
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ShiftHueRGBusingHSL(shift, rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
-
-      let h = hsl[0]
-      let s = hsl[1]
-      let l = hsl[2]
-      let hc = self.ShiftHue(a:shift, h)
-      return self.ConvertHSL2RGB(hc,s,l)
-    endfunction
-    let g:FCU.ShiftHueRGBusingHSL = function("FORMS_COLOR_UTIL_ShiftHueRGBusingHSL")
-
-    " ------------------------------------------------------------ 
-    " ComplimentRGBusingHSL: {{{2
-    "  Returns HSL compliment of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ComplimentRGBusingHSL(rn, gn, bn) dict
-      let shift = 180.0/360
-      return self.ShiftHueRGBusingHSL(shift, a:rgb, a:000)
-    endfunction
-    let g:FCU.ComplimentRGBusingHSL = function("FORMS_COLOR_UTIL_ComplimentRGBusingHSL")
-
-    " ------------------------------------------------------------ 
-    " AnalogicRGBusingHSL: {{{2
-    "  Returns HSL analogic values (+30,-30) of pair of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_AnalogicRGBusingHSL(rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let l = hsl[2]
-      let shift = 30.0/360
-      let hc1 = self.ShiftHue(shift, h)
-      let hc2 = self.ShiftHue(-shift, h)
-      return [self.ConvertHSL2RGB(hc1,s,l), self.ConvertHSL2RGB(hc2,s,l)]
-    endfunction
-    let g:FCU.AnalogicRGBusingHSL = function("FORMS_COLOR_UTIL_AnalogicRGBusingHSL")
-
-    " ------------------------------------------------------------ 
-    " SplitComplimentaryRGBusingHSL: {{{2
-    "  Returns HSL split complimentary values 
-    "  (180+30,180-30) of pair of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSL(rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let half = 180.0/360
-      let shift = 30.0/360
-      let hc2 = self.ShiftHue(half-shift, h)
-      let hc1 = self.ShiftHue(half+shift, h)
-      return [self.ConvertHSL2RGV(hc1,s,v), self.ConvertHSL2RGV(hc2,s,v)]
-    endfunction
-    let g:FCU.SplitComplimentaryRGBusingHSL = function("FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSL")
-
-    " ------------------------------------------------------------ 
-    " TriadicRGBusingHSL: {{{2
-    "  Returns HSL triadic values 
-    "  (180+60,180-60) of pair of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_TriadicRGBusingHSL(rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSL(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let half = 180.0/360
-      let shift = 60.0/360
-      let hc2 = self.ShiftHue(half-shift, h)
-      let hc1 = self.ShiftHue(half+shift, h)
-      return [self.ConvertHSL2RGV(hc1,s,v), self.ConvertHSL2RGV(hc2,s,v)]
-    endfunction
-    let g:FCU.TriadicRGBusingHSL = function("FORMS_COLOR_UTIL_TriadicRGBusingHSL")
-
-    " ------------------------------------------------------------ 
-    " ConvertRGB2HSV: {{{2
-    "  Converts an rgb values HSV Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertRGB2HSV(rn, gn, bn) dict
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-      let rf = (0.0 + rn)/255
-      let gf = (0.0 + gn)/255
-      let bf = (0.0 + bn)/255
-
-      if rf < gf
-        if rf < bf
-          let x = rf
-        else
-          let x = bf
-        endif
-      else
-        if gf < bf
-          let x = gf
-        else
-          let x = bf
-        endif
-      endif
-
-      if rf > gf
-        if rf > bf
-          let val = rf
-        else
-          let val = bf
-        endif
-      else
-        if gf > bf
-          let val = gf
-        else
-          let val = bf
-        endif
-      endif
-
-      if x == val
-        return [0.0, 0.0, val]
-      else
-
-        if rf == x
-          let f = gf-bf
-          let i = 3
-        elseif gf == x
-          let f = bf-rf
-          let i = 5
-        else
-          let f = rf-gf
-          let i = 1
-        endif
-
-        let d = val - x
-        let hue = (i - f/d) / 6
-        let sat = d/val
-
-        return [hue,sat,val]
-      endif
-    endfunction
-    let g:FCU.ConvertRGB2HSV = function("FORMS_COLOR_UTIL_ConvertRGB2HSV")
-
-
-    " ReduceHSV: {{{2
-    "  Generates HSV triplets one for each pair of Floats in List.
-    "  parameters:
-    "    h           : hue
-    "    s           : saturation
-    "    v           : value
-    "    adjustments : List of List of Float pair to be applied to s and v
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ReduceHSV(h,s,v, adjustments) dict
-      let r = []
-      for adj in a:adjustments
-        let sadj = a[0]
-        let vadj = a[1]
-        call add(r, [a:h, a:s * sadj, a:v * vadj])
-      endfor
-      return r
-    endfunction
-    let g:FCU.ReduceHSV = function("FORMS_COLOR_UTIL_ReduceHSV")
-
-    " ------------------------------------------------------------ 
-    " ConvertHSV2RGB: {{{2
-    "  Converts HSV Float triplet to RGB Float triplet
-    "  parameters:
-    "    h : hue
-    "    s : saturation
-    "    v : value
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertHSV2RGB(h,s,v) dict
-"let hstr = printf("%f",a:h)
-"let sstr = printf("%f",a:s)
-"let vstr = printf("%f",a:v)
-"call forms#log("ConvertHSV2RGB: TOP h,s,v=". hstr.",".sstr.",".vstr)
-      let h = a:h
-      let s = a:s
-      let v = a:v
-
-      let i = floor(h*6)
-      let f = h * 6 - i
-      let p = v * (1 - s)
-      let q = v * (1 - f*s) 
-      let t = v * (1 - (1-f)*s)
-
-      let im = float2nr(i) % 6
-      if im == 0
-        let r = v
-        let g = t
-        let b = p
-      elseif im == 1
-        let r = q
-        let g = v
-        let b = p
-      elseif im == 2
-        let r = p
-        let g = v
-        let b = t
-      elseif im == 3
-        let r = p
-        let g = q
-        let b = v
-      elseif im == 4
-        let r = t
-        let g = p
-        let b = v
-      else
-        let r = v
-        let g = p
-        let b = q
-      endif
-      let offset = 0.000000000001
-      return [
-              \ float2nr((r * 255)+offset), 
-              \ float2nr((g * 255)+offset), 
-              \ float2nr((b * 255)+offset)]
-    endfunction
-    let g:FCU.ConvertHSV2RGB = function("FORMS_COLOR_UTIL_ConvertHSV2RGB")
-
-    " ------------------------------------------------------------ 
-    " ShiftHueRGBusingHSV: {{{2
-    "  ShiftHues rgb returns RGB Float triplet using HSV
-    "  parameters:
-    "    shift : -0.5 <= float <= 0.5
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ShiftHueRGBusingHSV(shift, rn, gn, bn) dict
-" call forms#log("ShiftHueRGBusingHSV: TOP rgbstr=". a:rgb)
-      let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let l = hsl[2]
-      let hc = self.ShiftHue(a:shift, h)
-      return self.ConvertHSV2RGB(hc,s,l)
-    endfunction
-    let g:FCU.ShiftHueRGBusingHSV = function("FORMS_COLOR_UTIL_ShiftHueRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " ComplimentRGBusingHSV: {{{2
-    "  Returns HSV compliment of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ComplimentRGBusingHSV(rn, gn, bn) dict
-      let shift = 180.0/360
-      return self.ShiftHueRGBusingHSV(shift, a:rn, a:gn, a:bn)
-    endfunction
-    let g:FCU.ComplimentRGBusingHSV = function("FORMS_COLOR_UTIL_ComplimentRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " AnalogicRGBusingHSV: {{{2
-    "  Returns HSV analogic values shifted (for example: +30,-30) 
-    "     of pair of RGB Float triplet
-    "  parameters:
-    "    shift  : Float how much to shift hue + and -.
-    "               Should be from 0.0 to 0.5
-    "    rn     : red Number
-    "    gn     : green Number
-    "    bn     : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_AnalogicRGBusingHSV(shift, rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let hc1 = self.ShiftHue(a:shift, h)
-      let hc2 = self.ShiftHue(-a:shift, h)
-      return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
-    endfunction
-    let g:FCU.AnalogicRGBusingHSV = function("FORMS_COLOR_UTIL_AnalogicRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " SplitComplimentaryRGBusingHSV: {{{2
-    "  Returns HSV split complimentary values 
-    "  (for example: 180+30,180-30) of pair of RGB Float triplet
-    "  parameters:
-    "    shift  : Float how much to shift hue + and -.
-    "               Should be from 0.0 to 0.5
-    "    rn     : red Number
-    "    gn     : green Number
-    "    bn     : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSV(shift, rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let half = 180.0/360
-      let hc2 = self.ShiftHue(half-a:shift, h)
-      let hc1 = self.ShiftHue(half+a:shift, h)
-      return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
-    endfunction
-    let g:FCU.SplitComplimentaryRGBusingHSV = function("FORMS_COLOR_UTIL_SplitComplimentaryRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " TriadicRGBusingHSV: {{{2
-    "  Returns HSV triadic values 
-    "  (+120,-120) of pair of RGB Float triplet
-    "  parameters:
-    "    rn  : red Number
-    "    gn  : green Number
-    "    bn  : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_TriadicRGBusingHSV(rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let third = 120.0/360
-      let hc2 = self.ShiftHue(-third, h)
-      let hc1 = self.ShiftHue(+third, h)
-      return [self.ConvertHSV2RGB(hc1,s,v), self.ConvertHSV2RGB(hc2,s,v)]
-    endfunction
-    let g:FCU.TriadicRGBusingHSV = function("FORMS_COLOR_UTIL_TriadicRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " DoubleContrastRGBusingHSV: {{{2
-    "  Returns RGB triple of values.
-    "  (for example: -30,180,180-30) of triplets of RGB Float triplet
-    "  parameters:
-    "    shift  : Float how much to shift hue and compliment.
-    "               Should be from 0.0 to 0.5
-    "    rn     : red Number
-    "    gn     : green Number
-    "    bn     : blue Number
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_DoubleContrastRGBusingHSV(shift, rn, gn, bn) dict
-      let hsl = self.ConvertRGB2HSV(a:rn, a:gn, a:bn)
-      let h = hsl[0]
-      let s = hsl[1]
-      let v = hsl[2]
-      let minus = -a:shift
-      let minusHue = self.ShiftHue(minus, h)
-      let half = 180.0/360
-      let halfHue = self.ShiftHue(half, h)
-      let halfminus = half - a:shift
-      let halfminusHue = self.ShiftHue(halfminus, h)
-      return [
-              \ self.ConvertHSV2RGB(minusHue,s,v), 
-              \ self.ConvertHSV2RGB(halfHue,s,v), 
-              \ self.ConvertHSV2RGB(halfminusHue,s,v)]
-    endfunction
-    let g:FCU.DoubleContrastRGBusingHSV = function("FORMS_COLOR_UTIL_DoubleContrastRGBusingHSV")
-
-    " ------------------------------------------------------------ 
-    " ConvertRGB2IntNEW: {{{2
-    "  Converts an rgb String to a xterm 256 Number
-    "    Tried to make this fast.
-    "    Returns the xterm 256 Number
-    "  parameters:
-    "    rgb : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! g:FCU.ConvertRGB2IntNewX(rgb, ...) dict
-"call forms#log("ConvertRGB2IntNew: TOP rgbstr=". a:rgb)
-      if a:0 == 0
-        let [rn,gn,bn] = self.ParseRGB(a:rgb)
-      elseif a:0 == 2
-        let [rn,gn,bn] = self.ParseRGB(a:rgb, a:000[0], a:000[1])
-      else
-          throw "ColorUtil.ConvertRGB2IntNew: Wrong number of additional arguments: " . a:0
-      endif
-    endfunction
-    function! g:FCU.ConvertRGB2IntNew(rn, gn, bn) dict
-"let start = reltime()
-      let rn = a:rn
-      let gn = a:gn
-      let bn = a:bn
-
-"call forms#log("ConvertRGB2IntNew: in rn=". rn)
-"call forms#log("ConvertRGB2IntNew: in gn=". gn)
-"call forms#log("ConvertRGB2IntNew: in bn=". bn)
-      
-      " binary search over possible intensities
-      function! GetPartial(n)
-        " intensities=[0, 95, 135, 175, 215, 255]
-        " intensities = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
-        let n = a:n
-        let n2 = n+n
-
-        if n <= 135
-          if n <= 95
-            return (n2 <= 95) ? 0 : 95
-          else
-            return (n2 <= 230) ? 95 : 135 
-          endif
-        else
-          if n <= 215
-            if n <= 175
-              return (n2 <= 310) ? 135 : 175
-            else
-              return (n2 <= 390) ? 175 : 215
-            endif
-          else
-            return (n2 <= 470) ? 215 : 255
-          endif
-        endif
-      endfunction
-
-      let rnx = GetPartial(rn)
-      let gnx = GetPartial(gn)
-      let bnx = GetPartial(bn)
-"call forms#log("ConvertRGB2IntNew: outjrnx=". rnx)
-"call forms#log("ConvertRGB2IntNew: outjgnx=". gnx)
-"call forms#log("ConvertRGB2IntNew: outjbnx=". bnx)
-
-      " must check grey levels which can be a closer match
-      " TODO how to tell if we are near a grey level and
-      "   only do the following if we are near?
-      let diff = abs(rnx-rn) + abs(gnx-gn) + abs(bnx-bn)
-      let best_match = -1
-      let cnt = 232
-      while cnt < 256
-        let [rx,gx,bx] = self.ColorTable[cnt]
-        let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
-
-        if d < diff
-          let diff = d
-          let best_match = cnt
-        endif
-
-        let cnt += 1
-      endwhile
-
-      if best_match != -1
-"call forms#log("ConvertRGB2IntNew: best_match=". best_match)
-        let n = best_match
-      else
-        let rgbtxt = printf('%02x%02x%02x',rnx,gnx,bnx)
-"call forms#log("ConvertRGB2IntNew: rgbtxt=". rgbtxt)
-        let n = self.RGB2Int[rgbtxt]
-      endif
-"call forms#log("ConvertRGB2IntNew:          time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB2IntNew: n=". n)
-      return n
-    endfunction
-
-
-    " http://root.cern.ch/svn/root/tags/v5-30-06/core/textinput/src/textinput/TerminalDisplayUnix.cpp
-    " http://crunchbanglinux.org/forums/topic/20674/view-images-and-gifs-in-the-terminal/
-    " 6 intensity RGB
-    " intensities=[0, 95, 135, 175, 215, 255]
-    " intensities = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
-    let g:FCU.intensities = [
-              \ str2nr("0x00",16),
-              \ str2nr("0x5f",16),
-              \ str2nr("0x87",16),
-              \ str2nr("0xaf",16),
-              \ str2nr("0xd7",16),
-              \ str2nr("0xff",16)
-              \ ]
-
-    " ------------------------------------------------------------ 
-    " ConvertRGB2IntOLD: {{{2
-    "  Converts an rgb String to a xterm 256 Number
-    "    Tried to make this fast.
-    "    Returns the xterm 256 Number
-    "  parameters:
-    "    rgb : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! g:FCU.ConvertRGB2IntOLD(rgb, ...) dict
-"call forms#log("ConvertRGB2IntOLD: TOP rgbstr=". a:rgb)
-      if a:0 == 0
-        let [rn,gn,bn] = self.ParseRGB(a:rgb)
-      elseif a:0 == 2
-        let [rn,gn,bn] = self.ParseRGB(a:rgb, a:000[0], a:000[1])
-      else
-          throw "ColorUtil.ConvertRGB2IntOLD: Wrong number of additional arguments: " . a:0
-      endif
-let start = reltime()
-
-"call forms#log("ConvertRGB2IntOLD: in rn=". rn)
-"call forms#log("ConvertRGB2IntOLD: in gn=". gn)
-"call forms#log("ConvertRGB2IntOLD: in bn=". bn)
-      
-      function! GetPartial(n, intensities)
-        let n = a:n
-        let intensities = a:intensities
-        let s = intensities[0]
-        let b = intensities[1]
-        if s <= n && n <= b
-"call forms#log("ConvertRGB2IntOLD: 0")
-          return (n+n <= s+b) ? s : b
-        endif
-        let s = b
-        let b = intensities[2]
-        if s <= n && n <= b
-"call forms#log("ConvertRGB2IntOLD: 1")
-          return (n+n <= s+b) ? s : b
-        endif
-        let s = b
-        let b = intensities[3]
-        if s <= n && n <= b
-"call forms#log("ConvertRGB2IntOLD: 2")
-          return (n+n <= s+b) ? s : b
-        endif
-        let s = b
-        let b = intensities[4]
-        if s <= n && n <= b
-"call forms#log("ConvertRGB2IntOLD: 3")
-          return (n+n <= s+b) ? s : b
-        endif
-        let s = b
-        let b = intensities[5]
-        if s <= n && n <= b
-"call forms#log("ConvertRGB2IntOLD: 4")
-          return (n+n <= s+b) ? s : b
-        endif
-        throw "ConvertRGB2IntOLD.GetPartial: Bad partial color: " . string(n)
-      endfunction
-
-      let rnx = GetPartial(rn, self.intensities)
-      let gnx = GetPartial(gn, self.intensities)
-      let bnx = GetPartial(bn, self.intensities)
-"call forms#log("ConvertRGB2IntOLD: rnx=". rnx)
-"call forms#log("ConvertRGB2IntOLD: gnx=". gnx)
-"call forms#log("ConvertRGB2IntOLD: bnx=". bnx)
-
-      " must check grey levels which can be a closer match
-      let diff = abs(rnx-rn) + abs(gnx-gn) + abs(bnx-bn)
-      let best_match = -1
-      let cnt = 232
-      while cnt < 256
-        let [rx,gx,bx] = self.ColorTable[cnt]
-        let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
-
-        if d < diff
-          let diff = d
-          let best_match = cnt
-        endif
-
-        let cnt += 1
-      endwhile
-
-      if best_match != -1
-"call forms#log("ConvertRGB2IntOLD: best_match=". best_match)
-        let n = best_match
-      else
-        let rgbtxt = printf('%02x%02x%02x',rnx,gnx,bnx)
-"call forms#log("ConvertRGB2IntOLD: rgbtxt=". rgbtxt)
-        let n = self.RGB2Int[rgbtxt]
-      endif
-"call forms#log("ConvertRGB2IntOLD: time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB2IntOLD: n=". n)
-      return n
-    endfunction
-
-    " xterm number to rgb string
-    let g:FCU.ColorTable = []
-    " TODO make into list of [r,g,b] values
-    let g:FCU.RedColorTable = []
-    let g:FCU.GreenColorTable = []
-    let g:FCU.BlueColorTable = []
-    let cnt = 0
-    while cnt < 256
-      let rgb = g:FCU.Int2RGB[cnt]
-      let r = rgb[0:1]
-      let g = rgb[2:3]
-      let b = rgb[4:5]
-      let rn = str2nr(r, 16)
-      let gn = str2nr(g, 16)
-      let bn = str2nr(b, 16)
-      call add(g:FCU.ColorTable, [rn,gn,bn])
-      call add(g:FCU.RedColorTable, rn)
-      call add(g:FCU.GreenColorTable, gn)
-      call add(g:FCU.BlueColorTable, bn)
-
-      let cnt += 1
-    endwhile
-
-    " http://crunchbanglinux.org/forums/topic/20674/view-images-and-gifs-in-the-terminal/
-    " ------------------------------------------------------------ 
-    " ConvertRGB2Int: {{{2
-    "  Converts an rgb String to a xterm 256 Number
-    "    Tried to make this fast.
-    "    Returns the xterm 256 Number
-    "  parameters:
-    "    rgb : Parameters accepted by ParseRGB
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertRGB2Int(rgb, ...) dict
-"call forms#log("ConvertRGB2Int: TOP rgb=". a:rgb)
-      if a:0 == 0
-        let [rn,gn,bn] = self.ParseRGB(a:rgb)
-      elseif a:0 == 2
-        let [rn,gn,bn] = self.ParseRGB(a:rgb, a:000[0], a:000[1])
-      else
-          throw "ColorUtil.ConvertRGB2Int: Wrong number of additional arguments: " . a:0
-      endif
-"let start = reltime()
-
-"call forms#log("ConvertRGB2Int: in rn=". rn)
-"call forms#log("ConvertRGB2Int: in gn=". gn)
-"call forms#log("ConvertRGB2Int: in bn=". bn)
-      let best_match = 0
-      let diff = 10000000
-
-      let cnt = 16
-      while cnt < 256
-        let [rx,gx,bx] = self.ColorTable[cnt]
-        " let rx = self.RedColorTable[cnt]
-        " let gx = self.GreenColorTable[cnt]
-        " let bx = self.BlueColorTable[cnt]
-        let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
-
-        if d < diff
-          let diff = d
-          let best_match = cnt
-        endif
-
-        let cnt += 1
-      endwhile
-"call forms#log("ConvertRGB2Int: time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB2Int: best_match=". best_match)
-
-if 0
-let x = self.ConvertRGB2IntOLD(rn,gn,bn)
-" call forms#log("ConvertRGB2Int:          x=". x)
-if x != best_match
-  throw "ConvertRGB2Int missmatch"
-endif
-
-let y = self.ConvertRGB2IntNew(rn,gn,bn)
-" call forms#log("ConvertRGB2Int:          y=". y)
-if y != best_match
-  throw "ConvertRGB2Int missmatch"
-endif
-endif
-      return best_match
-
-    endfunction
-    let g:FCU.ConvertRGB2Int = function("FORMS_COLOR_UTIL_ConvertRGB2Int")
-
-    " ------------------------------------------------------------ 
-    " ConvertInt2RGB: {{{2
-    "  Converts an xterm 256 String or Number to an rgb String
-    "    Returns the rgb String
-    "  parameters:
-    "    nr : String or Number or xterm 256 value
-    "           value must be 0 <= value <= 255
-    " ------------------------------------------------------------ 
-    function! FORMS_COLOR_UTIL_ConvertInt2RGB(nr) dict
-      if (type(a:nr) == g:self#NUMBER_TYPE)
-        return self.Int2RGB[a:nr]
-      elseif (type(a:nr) == g:self#STRING_TYPE)
-        return self.Int2RGB[a:nr]
-      else
-        throw "ConvertInt2RGB: Bad number: " . string(a:nsstr)
-      endif
-    endfunction
-    let g:FCU.ConvertInt2RGB = function("FORMS_COLOR_UTIL_ConvertInt2RGB")
-  endif
-
-  return g:FCU
-endfunction
 
 " returns [label, mnemonic, mindex]
 " ------------------------------------------------------------ 
@@ -15373,7 +14120,7 @@ if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
 "---------------------------------------------------------------------------
 " UTF-8 Box Drawing Characters: {{{2
 "-------------------------------------------------------------------------------
-if !exists("b:forms_BoxDrawingCharacters") 
+" if !exists("b:forms_BoxDrawingCharacters") 
 
   " '─' 9472 2500 BOX DRAWINGS LIGHT HORIZONTAL (present in WGL4)
   let b:forms_BDLightHorizontal = '─'
@@ -15649,9 +14396,9 @@ if !exists("b:forms_BoxDrawingCharacters")
   let b:forms_BDHeavyUpAndLightDown = '╿'
 
   let b:forms_BoxDrawingCharacters = 1
-endif
+" endif
 
-if !exists("b:forms_BlockCharacters") 
+" if !exists("b:forms_BlockCharacters") 
 
   " '▀' 9600 2580 UPPER HALF BLOCK (present in WGL4)
   let b:forms_UpperHalfB = '▀'
@@ -15725,9 +14472,9 @@ if !exists("b:forms_BlockCharacters")
   let b:forms_QuadrantUpperRightAndLowerLeftAndLowerRight = '▟'
 
   let b:forms_BlockCharacters = 1
-endif
+" endif
 
-if !exists("b:forms_GeometricShapes") 
+" if !exists("b:forms_GeometricShapes") 
 
   " '◢' 9698 25E2  BLACK LOWER RIGHT TRIANGLE
   let b:forms_GSBlackLowerRightTriangle = '◢'
@@ -15739,7 +14486,7 @@ if !exists("b:forms_GeometricShapes")
   let b:forms_GSBlackUpperRightTriangle = '◥'
 
   let b:forms_GeometricShapes = 1
-endif
+" endif
 
 "---------------------------------------------------------------------------
 " Map of Box Drawing Character Sets: {{{2

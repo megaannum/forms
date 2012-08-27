@@ -81,7 +81,6 @@ over to you Vim home location.
 
 Vim has a number of third-party plugin managers. If you are using one
 you can configure it to automatically download and install Forms.
-TODO how to use VAM plugin manager
 
 ## Dependency
 
@@ -248,6 +247,18 @@ then, there ought not be a problem.
 Forms simply works on the version of rxvt that supports Unicode and 256
 colors, urxvt256c.
 
+## Linux urxvt & Vim
+
+Forms now works with 88 colore rxvt that supports Unicode urxvt.
+
+## Linux Konsole & Vim
+
+Forms now works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
+does not render correctly)
+
+## Linux Eterm & Vim
+
+Forms works eterm (well, I hope it works, no access to ETerm so could not test).  
 ## Linux GVim
 
 Some testing has been done on the Linux GVim platform and all of the
