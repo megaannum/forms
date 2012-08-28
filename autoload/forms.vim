@@ -5,7 +5,7 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 06/30/2012
+" Last Modified: 08/30/2012
 " Version:       1.5
 " Modifications:
 "  1.0 : initial public release.
@@ -163,90 +163,173 @@ augroup END
 
 function! s:LoadeHighlights() 
 
+"========================================
+" light highlight color values
+"========================================
+if ! exists("g:forms_hi_light_background")
+  let g:forms_hi_light_background="dadada"
+endif
+if ! exists("g:forms_hi_light_hotspot")
+  let g:forms_hi_light_hotspot="00ff00"
+endif
+if ! exists("g:forms_hi_light_flash")
+  let g:forms_hi_light_flash="ffff87"
+endif
+if ! exists("g:forms_hi_light_toggleselected")
+  let g:forms_hi_light_toggleselected="5fffff"
+endif
+if ! exists("g:forms_hi_light_selected")
+  let g:forms_hi_light_selected="5fffff"
+endif
+if ! exists("g:forms_hi_light_button")
+  let g:forms_hi_light_button="bcbcbc"
+endif
+if ! exists("g:forms_hi_light_buttonflash")
+  let g:forms_hi_light_buttonflash="767676"
+endif
+if ! exists("g:forms_hi_light_frame_tint_adjust")
+  let g:forms_hi_light_frame_tint_adjust=0.28
+endif
+if ! exists("g:forms_hi_light_frame_shade_adjust")
+  let g:forms_hi_light_frame_shade_adjust=0.15
+endif
+if ! exists("g:forms_hi_light_dropshadow_shade_adjust")
+  let g:forms_hi_light_dropshadow_shade_adjust=0.135
+endif
+if ! exists("g:forms_hi_light_disable")
+  let g:forms_hi_light_disable="ffaf00"
+endif
+if ! exists("g:forms_hi_light_menu")
+  let g:forms_hi_light_menu=g:forms_hi_light_background
+endif
+if ! exists("g:forms_hi_light_menumnemonic")
+  let g:forms_hi_light_menumnemonic=g:forms_hi_light_menu
+endif
+if ! exists("g:forms_hi_light_menuhotspot")
+  let g:forms_hi_light_menuhotspot="ff00d7"
+endif
+if ! exists("g:forms_hi_light_menumnemonichotspot")
+  let g:forms_hi_light_menumnemonichotspot=g:forms_hi_light_menuhotspot
+endif
+
+"========================================
+" dark highlight color values
+"========================================
+if ! exists("g:forms_hi_dark_background")
+  let g:forms_hi_dark_background="5c5c5c"
+endif
+if ! exists("g:forms_hi_dark_hotspot")
+  let g:forms_hi_dark_hotspot="00ff00"
+endif
+if ! exists("g:forms_hi_dark_flash")
+  let g:forms_hi_dark_flash="ffff87"
+endif
+if ! exists("g:forms_hi_dark_toggleselected")
+  let g:forms_hi_dark_toggleselected="5fffff"
+endif
+if ! exists("g:forms_hi_dark_selected")
+  let g:forms_hi_dark_selected="5fffff"
+endif
+if ! exists("g:forms_hi_dark_button")
+  let g:forms_hi_dark_button="585858"
+endif
+if ! exists("g:forms_hi_dark_buttonflash")
+  let g:forms_hi_dark_buttonflash="9e9e9e"
+endif
+if ! exists("g:forms_hi_dark_frame_tint_adjust")
+  let g:forms_hi_dark_frame_tint_adjust=0.28
+endif
+if ! exists("g:forms_hi_dark_frame_shade_adjust")
+  let g:forms_hi_dark_frame_shade_adjust=0.5
+endif
+if ! exists("g:forms_hi_dark_dropshadow_shade_adjust")
+  let g:forms_hi_dark_dropshadow_shade_adjust=0.5
+endif
+if ! exists("g:forms_hi_dark_disable")
+  let g:forms_hi_dark_disable="ffaf00"
+endif
+if ! exists("g:forms_hi_dark_menu")
+  let g:forms_hi_dark_menu=g:forms_hi_dark_background
+endif
+if ! exists("g:forms_hi_dark_menumnemonic")
+  let g:forms_hi_dark_menumnemonic=g:forms_hi_dark_menu
+endif
+if ! exists("g:forms_hi_dark_menuhotspot")
+  let g:forms_hi_dark_menuhotspot="ff00d7"
+endif
+if ! exists("g:forms_hi_dark_menumnemonichotspot")
+  let g:forms_hi_dark_menumnemonichotspot=g:forms_hi_dark_menuhotspot
+endif
+
+"========================================
 
 if &background == 'light' 
-  let backgroundColor = 'dadada'
-  let hotspotColor = '00ff00'
-  let flashColor = 'ffff87'
-  let toggleselectedColor = '5fffff'
-  let selectedColor = '5fffff'
-  let buttonColor = 'bcbcbc'
-  let buttonflashColor = '767676'
+  let backgroundColor = g:forms_hi_light_background
+  let hotspotColor = g:forms_hi_light_hotspot
+  let flashColor = g:forms_hi_light_flash
+  let toggleselectedColor = g:forms_hi_light_toggleselected
+  let selectedColor = g:forms_hi_light_selected
+  let buttonColor = g:forms_hi_light_button
+  let buttonflashColor = g:forms_hi_light_buttonflash
 
   " Frame
   " derive FrameHi values from BackgroundHi values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
-  let frameTintAjust = 0.28
+  let frameTintAjust = g:forms_hi_light_frame_tint_adjust
   let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
   let framefgColor = printf('%02x%02x%02x',rt,gt,bt)
-  let frameShadeAjust = 0.15
+  let frameShadeAjust = g:forms_hi_light_frame_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(frameShadeAjust, r, g, b)
   let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
 
   " DropShadow
   " derive DropShadowHi values from BackgroundHi values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
-  let dropshadowShadeAjust = 0.135
+  let dropshadowShadeAjust = g:forms_hi_light_dropshadow_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
   let dropshadowfgColor = printf('%02x%02x%02x',rs,gs,bs)
   let dropshadowbgColor = backgroundColor
 
-  let disableColor = 'ffaf00'
-  let menuColor = backgroundColor
-  let menumnemonicColor = backgroundColor
-  let menuhotspotColor = 'ff00d7'
-  let menumnemonichotspotColor = 'ff00d7'
+  let disableColor = g:forms_hi_light_disable
+  let menuColor = g:forms_hi_light_menu
+  let menumnemonicColor = g:forms_hi_light_menumnemonic
+  let menuhotspotColor = g:forms_hi_light_menuhotspot
+  let menumnemonichotspotColor = g:forms_hi_light_menumnemonichotspot
+
 
 else " &background == 'dark'
 
-  "let backgroundColor = '303030'
-  let backgroundColor = '5c5c5c'
-  let hotspotColor = '00ff00'
-  let flashColor = 'ffff87'
-  let toggleselectedColor = '5fffff'
-  let selectedColor = '5fffff'
-  let buttonColor = '585858'
-  let buttonflashColor = '9e9e9e'
+  let backgroundColor = g:forms_hi_dark_background
+  let hotspotColor = g:forms_hi_dark_hotspot
+  let flashColor = g:forms_hi_dark_flash
+  let toggleselectedColor = g:forms_hi_dark_toggleselected
+  let selectedColor = g:forms_hi_dark_selected
+  let buttonColor = g:forms_hi_dark_button
+  let buttonflashColor = g:forms_hi_dark_buttonflash
 
-  " :hi FrameHi             gui=NONE guifg=#3a3a3a guibg=#262626
   " Frame
   " derive FrameHi values from BackgroundHi values
-"let g:forms_log_enabled = g:self#IS_TRUE
-"call forms#log("FRAME COLOR")
-"call forms#log("backgroundColor=".backgroundColor)
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
-  let frameTintAjust = 0.28
+  let frameTintAjust = g:forms_hi_dark_frame_tint_adjust
   let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
   let framefgColor = printf('%02x%02x%02x',rt,gt,bt)
-"call forms#log("framefgColor=".framefgColor)
-  " let frameShadeAjust = 0.15
-  let frameShadeAjust = 0.5
+  let frameShadeAjust = g:forms_hi_dark_frame_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(frameShadeAjust, r, g, b)
   let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
-"call forms#log("framebgColor=".framebgColor)
-"let g:forms_log_enabled = g:self#IS_FALSE
 
-" light  :hi DropShadowHi        gui=NONE guibg=#dadada guifg=#bcbcbc
-       " :hi DropShadowHi        gui=NONE guibg=#303030 guifg=#080808
   " DropShadow
   " derive DropShadowHi values from BackgroundHi values
-"let g:forms_log_enabled = g:self#IS_TRUE
-"call forms#log("DROPSHADOW COLOR")
-"call forms#log("backgroundColor=".backgroundColor)
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
-  "let dropshadowShadeAjust = 0.135
-  let dropshadowShadeAjust = 0.5
+  let dropshadowShadeAjust = g:forms_hi_dark_dropshadow_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
   let dropshadowfgColor = printf('%02x%02x%02x',rs,gs,bs)
-"call forms#log("dropshadowfgColor=".dropshadowfgColor)
   let dropshadowbgColor = backgroundColor
-"let g:forms_log_enabled = g:self#IS_FALSE
 
-  let disableColor = 'ffaf00'
-  let menuColor = backgroundColor
-  let menumnemonicColor = backgroundColor
-  let menuhotspotColor = 'ff00d7'
-  let menumnemonichotspotColor = 'ff00d7'
+  let disableColor = g:forms_hi_dark_disable
+  let menuColor = g:forms_hi_dark_menu
+  let menumnemonicColor = g:forms_hi_dark_menumnemonic
+  let menuhotspotColor = g:forms_hi_dark_menuhotspot
+  let menumnemonichotspotColor = g:forms_hi_dark_menumnemonichotspot
 
 endif " background
 
@@ -336,211 +419,7 @@ else
   execute "hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=" . menumnemonichotspotNumber
 endif
 
-if 0
-
-if &background == 'light' 
-
-if has("gui_running")
-
-  " ReverseHi must use same background color, ctermbg, as BackgroundHi
-  :hi ReverseHi           gui=reverse guibg=#dadada
-  :hi HotSpotHi           gui=NONE guibg=#00ff00
-  :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
-  :hi FlashHi             gui=NONE guibg=#ffff87
-
-  :hi ToggleSelectedHi   gui=NONE guibg=#5fffff
-
-  :hi SelectedHi          gui=bold guibg=#5fffff
-
-  :hi ButtonHi            gui=NONE guibg=#bcbcbc
-  :hi ButtonFlashHi       gui=NONE guibg=#767676
-
-  :hi BackgroundHi        gui=NONE guibg=#dadada
-
-  " TODO derive FrameHi values from BackgroundHi values
-  :hi FrameHi             gui=NONE guifg=#e4e4e4 guibg=#d0d0d0
-
-  " TODO derive DropShadowHi values from BackgroundHi values
-  :hi DropShadowHi        gui=NONE guibg=#dadada guifg=#bcbcbc
-
-  :hi DisableHi           gui=NONE guibg=#ffaf00
-
-  :hi MenuHi              gui=NONE guibg=#dadada
-  :hi MenuMnemonicHi      gui=underline guibg=#dadada
-
-  :hi MenuHotSpotHi       gui=NONE guibg=#ff00d7
-  :hi MenuMnemonicHotSpotHi  gui=underline guibg=#ff00d7
-
-elseif &t_Co == 256 
-
-  :hi ReverseHi           cterm=reverse ctermbg=253 
-  :hi HotSpotHi           cterm=NONE ctermbg=46 
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
-  :hi FlashHi             cterm=NONE ctermbg=228 
-
-  :hi ToggleSelectedHi   cterm=bold ctermbg=87 
-
-  :hi SelectedHi          cterm=bold ctermbg=87 
-
-  :hi ButtonHi            cterm=NONE ctermbg=250 
-  :hi ButtonFlashHi       cterm=NONE ctermbg=243 
-
-  :hi BackgroundHi        cterm=NONE ctermbg=253 
-
-  :hi FrameHi             cterm=NONE ctermfg=254 ctermbg=252 
-
-  :hi DropShadowHi        cterm=NONE ctermbg=253 ctermfg=250 
-
-  :hi DisableHi           cterm=NONE ctermbg=214 
-
-  :hi MenuHi              cterm=None ctermbg=253 
-  :hi MenuMnemonicHi      cterm=underline ctermbg=253 
-
-  :hi MenuHotSpotHi       cterm=None ctermbg=200 
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 
-
-elseif &t_Co == 88
-
-  :hi ReverseHi           cterm=reverse ctermbg=86
-  :hi HotSpotHi           cterm=NONE ctermbg=28
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=28
-  :hi FlashHi             cterm=NONE ctermbg=77
-
-  :hi ToggleSelectedHi   cterm=bold ctermbg=47 
-
-  :hi SelectedHi          cterm=bold ctermbg=47 
-
-  :hi ButtonHi            cterm=NONE ctermbg=85
-  :hi ButtonFlashHi       cterm=NONE ctermbg=82
-
-  :hi BackgroundHi        cterm=NONE ctermbg=86 
-
-  :hi FrameHi             cterm=NONE ctermfg=87 ctermbg=86
-
-  :hi DropShadowHi        cterm=NONE ctermbg=86 ctermfg=85
-
-  :hi DisableHi           cterm=NONE ctermbg=72
-
-  :hi MenuHi              cterm=None ctermbg=86 
-  :hi MenuMnemonicHi      cterm=underline ctermbg=86 
-
-  :hi MenuHotSpotHi       cterm=None ctermbg=13
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=13
-
-else " t_Co < 88
-
-  " TODO: I have no idea if these values look ok
-  :hi ReverseHi           cterm=reverse ctermbg=LightGrey
-  :hi HotSpotHi           ctermbg=Green 
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
-  :hi FlashHi             ctermbg=LightYellow
-
-  :hi ToggleSelectedHi   cterm=bold ctermbg=LightBlue
-
-  :hi SelectedHi          cterm=bold ctermbg=LightBlue
-
-  :hi ButtonHi            cterm=NONE ctermbg=Grey
-  :hi ButtonFlashHi       cterm=NONE ctermbg=DarkGrey
-
-  :hi BackgroundHi        cterm=NONE ctermbg=LightGrey
-  :hi DisableHi           cterm=NONE ctermbg=LightRed
-
-  :hi MenuHi              cterm=None ctermbg=LightGrey
-  :hi MenuMnemonicHi      cterm=underline ctermbg=LightGrey 
-  :hi MenuHotSpotHi       cterm=None ctermbg=LightGrey
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=LightMagenta
-
-endif
-
-else " &background == 'dark'
-
-if has("gui_running")
-
-  :hi ReverseHi           gui=reverse guibg=#303030 
-  :hi HotSpotHi           gui=NONE guibg=#00ff00
-  :hi ReverseHotSpotHi    gui=reverse guibg=#00ff00
-  :hi FlashHi             gui=NONE guibg=#ffff87
-
-  :hi ToggleSelectedHi   gui=bold guibg=#5fffff
-
-  :hi SelectedHi          gui=bold guibg=#5fffff
-
-  :hi ButtonHi            gui=NONE guibg=#585858
-  :hi ButtonFlashHi       gui=NONE guibg=#9e9e9e
-
-  :hi BackgroundHi        gui=NONE guibg=#303030
-
-  :hi FrameHi             gui=NONE guifg=#3a3a3a guibg=#262626
-
-  :hi DropShadowHi        gui=NONE guibg=#303030 guifg=#080808
-
-  :hi DisableHi           gui=NONE guibg=#ffaf00
-
-  :hi MenuHi              gui=None guibg=#303030 
-  :hi MenuMnemonicHi      gui=underline guibg=#303030 
-
-  :hi MenuHotSpotHi       gui=None guibg=#ff00d7
-  :hi MenuMnemonicHotSpotHi  gui=underline guibg=#ff00d7
-
-elseif &t_Co == 256 
-
-  :hi ReverseHi           cterm=reverse ctermbg=236 
-  :hi HotSpotHi           cterm=NONE ctermbg=46 
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=46 
-  :hi FlashHi             cterm=NONE ctermbg=228 
-
-  :hi ToggleSelectedHi   cterm=bold ctermbg=87 
-
-  :hi SelectedHi          cterm=bold ctermbg=87 
-
-  :hi ButtonHi            cterm=NONE ctermbg=240 
-  :hi ButtonFlashHi       cterm=NONE ctermbg=247 
-
-  " :hi BackgroundHi        cterm=NONE ctermbg=253 
-  :hi BackgroundHi        cterm=NONE ctermbg=236
-
-  :hi FrameHi             cterm=NONE ctermfg=237 ctermbg=235
-
-  :hi DropShadowHi        cterm=NONE ctermbg=236 ctermfg=232
-
-  :hi DisableHi           cterm=NONE ctermbg=214 
-
-  :hi MenuHi              cterm=None ctermbg=236 
-  :hi MenuMnemonicHi      cterm=underline ctermbg=236 
-
-  :hi MenuHotSpotHi       cterm=None ctermbg=200 
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=200 
-
-else " t_Co < 256
-
-  " TODO: I have no idea if these values look ok
-  :hi ReverseHi           cterm=reverse ctermbg=DarkGrey
-  :hi HotSpotHi           ctermbg=Green 
-  :hi ReverseHotSpotHi    cterm=reverse ctermbg=Green
-  :hi FlashHi             ctermbg=LightYellow
-
-  :hi ToggleSelectedHi   cterm=bold ctermbg=LightBlue
-
-  :hi SelectedHi          cterm=bold ctermbg=LightBlue
-
-  :hi ButtonHi            cterm=NONE ctermbg=Grey
-  :hi ButtonFlashHi       cterm=NONE ctermbg=LightGrey
-
-  :hi BackgroundHi        cterm=NONE ctermbg=DarkGrey
-  :hi DisableHi           cterm=NONE ctermbg=DarkGrey
-
-  :hi MenuHi              cterm=None ctermbg=DarkGrey
-  :hi MenuMnemonicHi      cterm=underline ctermbg=DarkGrey
-  :hi MenuHotSpotHi       cterm=None ctermbg=DarkGrey
-  :hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=LightMagenta
-
-endif
-
-endif " background
-
-endif " if 0
-
-endfunction
+endfunction " s:LoadeHighlights
 
 call s:LoadeHighlights() 
 

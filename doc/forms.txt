@@ -22,6 +22,9 @@ For Vim instructions on installing this 'txt' file, enter:
       3.2 Window Image 
       3.3 Log File
       3.4 Gui Font
+      3.5 Highlight Colors
+          3.5.1 Light Color Variables and Default Values
+          3.5.2 Dark Color Variables and Default Values
   4. Mappings                                |forms-mappings|
   5. Fonts                                   |forms-fonts|
   6. Colors                                  |forms-colors|
@@ -262,6 +265,66 @@ Font handling is different when using Vim. With GVim, one can set and
 change the font to use dynamically, when GVim is running.
 With Vim in an Xterm, it is the Xterm's font that is used by Vim.
 See below |forms-fonts| for more information.
+
+Highlight Colors~
+
+The Forms library uses region-based highlights to color items.
+The default values for these highlights, both for 'light' and 'dark'
+'background' settings, are located in the forms.vim file.
+It is possible to override all of the values though it is cautioned
+that things may not look correct is some cases (but everything
+will still work).
+
+In addition, some highlight colors are generated from others using
+adjustment values, Float values between 0.0 and 1.0, to either
+create a Tint or Shade value. Specifically, the 'Frame' and 'DropShadow'
+colors are adjusted values based upon the current background color.
+The value of the adjustments are rather critical and, to get
+a reasonable effect, may actually depend upon the value of the
+background color.
+
+At any rate, below are the names of the 'light' and 'dark' highlight
+color variables along with their default values.
+You can change one but placing the option override in your {.vimrc}
+file. For instance, the following make the 'light' background yellow: >
+
+  let g:forms_hi_light_background="dada00"
+
+Light Color Variables and Default Values~
+>
+  let g:forms_hi_light_background="dadada"
+  let g:forms_hi_light_hotspot="00ff00"
+  let g:forms_hi_light_flash="ffff87"
+  let g:forms_hi_light_toggleselected="5fffff"
+  let g:forms_hi_light_selected="5fffff"
+  let g:forms_hi_light_button="bcbcbc"
+  let g:forms_hi_light_buttonflash="767676"
+  let g:forms_hi_light_frame_tint_adjust=0.28
+  let g:forms_hi_light_frame_shade_adjust=0.15
+  let g:forms_hi_light_dropshadow_shade_adjust=0.135
+  let g:forms_hi_light_disable="ffaf00"
+  let g:forms_hi_light_menu=g:forms_hi_light_background
+  let g:forms_hi_light_menumnemonic=g:forms_hi_light_menu
+  let g:forms_hi_light_menuhotspot="ff00d7"
+  let g:forms_hi_light_menumnemonichotspot=g:forms_hi_light_menuhotspot
+
+Dark Color Variables and Default Values~
+>
+  let g:forms_hi_dark_background="5c5c5c"
+  let g:forms_hi_dark_hotspot="00ff00"
+  let g:forms_hi_dark_flash="ffff87"
+  let g:forms_hi_dark_toggleselected="5fffff"
+  let g:forms_hi_dark_selected="5fffff"
+  let g:forms_hi_dark_button="585858"
+  let g:forms_hi_dark_buttonflash="9e9e9e"
+  let g:forms_hi_dark_frame_tint_adjust=0.28
+  let g:forms_hi_dark_frame_shade_adjust=0.5
+  let g:forms_hi_dark_dropshadow_shade_adjust=0.5
+  let g:forms_hi_dark_disable="ffaf00"
+  let g:forms_hi_dark_menu=g:forms_hi_dark_background
+  let g:forms_hi_dark_menumnemonic=g:forms_hi_dark_menu
+  let g:forms_hi_dark_menuhotspot="ff00d7"
+  let g:forms_hi_dark_menumnemonichotspot=g:forms_hi_dark_menuhotspot
 
 ==============================================================================
 4. Mappings                                                    *forms-mappings*
