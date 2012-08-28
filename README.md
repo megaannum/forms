@@ -102,6 +102,7 @@ After unpacking the Forms directory layout should look like:
           examples/...
       doc/forms.vim
       plugin/forms.vim
+      tutorial/forms/...
 
 If a plugin manager is used, files/directories will be wherever the
 plugin manager is configured to install things.

@@ -147,7 +147,7 @@ After unpacking the {Forms} directory layout should look like:
       doc/forms.vim
       plugin/forms.vim
       tutorial/forms/...
-< 
+ 
 If a plugin manager is used, files/directories will be wherever the
 plugin manager is configured to install things.
 
@@ -255,7 +255,7 @@ set the font to use when using {Forms} with GVim.
     if ! exists("g:forms_gui_font")
       let g:forms_gui_font="Fixed 20"
     endif
-<
+
 If not set previously, the default font is the fixed width font of size 20.
 
 When a form is run, it saves the current font and then changes to the
@@ -352,7 +352,7 @@ Here are the mappings for the menu and popup:
     vmap <Leader>m :call forms#menu#MakeMenu('v')<CR>
     nmap <Leader>p :call forms#menu#MakePopUp('n')<CR>
     vmap <Leader>p :call forms#menu#MakePopUp('v')<CR>
-<
+
 It should be noted that there are normal and visual mode mappings. 
 That is because some capabilities of the menu/popup are enabled/disabled
 depending upon mode, as well as, which command to ultimately execute
@@ -384,7 +384,7 @@ used by the Xterm. Running on my Linux systems I found the following
 works to launch an Xterm appropriately configured: 
     /usr/bin/xterm -g 80x30 -bg lightgrey -sl 1000 +si -fn \
        '-misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*'
-<
+
 Here, focus on the font used, fixed width, size 20 supporting ISO-10646,
 the Universal Character Set (UCS) defined by the International Standard
 ISO/IEC 10646 (https://en.wikipedia.org/wiki/Universal_Character_Set),
@@ -749,7 +749,7 @@ designed to interact with the user (i.e., accept user input).
              function! forms#newLabel(attrs)
                return forms#loadLabelPrototype().clone().init(a:attrs)
              endfunction
-<
+
           The Label prototype is cloned and the clone is then initialized.
             
         Tree ~
