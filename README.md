@@ -245,20 +245,34 @@ then, there ought not be a problem.
 ## Linux urxvt256c & Vim
 
 Forms simply works on the version of rxvt that supports Unicode and 256
-colors, urxvt256c.
+colors, urxvt256c.  Add to .vimrc file:
+
+    set t_Co=256
 
 ## Linux urxvt & Vim
 
-Forms now works with 88 colore rxvt that supports Unicode urxvt.
+Forms works with 88 colore rxvt that supports Unicode urxvt.
+Add to .vimrc file:
+
+    set t_Co=88
 
 ## Linux Konsole & Vim
 
-Forms now works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
-does not render correctly)
+Forms works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
+does not render correctly).
+Add to .vimrc file:
+
+    set t_Co=256
+    let g:FORMS_COLOR_TERM_KONSOLE = 0
 
 ## Linux Eterm & Vim
 
-Forms works eterm (well, I hope it works, no access to ETerm so could not test).  
+Forms works eterm (well, I hope it works, no access to ETerm so could not test).
+Add to .vimrc file:
+
+    set t_Co=256
+    let g:FORMS_COLOR_TERM_ETERM = 0
+
 ## Linux GVim
 
 Some testing has been done on the Linux GVim platform and all of the

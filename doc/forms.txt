@@ -32,9 +32,12 @@ For Vim instructions on installing this 'txt' file, enter:
   8. Supported Platforms                     |forms-platforms|
     8.1 Linux Xterm & Vim
     8.2 Linux urxvt256c & Vim
-    8.3 Linux GVim
-    8.4 Mac GVim
-    8.5 Windows GVim
+    8.3 Linux urxvt & Vim
+    8.4 Linux Konsole & Vim
+    8.5 Linux Eterm & Vim
+    8.6 Linux GVim
+    8.7 Mac GVim
+    8.8 Windows GVim
   9. Glyphs                                  |forms-glyphs|
   10. Examples                               |forms-examples|
   11. FAQ                                    |forms-faq|
@@ -103,11 +106,11 @@ A zip snapshot of the {Forms} library can be downloaded
 from [www.vim.org](http://www.vim.org/scripts/script.php?script_id=4150)
 
 
-In your Vim home, normally $HOME/.vim in Unix, unzip the file: >
+In your Vim home, normally $HOME/.vim in Unix, unzip the file: 
     # cd $HOME/.vim
     # unzip forms.zip
     
-On a Windows system, vim home is normally $HOME/vimfiles. >
+On a Windows system, vim home is normally $HOME/vimfiles. 
     TODO how to unpack on Windows?
 
 {Forms} is also available via [githup](http://github.com/megaannum/forms).
@@ -123,25 +126,27 @@ TODO how to use VAM plugin manager
 
 2.2 Dependency                                                *forms-dependency*
 
-{Forms} depends upon the {Self} Libaray, a prototype-based object system: >
+{Forms} depends upon the {Self} Libaray, a prototype-based object system: 
     http://www.vim.org/scripts/script.php?script_id=3072
-<
-or >
+
+or 
     https://github.com/megaannum/self
-<
+
 
 2.3 Directory layout                                  *forms-directory-layout*
 
-After unpacking the {Forms} directory layout should look like: >
+After unpacking the {Forms} directory layout should look like: 
     $HOME/.vim/
       autoload/
         forms.vim
         forms/
           menu.vim
+          color/...
           dialog/...
           examples/...
       doc/forms.vim
       plugin/forms.vim
+      tutorial/forms/...
 < 
 If a plugin manager is used, files/directories will be wherever the
 plugin manager is configured to install things.
@@ -178,16 +183,16 @@ There are two options that control this behavior.
 The first enables/disables the section of code that generates the 
 window dump and the second set the name of the dump file.
 
-Enable window dump: >
+Enable window dump: 
     let g:forms_window_dump_enabled = g:self#IS_TRUE
-Disable window dump: >
+Disable window dump: 
     let g:forms_window_dump_enabled = g:self#IS_FALSE
 
 The default setting if true (1), window dumps are enabled.
 (note that: g:self#IS_TRUE == 1 and g:self#IS_FALSE == 0 are
 variables defined in the {Self} library)
 
-Set window dump file name: >
+Set window dump file name: 
     let g:forms_window_dump_file = "some_file_name"
 
 The default value for the dump file name is "VIM_WINDOW".
@@ -197,7 +202,7 @@ Window Image  ~
 
 On Unix XTerms or Rxvt terminal emulator it is possible to take a 
 'png' image of a Forms window. Simply enter <C-R> and the Forms
-library invokes the Unix command: >
+library invokes the Unix command:
 
     import -window $WINDOWID {g:forms_window_image_file}.png
 
@@ -206,9 +211,9 @@ of the image file. The default value is "VIM_IMAGE".
 Normally, control-r maps to the 'redo' command, but in Forms it
 creates a window image.
 
-Enable window image: >
+Enable window image:
     let g:forms_window_image_enabled = g:self#IS_TRUE
-Disable window image: >
+Disable window image:
     let g:forms_window_image_enabled = g:self#IS_FALSE
 
 The default setting if true (1), window images are enabled.
@@ -223,12 +228,12 @@ and should really only be enabled by developers. To enable logging
 requires both its enabling and one must uncomment and/or create new log
 statements (thats right, currently all log statements are commented out).
 
-To enable logging the following should be defined: >
+To enable logging the following should be defined: 
     let g:forms_log_enabled = g:self#IS_TRUE
-and to disable logging: >
+and to disable logging: 
     let g:forms_log_enabled = g:self#IS_FALSE
 
-To set the log file name: >
+To set the log file name:
     let g:forms_log_file = "some_file_name"
 
 The default value for the log file name is "FORMS_LOG".
@@ -242,10 +247,10 @@ characters. Understandably, for most font designers it appears that making
 pretty fonts is more important than implementing all of the UTF-8 
 special characters - and, I guess, one can not blame them.
 It is a requirement for full {Forms} functionality to use an appropriate font.
-There may be other fonts, but it has been found that the font: >
+There may be other fonts, but it has been found that the font:
     Fixed 20
 works in GVim. With that in mind, there an option that allows one to 
-set the font to use when using {Forms} with GVim. >
+set the font to use when using {Forms} with GVim.
 
     if ! exists("g:forms_gui_font")
       let g:forms_gui_font="Fixed 20"
@@ -286,12 +291,12 @@ background color.
 At any rate, below are the names of the 'light' and 'dark' highlight
 color variables along with their default values.
 You can change one but placing the option override in your {.vimrc}
-file. For instance, the following make the 'light' background yellow: >
+file. For instance, the following make the 'light' background yellow: 
 
   let g:forms_hi_light_background="dada00"
 
 Light Color Variables and Default Values~
->
+
   let g:forms_hi_light_background="dadada"
   let g:forms_hi_light_hotspot="00ff00"
   let g:forms_hi_light_flash="ffff87"
@@ -309,7 +314,7 @@ Light Color Variables and Default Values~
   let g:forms_hi_light_menumnemonichotspot=g:forms_hi_light_menuhotspot
 
 Dark Color Variables and Default Values~
->
+
   let g:forms_hi_dark_background="5c5c5c"
   let g:forms_hi_dark_hotspot="00ff00"
   let g:forms_hi_dark_flash="ffff87"
@@ -329,7 +334,7 @@ Dark Color Variables and Default Values~
 ==============================================================================
 4. Mappings                                                    *forms-mappings*
 
-The {Forms} mappings are in the {plugin/forms.vim} file. >
+The {Forms} mappings are in the {plugin/forms.vim} file. 
 
 Strictly speaking, the {Forms} library is a library and, so, there ought not
 be any mappings. But, while developing {Forms} a number of examples were
@@ -342,7 +347,7 @@ as superfluous, covering Vim commands that are know by heart, so to
 power users disdain the GVim menu/popup - so, the power user is not
 the target user.  Rather, the same users that find the GVim menu/popup
 useful will find the {Forms} menu/popup equally useful.
-Here are the mappings for the menu and popup: >
+Here are the mappings for the menu and popup: 
     nmap <Leader>m :call forms#menu#MakeMenu('n')<CR>
     vmap <Leader>m :call forms#menu#MakeMenu('v')<CR>
     nmap <Leader>p :call forms#menu#MakePopUp('n')<CR>
@@ -355,7 +360,7 @@ may depend upon mode.
 
 There is also a mapping which launches a form that links to some 40 {Forms}
 demonstration forms. The demonstration forms range from a simple box
-drawing example to a file browser and color chooser: >
+drawing example to a file browser and color chooser: 
     nmap <Leader>d :call forms#example#demo#Make()<CR>
 
 If any of the demonstration forms do not display or function as one might
@@ -376,7 +381,7 @@ characters.
 
 For console-base Vim running in an Xterm, the font used by Vim is the font
 used by the Xterm. Running on my Linux systems I found the following
-works to launch an Xterm appropriately configured: >
+works to launch an Xterm appropriately configured: 
     /usr/bin/xterm -g 80x30 -bg lightgrey -sl 1000 +si -fn \
        '-misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*'
 <
@@ -403,19 +408,23 @@ can not be done.
 ==============================================================================
 6. Colors                                                   *forms-colors*
 
-The {Forms} library running in Vim is designed to use 256 colors.
-In one's {.vimrc} one should have: >
+The {Forms} library running in Vim is designed to use 256 or 88 colors.
+In one's {.vimrc} one should have: 
     set t_Co=256
-
-To see if your environment supports 256 colors see: >
+or 
+    set t_Co=88
+To see if your environment supports 256 colors see: 
     http://vim.wikia.com/wiki/256_colors_in_vim
+    http://vim.wikia.com/wiki/256_colors_setup_for_console_Vim
 
 On Linux the standard Xterm supports 256 colors.
-For a comparison of different X-Window terminal emulators see: >
+For a comparison of different X-Window terminal emulators see: 
     https://en.wikipedia.org/wiki/Comparison_of_terminal_emulators
 
 I do not know if, out of the box, Vim running on Mac or Windows supports
 265 colors. Feedback would be welcome.
+
+The terminal urxvt supports 88 colors.
 
 ==============================================================================
 7. Highlights                                             *forms-highlights*
@@ -462,28 +471,50 @@ the box drawing and block characters in a reasonable manner.
 8.1 Linux Xterm & Vim ~
 
 {Forms} was developed and extensively tested on a Linux Xterm platform.
-As long as the Xterm is using the correct font, such as >
+As long as the Xterm is using the correct font, such as 
     -misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*
 and has 256 color support and such support is declared in the {.vimrc}
-file >
+file 
     set t_Co=256
 then, there ought not be a problem.
 
 8.2 Linux urxvt256c & Vim ~
 
 {Forms} simply works on the version of rxvt that supports Unicode and 256
-colors, urxvt256c.
+colors, urxvt256c.  Add to .vimrc file: 
+    set t_Co=256
 
-8.3 Linux GVim ~
+8.3 Linux urxvt & Vim~
+
+{Forms} works with 88 colore rxvt that supports Unicode urxvt.
+Add to .vimrc file: 
+    set t_Co=88
+
+8.4 Linux Konsole & Vim~
+
+{Forms} works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
+does not render correctly).
+Add to .vimrc file: 
+    set t_Co=256
+    let g:FORMS_COLOR_TERM_KONSOLE = 0
+
+8.5 Linux Eterm & Vim~
+
+(Forms} works eterm (well, I hope it works, no access to ETerm so could not test).
+Add to .vimrc file: 
+    set t_Co=256
+    let g:FORMS_COLOR_TERM_ETERM = 0
+
+8.6 Linux GVim ~
 
 Some testing has been done on the Linux GVim platform and all of the
 demonstration forms seem to work as expected.
 
-8.4 Mac GVim ~
+8.7 Mac GVim ~
 
 No testing has been done on the Mac GVim configure. Feedback is welcome.
 
-8.5 Windows GVim ~
+8.8 Windows GVim ~
 
 No testing has been done on the Windows GVim configure. Feedback is welcome.
 
@@ -713,7 +744,8 @@ designed to interact with the user (i.e., accept user input).
           library, Glyphs have a "constructor", and associated function that
           takes a Dictionary of attributes and returns a newly cloned and
           initialized object. As an example, the Label Glyph has the following
-          function >
+          function 
+
              function! forms#newLabel(attrs)
                return forms#loadLabelPrototype().clone().init(a:attrs)
              endfunction
@@ -824,60 +856,59 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 ==============================================================================
 11. FAQ                                                         *forms-faq*
   11.1 User                                                *forms-faq-user*
->
+
     Q: How to exit a Form?
-<
+
     A: Entering <Esc> will exit the current form. If you were in a sub-Form
        you will pop up the its parent Form.
->
+
     Q: How do I use a button/editor/slider/... Glyph?
-<
+
     A: Entering <C-H> or clicking the right mouse button, <RightMouse>, on any
        Glyph will bring up context sensitive information for the Glyph. This 
        will include both general usage information and Form specific 
        information.
 
   11.2 Developer                                      *forms-faq-developer*
->
+
     Q: After changing some {Forms} code, in order to see the changes I have
        to exit Vim, restart Vim and run my Form again; simply sourcing the
        autoload/forms.vim file has no effect. How can I reload with out
        exiting Vim.
-<
+
     A: There is a {Forms} function called 'forms#reload()'. This will call
        the {Self} library function that lets one reload an autoloaded 
        function by deleting the function (See the code for more details).
-       If you are going to do this a lot, you might define a key mapping like: >
+       If you are going to do this a lot, you might define a key mapping like: 
          map <Leader>fr :call forms#reload()<CR>
-<
->
+
     Q: Whats the variable 'g:self#IN_DEVELOPMENT_MODE' do?
-<
+
     A: While developing the {Forms} library, one very, very often wants to
        reload the code to test a new feature. On the other hand, user will
        never want to or need to reload the code. So, there is a Boolean
        variable that controls who/when the {Forms} library can be reloaded.
        If you want to develop {Forms} code, consider setting the variable to
-       true in your .vimrc prior loading the {Self} library: >
+       true in your .vimrc prior loading the {Self} library: 
          let g:self#IN_DEVELOPMENT_MODE = g:self#IS_TRUE
-<
+
        The default setting is to false.
->
+
     Q: Writing out a glyph.
-<
+
     A: A Glyph is a Dictionary. It has references to its prototype and its
        prototype's prototype, etc., so string(glyph) can produce a page full
        of text (one very long line).
->
+
     Q: What does the "Show Selection" button do when context sensitive help
        is displayed?
-<
+
     A: The Glyphs in a Form are tree. The "Show Selection" button shows those
        Glyphs in the tree whose allocation includes the point of the mouse
        click; from Form down to the leaf glyph.
->
+
     Q: Then can a given Glyph appear more than once in a Glyph tree?
-<
+
     A: This has to do with the allocation (line,column,width,height) a Glyph
        is given and caches when it is initially drawn. Most Glyphs will 
        used this allocation in other methods. As an example, when a Glyph
@@ -891,10 +922,10 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
        can accept focus can never be used more than once.  Some Glyphs 
        that can appear multiple times are, for example, the HSpace, VSpace. 
        HLine and VLine  Glyphs.
->
+
     Q: I know where a Glyph will be drawn if it is aligned top, left, right or
        bottom. But, where will it be drawn if it is to be centered?
-<
+
     A: In placing Glyph in the center of a space there can be a rounding
        error. This also occurs in GUIs but there the size of the pixel makes
        it hard to see. For a TUI, the resolution is one character
@@ -902,18 +933,18 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
        of the Glyph and m is the width of the space its to appear in (m>n)
        then if (m-n) is divisible by 2, then the Glyph can be truly centered.
        If not, it will be one character off true center.
->
+
     Q: How do I call an object's prototype's method?
-<
+
     A: The short answer is that there is no safe, builtin way; one must
        create a calling "convention" and make sure that a developer who might
        wish to extend your objects understands the "convention".
        Consider three object: 'A', 'B', and 'C' where 'B' is A's prototype and
-       'C' is B's prototype. >
+       'C' is B's prototype. 
             A._prototype == B
             B._prototype == C
-<
-       Object 'C' has a method that both objects 'B' and 'A' will override. >
+
+       Object 'C' has a method that both objects 'B' and 'A' will override. 
             function! C.m() dict
               " do something
             endfunction
@@ -927,42 +958,42 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
               " do something
               " call B's method 'm'
             endfunction
-<
+
        Naively for object 'A' to call object's B's method one might do the
-       following: >
+       following: 
             function! A.m() dict
               " do something
               call self._prototype.m()
             endfunction
-<
+
        But, this does not work, 
-       To make things clearer, lets re-write A's method: >
+       To make things clearer, lets re-write A's method: 
             function! A.m() dict
               " do something
               let p = self._prototype
               call p.m()
             endfunction
-<
+
        What is the object that's calling the method? Its 'p' (B) not 'A'.
        So, the 'self' that appears in B's method body using A's code
        will, in fact, be 'B' not 'A'.
        So, lets try another approach and use Vim's 'call()' function so
-       A's method is now: >
+       A's method is now: 
             function! A.m() dict
               " do something
               let p = self._prototype
               call call(p.m, [], self)
             endfunction
-<
+
        Well, with this approach, 'A' will be the 'self' object in B's method,
        but there is a problem. Let us say, that B's method uses this same
-       approach: >
+       approach: 
             function! B.m() dict
               " do something
               let p = self._prototype
               call call(p.m, [], self)
             endfunction
-<
+
        What is the 'self' object in B's method? Its 'A'. So, taking the 'self' 
        object's prototype, 'self._prototype', which is to say, taking
        A's prototype and calling its method ....  one will get a function 
@@ -980,7 +1011,7 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
        the value in each method and, to be safe, try-finally blocks.
        Another approach is to write the method where the last argument
        is optional and, if present, it is the "current prototype". This 
-       is the approach I used (though I am certainly not happy with it) >
+       is the approach I used (though I am certainly not happy with it) 
             function! C.m(...) dict
               " do something
             endfunction
@@ -1046,14 +1077,14 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 14. Questions                                               *forms-questions*
->
+
     Q: Don't seem to be able to get <S-Tab> to work with Vim-linux.
-<
->
+
+
     Q: Entering <C-H> will give context information, but only about the
        Glyph with focus. How to get the "application" level context to
        display.
-<
+
 
 ==============================================================================
 
