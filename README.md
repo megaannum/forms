@@ -264,7 +264,7 @@ does not render correctly).
 Add to .vimrc file:
 
     set t_Co=256
-    let g:FORMS_COLOR_TERM_KONSOLE = 0
+    let g:FORMS_COLOR_TERM_KONSOLE = 1
 
 ## Linux Eterm & Vim
 
@@ -272,7 +272,7 @@ Forms works eterm (well, I hope it works, no access to ETerm so could not test).
 Add to .vimrc file:
 
     set t_Co=256
-    let g:FORMS_COLOR_TERM_ETERM = 0
+    let g:FORMS_COLOR_TERM_ETERM = 1
 
 ## Linux GVim
 
@@ -297,6 +297,9 @@ There is a Forms tutorial which can be accessed at [Forms tutorial](https://gith
 
 ## Acknowledgements and thanks
 
-- Marc Weber: provided initial release feedback identifying Vim 7.3 bug and
+- Marc Weber: Initial release feedback identifying Vim 7.3 bug and
   let me debug it on one of his test machines.
-- Andy Wokula: provided feedback on help file syntax and GVim when font is latin1.
+- Andy Wokula: Feedback on help file syntax and GVim when font is latin1.
+- Christian Brabandt: Feedback Slider+FieldEditor bugs and ergonomics, 
+  FileBrowser filenames with embedded spaces, etc, and, of course,
+  <S-Tab> does not work.

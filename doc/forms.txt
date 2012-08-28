@@ -496,14 +496,14 @@ Add to .vimrc file:
 does not render correctly).
 Add to .vimrc file: 
     set t_Co=256
-    let g:FORMS_COLOR_TERM_KONSOLE = 0
+    let g:FORMS_COLOR_TERM_KONSOLE = 1
 
 8.5 Linux Eterm & Vim~
 
 (Forms} works eterm (well, I hope it works, no access to ETerm so could not test).
 Add to .vimrc file: 
     set t_Co=256
-    let g:FORMS_COLOR_TERM_ETERM = 0
+    let g:FORMS_COLOR_TERM_ETERM = 1
 
 8.6 Linux GVim ~
 
