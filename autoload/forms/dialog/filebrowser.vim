@@ -37,7 +37,7 @@
 function! forms#dialog#filebrowser#Make(...) 
 
   function! V7MakeChoices(dir) 
-    let files = split(globpath(a:dir, "*"))
+    let files = split(globpath(a:dir, "*"), '\n')
     let flist = []
     let dlist = [["../", 0]]
     let cnt = 1

@@ -147,6 +147,7 @@ function! forms#menu#MakeFileMenu()
     let f = forms#dialog#filebrowser#Make(a:title) 
     call forms#log("forms#menu#MakeFileMenu.BrowserAction f=".f)
     if f != ''
+      let f = substitute(f, ' ', '\\ ', "g")
       execute ':'.a:cmd.f
     endif
   endfunction
