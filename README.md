@@ -245,11 +245,23 @@ the 256 looks best. In your .vimrc file add one of:
 
     if ($TERM == 'xterm')
         let &t_Co=256
+    endif
+
 or
+
+    if ($TERM == 'xterm')
         let &t_Co=88
+    endif
+
 or
+
+    if ($TERM == 'xterm')
         let &t_Co=16
+    endif
+
 or
+
+    if ($TERM == 'xterm')
         let &t_Co=8
     endif
 
