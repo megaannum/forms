@@ -1,30 +1,32 @@
 " ============================================================================
-" urxvt.vim
+" xterm88.vim
 "
-" File:          urxvt.vim
-" Summary:       Rxvt-Unicode (part of Forms Library)
+" File:          xterm88.vim
+" Summary:       XTerm 88 (part of Forms Library)
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " ============================================================================
 
 " ------------------------------------------------------------ 
 " Define Int_2_Name Dictionary: {{{2
 " Refs:
-"   rxvt-unicode-9.1.5 src/init.C
+"   http://www.opensource.apple.com/source/ncurses/ncurses-27/ncurses/test/xterm-88color.dat
+"   xterm-281/xter/charproc.c
+"   NOTE: color for 12 does not have name!!
 " ------------------------------------------------------------ 
 let s:Int_2_Name = {
     \ '0': 'black',
     \ '1': 'red3',
     \ '2': 'green3',
     \ '3': 'yellow3',
-    \ '4': 'blue3',
+    \ '4': 'blue2',
     \ '5': 'magenta3',
     \ '6': 'cyan3',
-    \ '7': 'AntiqueWhite',
-    \ '8': 'gray25',
+    \ '7': 'gray90',
+    \ '8': 'gray50',
     \ '9': 'red',
     \ '10': 'green',
     \ '11': 'yellow',
-    \ '12': 'SteelBlue1',
+    \ '12': 'UnknownBlue',
     \ '13': 'magenta',
     \ '14': 'cyan',
     \ '15': 'white'
@@ -33,22 +35,23 @@ let s:Int_2_Name = {
 " ------------------------------------------------------------ 
 " Define Int_2_RGB Dictionary: {{{2
 " Refs:
-"   rxvt-unicode-9.1.5 src/init.C
+"  http://www.opensource.apple.com/source/ncurses/ncurses-27/ncurses/test/xterm-88color.dat
+"   xterm-281/xter/charproc.c
 " ------------------------------------------------------------ 
 let s:Int_2_RGB = {
     \ '0': '000000',
     \ '1': 'cd0000',
     \ '2': '00cd00',
     \ '3': 'cdcd00',
-    \ '4': '0000cd',
+    \ '4': '0000ee',
     \ '5': 'cd00cd',
     \ '6': '00cdcd',
-    \ '7': 'faebd7',
-    \ '8': '404040',
+    \ '7': 'e5e5e5',
+    \ '8': '4d4d4d',
     \ '9': 'ff0000',
     \ '10': '00ff00',
     \ '11': 'ffff00',
-    \ '12': '0000ff',
+    \ '12': '5c5cff',
     \ '13': 'ff00ff',
     \ '14': '00ffff',
     \ '15': 'ffffff',
@@ -71,7 +74,7 @@ let s:Int_2_RGB = {
     \ '32': '8b0000',
     \ '33': '8b008b',
     \ '34': '8b00cd',
-    \ '35': '8b00ff',
+    \ '35': '8b00ff',      
     \ '36': '8b8b00',
     \ '37': '8b8b8b',
     \ '38': '8b8bcd',
@@ -118,7 +121,7 @@ let s:Int_2_RGB = {
     \ '79': 'ffffff',
     \ '80': '2e2e2e',
     \ '81': '5c5c5c',
-    \ '82': '737373',
+    \ '82': '717171',
     \ '83': '8b8b8b',
     \ '84': 'a2a2a2',
     \ '85': 'b9b9b9',
@@ -135,7 +138,7 @@ for key in sort(keys(s:Int_2_RGB))
 endfor
 
 " xterm number to rgb string
-let s:ColorTable= []
+let s:ColorTable = []
 " TODO make into list of [r,g,b] values
 let cnt = 0
 while cnt < 88
@@ -159,7 +162,6 @@ let s:intensities = [
           \ str2nr("0xcd",16),
           \ str2nr("0xff",16)
           \ ]
-
 
 " ------------------------------------------------------------ 
 " ConvertRGB_2_Int: {{{2
@@ -186,46 +188,52 @@ function! s:GetPartial_Int(n)
   endif
 endfunction
 
-function! forms#color#urxvt#ConvertRGB_2_Int(rn, gn, bn)
+function! forms#color#xterm#ConvertRGB_2_Int(rn, gn, bn)
 "let start = reltime()
   let rn = a:rn
   let gn = a:gn
   let bn = a:bn
 
-"call forms#log("ConvertRGB_2_Int: in rn=". rn)
-"call forms#log("ConvertRGB_2_Int: in gn=". gn)
-"call forms#log("ConvertRGB_2_Int: in bn=". bn)
-  
-  " special case 
-  " '7': 'faebd7'
-  " '8': '404040',
-  if (rn == 250) && (gn == 235) && (bn == 215)
-    return 7
-  elseif (rn == 64) && (gn == 64) && (bn == 64)
-    return 8
-  endif
+" call forms#log("ConvertRGB_2_Int: in rn=". rn)
+" call forms#log("ConvertRGB_2_Int: in gn=". gn)
+" call forms#log("ConvertRGB_2_Int: in bn=". bn)
 
+  " special case 
+  "  '4': '0000ee',
+  "  '7': 'e5e5e5',
+  "  '8': '4d4d4d',
+  "  '12': '5c5cff',
+  if (rn == 0) && (gn == 0) && (bn == 238)
+    return 4
+  elseif (rn == 229) && (gn == 229) && (bn == 229)
+    return 7
+  elseif (rn == 77) && (gn == 77) && (bn == 77)
+    return 8
+  elseif (rn == 92) && (gn == 92) && (bn == 255)
+    return 12
+  endif
+  
   let rnx = s:GetPartial_Int(rn)
   let gnx = s:GetPartial_Int(gn)
   let bnx = s:GetPartial_Int(bn)
-"call forms#log("ConvertRGB_2_Int: outjrnx=". rnx)
-"call forms#log("ConvertRGB_2_Int: outjgnx=". gnx)
-"call forms#log("ConvertRGB_2_Int: outjbnx=". bnx)
+" call forms#log("ConvertRGB_2_Int: outjrnx=". rnx)
+" call forms#log("ConvertRGB_2_Int: outjgnx=". gnx)
+" call forms#log("ConvertRGB_2_Int: outjbnx=". bnx)
 
   " must check grey levels which can be a closer match
   " TODO how to tell if we are near a grey level and
   "   only do the following if we are near?
   let diff = abs(rnx-rn) + abs(gnx-gn) + abs(bnx-bn)
-"call forms#log("ConvertRGB_2_Int: diff=". diff)
+" call forms#log("ConvertRGB_2_Int: diff=". diff)
   let best_match = -1
   let cnt = 80
   while cnt < 88
     let [rx,gx,bx] = s:ColorTable[cnt]
     let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
-"call forms#log("ConvertRGB_2_Int: d=". d)
+" call forms#log("ConvertRGB_2_Int: d=". d)
 
     " on equals, prefer gray to color
-    if d <= diff
+    if d < diff
       let diff = d
       let best_match = cnt
     endif
@@ -234,33 +242,33 @@ function! forms#color#urxvt#ConvertRGB_2_Int(rn, gn, bn)
   endwhile
 
   if best_match != -1
-"call forms#log("ConvertRGB_2_Int: best_match=". best_match)
+" call forms#log("ConvertRGB_2_Int: best_match=". best_match)
     let n = best_match
   else
     let rgbtxt = printf('%02x%02x%02x',rnx,gnx,bnx)
-"call forms#log("ConvertRGB_2_Int: rgbtxt=". rgbtxt)
+" call forms#log("ConvertRGB_2_Int: rgbtxt=". rgbtxt)
     let n = s:RGB_2_Int[rgbtxt]
   endif
-"call forms#log("ConvertRGB_2_Int:       time=". reltimestr(reltime(start)))
+" call forms#log("ConvertRGB_2_Int:      time=". reltimestr(reltime(start)))
 "call forms#log("ConvertRGB_2_Int: n=". n)
   return n
 endfunction
 
 " ------------------------------------------------------------ 
 " ConvertInt_2_RGB: {{{2
-"  Converts an 88 String or Number to an rgb String
+"  Converts an xterm 88 String or Number to an rgb String
 "    Returns the rgb String
 "  parameters:
 "    nr : String or Number or xterm 88 value
 "           value must be 0 <= value <= 88
 " ------------------------------------------------------------ 
-function! forms#color#urxvt#ConvertInt_2_RGB(nr)
+function! forms#color#xterm#ConvertInt_2_RGB(nr)
   if (type(a:nr) == g:self#NUMBER_TYPE)
     return s:Int_2_RGB[a:nr]
   elseif (type(a:nr) == g:self#STRING_TYPE)
     return s:Int_2_RGB[a:nr]
   else
-    throw "FORMS_COLOR_UTIL_ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
+    throw "forms#color#xterm#ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
   endif
 endfunction
 

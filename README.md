@@ -222,7 +222,8 @@ The Forms library ought to work on any platform where Vim has 256 colors
 (or full RGB as with GVim) and a fixed width UTF-8 font which implements
 the box drawing and block characters in a reasonable manner.
 
-## Linux Xterm & Vim
+## Linux Vim
+### Xterm
 
 Forms was developed and extensively tested on a Linux Xterm platform.
 As long as the Xterm is using the correct font, such as 
@@ -236,45 +237,59 @@ works to launch an Xterm appropriately configured:
     /usr/bin/xterm -g 80x30 -bg lightgrey -sl 1000 +si -fn \
        '-misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*'
 
-The Xterm must also have 256 color support and such support is 
-declared in the .vimrc file with:
+If with say, the font 10x20, then you may not be able to render all of
+the unicode characters, but it ought to still work.
 
-    set t_Co=256
+There is support for 256, 88, 16 and 8 color Xterms though
+the 256 looks best. In your .vimrc file add one of:
 
-then, there ought not be a problem.
+    if ($TERM == 'xterm')
+        let &t_Co=256
+or
+        let &t_Co=88
+or
+        let &t_Co=16
+or
+        let &t_Co=8
+    endif
 
-## Linux urxvt256c & Vim
+if you need help in getting the correct number of colors in Vim.
+
+
+### urxvt256c
 
 Forms simply works on the version of rxvt that supports Unicode and 256
-colors, urxvt256c.  Add to .vimrc file:
+colors, urxvt256c. 
+Vim knows that  &t_Co == 256.
 
-    set t_Co=256
+### urxvt
 
-## Linux urxvt & Vim
+Forms works with 88 color verion of rxvt that supports Unicode, urxvt.
+Vim knows that  &t_Co == 88.
 
-Forms works with 88 colore rxvt that supports Unicode urxvt.
-Add to .vimrc file:
+### rxvt
 
-    set t_Co=88
+Forms works with non-Unicode, 8 color rxvt.
+Vim knows that  &t_Co == 8.
 
-## Linux Konsole & Vim
+### Konsole
 
 Forms works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
 does not render correctly).
 Add to .vimrc file:
 
-    set t_Co=256
+    let &t_Co=256
     let g:FORMS_COLOR_TERM_KONSOLE = 1
 
-## Linux Eterm & Vim
+### Eterm
 
 Forms works eterm (well, I hope it works, no access to ETerm so could not test).
 Add to .vimrc file:
 
-    set t_Co=256
+    let &t_Co=256
     let g:FORMS_COLOR_TERM_ETERM = 1
 
-## Linux GVim
+### GVim
 
 Some testing has been done on the Linux GVim platform and all of the
 demonstration forms seem to work as expected.

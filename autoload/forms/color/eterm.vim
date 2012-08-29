@@ -298,7 +298,7 @@ endwhile
 " 6 intensity RGB
 " intensities = [0, 42, 85, 127, 170, 212]
 " intensities = (0x00, 0x2a, 0x55, 0x7f, 0xaa, 0xd4)
-let forms#color#eterm#intensities256 = [
+let s:intensities = [
           \ str2nr("0x00",16),
           \ str2nr("0x2a",16),
           \ str2nr("0x55",16),

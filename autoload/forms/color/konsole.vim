@@ -298,7 +298,7 @@ endwhile
 " 6 intensity RGB
 " intensities = [0, 51, 102, 153, 204, 255]
 " intensities = (0x00, 0x33, 0x66, 0x99, 0xcc, 0xff )
-let forms#color#konsole#intensities256 = [
+let s:intensities = [
           \ str2nr("0x00",16),
           \ str2nr("0x33",16),
           \ str2nr("0x66",16),
@@ -316,7 +316,7 @@ let forms#color#konsole#intensities256 = [
 "    rgb : Parameters accepted by ParseRGB
 " ------------------------------------------------------------ 
 
-" binary search over possible intensities256
+" binary search over possible intensities
 function! s:GetPartial_Int256(n)
   " intensities = [0, 51, 102, 153, 204, 255]
   " intensities = (0x00, 0x33, 0x66, 0x99, 0xcc, 0xff )

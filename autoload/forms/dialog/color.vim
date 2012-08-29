@@ -223,15 +223,19 @@ function!  forms#dialog#color#Make(with_pallet)
 
   "----
 
-if has("gui_running") || &t_Co == 256
-  :hi CCRedHi    cterm=NONE ctermbg=196 guibg=#ff0000
-  :hi CCGreenHi  cterm=NONE ctermbg=46  guibg=#00ff00
-  :hi CCBlueHi   cterm=NONE ctermbg=21  guibg=#0000ff
-elseif &t_Co == 88
-  :hi CCRedHi    cterm=NONE ctermbg=64 guibg=#ff0000
-  :hi CCGreenHi  cterm=NONE ctermbg=28  guibg=#00ff00
-  :hi CCBlueHi   cterm=NONE ctermbg=19  guibg=#0000ff
+if has("gui_running")
+  :hi CCRedHi    cterm=NONE guibg=#ff0000
+  :hi CCGreenHi  cterm=NONE guibg=#00ff00
+  :hi CCBlueHi   cterm=NONE guibg=#0000ff
+else
+  let n = forms#color#term#ConvertRGBTxt_2_Int("ff0000")
+  execute "hi CCRedHi    cterm=NONE ctermbg=" . n
+  let n = forms#color#term#ConvertRGBTxt_2_Int("00ff00")
+  execute "hi CCGreenHi  cterm=NONE ctermbg=" . n
+  let n = forms#color#term#ConvertRGBTxt_2_Int("0000ff")
+  execute "hi CCBlueHi   cterm=NONE ctermbg=" . n
 endif
+
 
   "----
   let rhsa = forms#newAction({ 'execute': function("CCSliderAction")})

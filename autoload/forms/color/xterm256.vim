@@ -1,24 +1,51 @@
 " ============================================================================
-" xterm.vim
+" xterm256.vim
 "
-" File:          xterm.vim
-" Summary:       XTerm (part of Forms Library)
+" File:          xterm256.vim
+" Summary:       XTerm 256 (part of Forms Library)
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " ============================================================================
 
 " ------------------------------------------------------------ 
-" Define Int256_2_RGB Dictionary: {{{2
+" Define Int_2_Name Dictionary: {{{2
+" Refs:
+"   http://www.opensource.apple.com/source/ncurses/ncurses-27/ncurses/test/xterm-88color.dat
+"   xterm-281/xter/charproc.c
+"   NOTE: color for 12 does not have name!!
+" ------------------------------------------------------------ 
+let s:Int_2_Name = {
+    \ '0': 'black',
+    \ '1': 'red3',
+    \ '2': 'green3',
+    \ '3': 'yellow3',
+    \ '4': 'blue2',
+    \ '5': 'magenta3',
+    \ '6': 'cyan3',
+    \ '7': 'gray90',
+    \ '8': 'gray50',
+    \ '9': 'red',
+    \ '10': 'green',
+    \ '11': 'yellow',
+    \ '12': 'UnknownBlue',
+    \ '13': 'magenta',
+    \ '14': 'cyan',
+    \ '15': 'white'
+    \ }
+
+" ------------------------------------------------------------ 
+" Define Int_2_RGB Dictionary: {{{2
 " Refs:
 "   https://en.wikipedia.org/wiki/File:Xterm_color_chart.png
 "   rxvt-unicode-9.1.5 src/init.C
+"   xterm-281/256colres.h
 " TODO: should #8 be '4d4d4d' or '7f7f7f'
 " ------------------------------------------------------------ 
-let s:Int256_2_RGB = {
+let s:Int_2_RGB = {
     \ '0': '000000',
     \ '1': 'cd0000',
     \ '2': '00cd00',
     \ '3': 'cdcd00',
-    \ '4': '0000cd',
+    \ '4': '0000ee',
     \ '5': 'cd00cd',
     \ '6': '00cdcd',
     \ '7': 'e5e5e5',
@@ -26,7 +53,7 @@ let s:Int256_2_RGB = {
     \ '9': 'ff0000',
     \ '10': '00ff00',
     \ '11': 'ffff00',
-    \ '12': '0000ff',
+    \ '12': '5c5cff',
     \ '13': 'ff00ff',
     \ '14': '00ffff',
     \ '15': 'ffffff',
@@ -273,26 +300,26 @@ let s:Int256_2_RGB = {
     \ }
 
 " ------------------------------------------------------------ 
-" Generate RGB_2_Int256 Dictionary: {{{2
+" Generate RGB_2_Int Dictionary: {{{2
 " ------------------------------------------------------------ 
-let s:RGB_2_Int256 = {}
-for key in sort(keys(s:Int256_2_RGB))
-  let s:RGB_2_Int256[s:Int256_2_RGB[key]] = key
+let s:RGB_2_Int = {}
+for key in sort(keys(s:Int_2_RGB))
+  let s:RGB_2_Int[s:Int_2_RGB[key]] = key
 endfor
 
 " xterm number to rgb string
-let s:ColorTable256 = []
+let s:ColorTable = []
 " TODO make into list of [r,g,b] values
 let cnt = 0
 while cnt < 256
-  let rgb = s:Int256_2_RGB[cnt]
+  let rgb = s:Int_2_RGB[cnt]
   let r = rgb[0:1]
   let g = rgb[2:3]
   let b = rgb[4:5]
   let rn = str2nr(r, 16)
   let gn = str2nr(g, 16)
   let bn = str2nr(b, 16)
-  call add(s:ColorTable256, [rn,gn,bn])
+  call add(s:ColorTable, [rn,gn,bn])
 
   let cnt += 1
 endwhile
@@ -302,7 +329,7 @@ endwhile
 " 6 intensity RGB
 " intensities=[0, 95, 135, 175, 215, 255]
 " intensities = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
-let forms#color#xterm#intensities256 = [
+let s:intensities = [
           \ str2nr("0x00",16),
           \ str2nr("0x5f",16),
           \ str2nr("0x87",16),
@@ -313,7 +340,7 @@ let forms#color#xterm#intensities256 = [
 
 
 " ------------------------------------------------------------ 
-" ConvertRGB_2_Int256: {{{2
+" ConvertRGB_2_Int: {{{2
 "  Converts an rgb String to a xterm 256 Number
 "    Tried to make this fast.
 "    Returns the xterm 256 Number
@@ -322,9 +349,9 @@ let forms#color#xterm#intensities256 = [
 " ------------------------------------------------------------ 
 
 " binary search over possible intensities256
-function! s:GetPartial_Int256(n)
-  " intensities256=[0, 95, 135, 175, 215, 255]
-  " intensities256 = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
+function! s:GetPartial_Int(n)
+  " intensities=[0, 95, 135, 175, 215, 255]
+  " intensities = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
   let n = a:n
   let n2 = n+n
 
@@ -347,34 +374,64 @@ function! s:GetPartial_Int256(n)
   endif
 endfunction
 
-function! forms#color#xterm#ConvertRGB_2_Int(rn, gn, bn)
+function! forms#color#xterm256#ConvertRGB_2_Int(rn, gn, bn)
 "let start = reltime()
   let rn = a:rn
   let gn = a:gn
   let bn = a:bn
 
-" call forms#log("ConvertRGB_2_Int256: in rn=". rn)
-" call forms#log("ConvertRGB_2_Int256: in gn=". gn)
-" call forms#log("ConvertRGB_2_Int256: in bn=". bn)
+" call forms#log("ConvertRGB_2_Int: in rn=". rn)
+" call forms#log("ConvertRGB_2_Int: in gn=". gn)
+" call forms#log("ConvertRGB_2_Int6: in bn=". bn)
+
+  " special case 
+  "  '1': 'cd0000',
+  "  '2': '00cd00',
+  "  '3': 'cdcd00',
+  "  '4': '0000ee',
+  "  '5': 'cd00cd',
+  "  '6': '00cdcd',
+  "  '7': 'e5e5e5',
+  "  '8': '4d4d4d',
+  "  '12': '5c5cff',
+  if (rn == 205) && (gn == 0) && (bn == 0)
+    return 1
+  elseif (rn == 0) && (gn == 205) && (bn == 0)
+    return 2
+  elseif (rn == 205) && (gn == 205) && (bn == 0)
+    return 3
+  elseif (rn == 0) && (gn == 0) && (bn == 238)
+    return 4
+  elseif (rn == 205) && (gn == 0) && (bn == 205)
+    return 5
+  elseif (rn == 0) && (gn == 205) && (bn == 205)
+    return 6
+  elseif (rn == 229) && (gn == 229) && (bn == 229)
+    return 7
+  elseif (rn == 77) && (gn == 77) && (bn == 77)
+    return 8
+  elseif (rn == 92) && (gn == 92) && (bn == 255)
+    return 12
+  endif
   
-  let rnx = s:GetPartial_Int256(rn)
-  let gnx = s:GetPartial_Int256(gn)
-  let bnx = s:GetPartial_Int256(bn)
-" call forms#log("ConvertRGB_2_Int256: outjrnx=". rnx)
-" call forms#log("ConvertRGB_2_Int256: outjgnx=". gnx)
-" call forms#log("ConvertRGB_2_Int256: outjbnx=". bnx)
+  let rnx = s:GetPartial_Int(rn)
+  let gnx = s:GetPartial_Int(gn)
+  let bnx = s:GetPartial_Int(bn)
+" call forms#log("ConvertRGB_2_Int: outjrnx=". rnx)
+" call forms#log("ConvertRGB_2_Int: outjgnx=". gnx)
+" call forms#log("ConvertRGB_2_Int: outjbnx=". bnx)
 
   " must check grey levels which can be a closer match
   " TODO how to tell if we are near a grey level and
   "   only do the following if we are near?
   let diff = abs(rnx-rn) + abs(gnx-gn) + abs(bnx-bn)
-" call forms#log("ConvertRGB_2_Int256: diff=". diff)
+" call forms#log("ConvertRGB_2_Int: diff=". diff)
   let best_match = -1
   let cnt = 232
   while cnt < 256
-    let [rx,gx,bx] = s:ColorTable256[cnt]
+    let [rx,gx,bx] = s:ColorTable[cnt]
     let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
-" call forms#log("ConvertRGB_2_Int256: d=". d)
+" call forms#log("ConvertRGB_2_Int: d=". d)
 
     " on equals, prefer gray to color
     if d < diff
@@ -386,20 +443,20 @@ function! forms#color#xterm#ConvertRGB_2_Int(rn, gn, bn)
   endwhile
 
   if best_match != -1
-" call forms#log("ConvertRGB_2_Int256: best_match=". best_match)
+" call forms#log("ConvertRGB_2_Int: best_match=". best_match)
     let n = best_match
   else
     let rgbtxt = printf('%02x%02x%02x',rnx,gnx,bnx)
-" call forms#log("ConvertRGB_2_Int256: rgbtxt=". rgbtxt)
-    let n = s:RGB_2_Int256[rgbtxt]
+" call forms#log("ConvertRGB_2_Int: rgbtxt=". rgbtxt)
+    let n = s:RGB_2_Int[rgbtxt]
   endif
-" call forms#log("ConvertRGB_2_Int256:      time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB_2_Int256: n=". n)
+" call forms#log("ConvertRGB_2_Int:      time=". reltimestr(reltime(start)))
+"call forms#log("ConvertRGB_2_Int: n=". n)
   return n
 endfunction
 
 " ------------------------------------------------------------ 
-" ConvertRGB_2_Int256Good: {{{2
+" ConvertRGB_2_IntGood: {{{2
 "  Converts an rgb String to a xterm 256 Number
 "    Tried to make this fast.
 "    Returns the xterm 256 Number
@@ -407,65 +464,65 @@ endfunction
 "    rgb : Parameters accepted by ParseRGB
 " ------------------------------------------------------------ 
 "
-function! s:GetPartial_Int256Good(n, intensities)
+function! s:GetPartial_IntGood(n, intensities)
   let n = a:n
   let intensities = a:intensities
   let s = intensities[0]
   let b = intensities[1]
   if s <= n && n <= b
-"call forms#log("ConvertRGB_2_Int256Good: 0")
+"call forms#log("ConvertRGB_2_IntGood: 0")
     return (n+n <= s+b) ? s : b
   endif
   let s = b
   let b = intensities[2]
   if s <= n && n <= b
-"call forms#log("ConvertRGB_2_Int256Good: 1")
+"call forms#log("ConvertRGB_2_IntGood: 1")
     return (n+n <= s+b) ? s : b
   endif
   let s = b
   let b = intensities[3]
   if s <= n && n <= b
-"call forms#log("ConvertRGB_2_Int256Good: 2")
+"call forms#log("ConvertRGB_2_IntGood: 2")
     return (n+n <= s+b) ? s : b
   endif
   let s = b
   let b = intensities[4]
   if s <= n && n <= b
-"call forms#log("ConvertRGB_2_Int256Good: 3")
+"call forms#log("ConvertRGB_2_IntGood: 3")
     return (n+n <= s+b) ? s : b
   endif
   let s = b
   let b = intensities[5]
   if s <= n && n <= b
-"call forms#log("ConvertRGB_2_Int256Good: 4")
+"call forms#log("ConvertRGB_2_IntGood: 4")
     return (n+n <= s+b) ? s : b
   endif
-  throw "ConvertRGB_2_Int256Good.GetPartial_Int256Good: Bad partial color: " . string(n)
+  throw "ConvertRGB_2_IntGood.GetPartial_IntGood: Bad partial color: " . string(n)
 endfunction
 
-function! forms#color#xterm#ConvertRGB_2_Int256Good(rn, gn, bn)
+function! forms#color#xterm256#ConvertRGB_2_IntGood(rn, gn, bn)
   let rn = a:rn
   let gn = a:gn
   let bn = a:bn
 "let start = reltime()
 
-"call forms#log("ConvertRGB_2_Int256Good: in rn=". rn)
-"call forms#log("ConvertRGB_2_Int256Good: in gn=". gn)
-"call forms#log("ConvertRGB_2_Int256Good: in bn=". bn)
+"call forms#log("ConvertRGB_2_IntGood: in rn=". rn)
+"call forms#log("ConvertRGB_2_IntGood: in gn=". gn)
+"call forms#log("ConvertRGB_2_IntGood: in bn=". bn)
   
-  let rnx = s:GetPartial_Int256Good(rn, forms#color#xterm#intensities256)
-  let gnx = s:GetPartial_Int256Good(gn, forms#color#xterm#intensities256)
-  let bnx = s:GetPartial_Int256Good(bn, forms#color#xterm#intensities256)
-"call forms#log("ConvertRGB_2_Int256Good: rnx=". rnx)
-"call forms#log("ConvertRGB_2_Int256Good: gnx=". gnx)
-"call forms#log("ConvertRGB_2_Int256Good: bnx=". bnx)
+  let rnx = s:GetPartial_IntGood(rn, s:intensities)
+  let gnx = s:GetPartial_IntGood(gn, s:intensities)
+  let bnx = s:GetPartial_IntGood(bn, s:intensities)
+"call forms#log("ConvertRGB_2_IntGood: rnx=". rnx)
+"call forms#log("ConvertRGB_2_IntGood: gnx=". gnx)
+"call forms#log("ConvertRGB_2_IntGood: bnx=". bnx)
 
   " must check grey levels which can be a closer match
   let diff = abs(rnx-rn) + abs(gnx-gn) + abs(bnx-bn)
   let best_match = -1
   let cnt = 232
   while cnt < 256
-    let [rx,gx,bx] = s:ColorTable256[cnt]
+    let [rx,gx,bx] = s:ColorTable[cnt]
     let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
 
     if d <= diff
@@ -477,15 +534,15 @@ function! forms#color#xterm#ConvertRGB_2_Int256Good(rn, gn, bn)
   endwhile
 
   if best_match != -1
-"call forms#log("ConvertRGB_2_Int256Good: best_match=". best_match)
+"call forms#log("ConvertRGB_2_IntGood: best_match=". best_match)
     let n = best_match
   else
     let rgbtxt = printf('%02x%02x%02x',rnx,gnx,bnx)
-"call forms#log("ConvertRGB_2_Int256Good: rgbtxt=". rgbtxt)
-    let n = s:RGB_2_Int256[rgbtxt]
+"call forms#log("ConvertRGB_2_IntGood: rgbtxt=". rgbtxt)
+    let n = s:RGB_2_Int[rgbtxt]
   endif
-"call forms#log("ConvertRGB_2_Int256Good:  time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB_2_Int256Good: n=". n)
+"call forms#log("ConvertRGB_2_IntGood:  time=". reltimestr(reltime(start)))
+"call forms#log("ConvertRGB_2_IntGood: n=". n)
   return n
 endfunction
 
@@ -493,28 +550,28 @@ endfunction
 
 " http://crunchbanglinux.org/forums/topic/20674/view-images-and-gifs-in-the-terminal/
 " ------------------------------------------------------------ 
-" ConvertRGB_2_Int256Slow: {{{2
+" ConvertRGB_2_IntSlow: {{{2
 "  Converts an rgb String to a xterm 256 Number
 "    Tried to make this fast.
 "    Returns the xterm 256 Number
 "  parameters:
 "    rgb : Parameters accepted by ParseRGB
 " ------------------------------------------------------------ 
-function! forms#color#xterm#ConvertRGB_2_Int256Slow(rn, gn, bn)
+function! forms#color#xterm256#ConvertRGB_2_IntSlow(rn, gn, bn)
   let rn = a:rn
   let gn = a:gn
   let bn = a:bn
 "let start = reltime()
 
-"call forms#log("ConvertRGB_2_Int256Slow: in rn=". rn)
-"call forms#log("ConvertRGB_2_Int256Slow: in gn=". gn)
-"call forms#log("ConvertRGB_2_Int256Slow: in bn=". bn)
+"call forms#log("ConvertRGB_2_IntSlow: in rn=". rn)
+"call forms#log("ConvertRGB_2_IntSlow: in gn=". gn)
+"call forms#log("ConvertRGB_2_IntSlow: in bn=". bn)
   let best_match = 0
   let diff = 10000000
 
   let cnt = 16
   while cnt < 256
-    let [rx,gx,bx] = s:ColorTable256[cnt]
+    let [rx,gx,bx] = s:ColorTable[cnt]
     let d = abs(rx-rn) + abs(gx-gn) + abs(bx-bn)
 
     if d < diff
@@ -524,27 +581,27 @@ function! forms#color#xterm#ConvertRGB_2_Int256Slow(rn, gn, bn)
 
     let cnt += 1
   endwhile
-"call forms#log("ConvertRGB_2_Int256Slow:  time=". reltimestr(reltime(start)))
-"call forms#log("ConvertRGB_2_Int256Slow: best_match=". best_match)
+"call forms#log("ConvertRGB_2_IntSlow:  time=". reltimestr(reltime(start)))
+"call forms#log("ConvertRGB_2_IntSlow: best_match=". best_match)
   return best_match
 
 endfunction
 
 " ------------------------------------------------------------ 
-" ConvertInt256_2_RGB: {{{2
+" ConvertInt_2_RGB: {{{2
 "  Converts an xterm 256 String or Number to an rgb String
 "    Returns the rgb String
 "  parameters:
 "    nr : String or Number or xterm 256 value
 "           value must be 0 <= value <= 255
 " ------------------------------------------------------------ 
-function! forms#color#xterm#ConvertInt_2_RGB(nr)
+function! forms#color#xterm256#ConvertInt_2_RGB(nr)
   if (type(a:nr) == g:self#NUMBER_TYPE)
-    return s:Int256_2_RGB[a:nr]
+    return s:Int_2_RGB[a:nr]
   elseif (type(a:nr) == g:self#STRING_TYPE)
-    return s:Int256_2_RGB[a:nr]
+    return s:Int_2_RGB[a:nr]
   else
-    throw "forms#color#xterm#ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
+    throw "forms#color#xterm256#ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
   endif
 endfunction
 

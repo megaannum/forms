@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 July 19
 
 Author:      Richard Emberson 
-Version:     1.5
+Version:     1.6
 Title:       Forms Library
 Homepage:    TODO
 
@@ -30,14 +30,16 @@ For Vim instructions on installing this 'txt' file, enter:
   6. Colors                                  |forms-colors|
   7. Highlights                              |forms-highlights|
   8. Supported Platforms                     |forms-platforms|
-    8.1 Linux Xterm & Vim
-    8.2 Linux urxvt256c & Vim
-    8.3 Linux urxvt & Vim
-    8.4 Linux Konsole & Vim
-    8.5 Linux Eterm & Vim
-    8.6 Linux GVim
-    8.7 Mac GVim
-    8.8 Windows GVim
+    8.1 Linux Vim
+      8.1.1 xterm
+      8.1.2 urxvt256c
+      8.1.3 urxvt
+      8.1.4 rxvt
+      8.1.5 Konsole
+      8.1.6 Eterm
+    8.2 Linux GVim
+    8.3 Mac GVim
+    8.4 Windows GVim
   9. Glyphs                                  |forms-glyphs|
   10. Examples                               |forms-examples|
   11. FAQ                                    |forms-faq|
@@ -410,9 +412,9 @@ can not be done.
 
 The {Forms} library running in Vim is designed to use 256 or 88 colors.
 In one's {.vimrc} one should have: 
-    set t_Co=256
+    let &t_Co=256
 or 
-    set t_Co=88
+    let &t_Co=88
 To see if your environment supports 256 colors see: 
     http://vim.wikia.com/wiki/256_colors_in_vim
     http://vim.wikia.com/wiki/256_colors_setup_for_console_Vim
@@ -468,53 +470,76 @@ The {Forms} library ought to work on any platform where Vim has 256 colors
 (or full RGB as with GVim) and a fixed width UTF-8 font which implements
 the box drawing and block characters in a reasonable manner.
 
-8.1 Linux Xterm & Vim ~
+8.1 Linux Vim ~
+
+8.1.1 xterm ~
 
 {Forms} was developed and extensively tested on a Linux Xterm platform.
 As long as the Xterm is using the correct font, such as 
     -misc-fixed-medium-r-normal-*-20-*-*-*-*-*-iso10646-*
-and has 256 color support and such support is declared in the {.vimrc}
-file 
-    set t_Co=256
-then, there ought not be a problem.
 
-8.2 Linux urxvt256c & Vim ~
+If with say, the font 10x20, then you may not be able to render all of
+the unicode characters, but it ought to still work.
+
+The Xterm has 256 color support and such support is declared in the {.vimrc}
+file 
+    let &t_Co=256
+
+More generally, depending upon the type of Xterm you could have in
+your {.vimrc}:
+    if ($TERM == 'xterm')
+        let &t_Co=256
+or
+        let &t_Co=88
+or
+        let &t_Co=16
+or
+        let &t_Co=8
+    endif
+
+8.1.2 urxvt256c~
 
 {Forms} simply works on the version of rxvt that supports Unicode and 256
-colors, urxvt256c.  Add to .vimrc file: 
-    set t_Co=256
+colors, urxvt256c.  
+Vim knows that  &t_Co == 256.
 
-8.3 Linux urxvt & Vim~
+8.1.3 urxvt~
 
-{Forms} works with 88 colore rxvt that supports Unicode urxvt.
-Add to .vimrc file: 
-    set t_Co=88
+{Forms} works with 88 color verion of rxvt that supports Unicode, urxvt.
+Vim knows that  &t_Co == 88.
 
-8.4 Linux Konsole & Vim~
+8.1.4 rxvt~
+
+{Forms} works with the non-Unicode, 8 color rxvt.
+Vim knows that  &t_Co == 88.
+
+8.1.5 Konsole~
 
 {Forms} works kconsole (though kconsole's UTF-8 9608 2588 FULL BLOCK
 does not render correctly).
-Add to .vimrc file: 
-    set t_Co=256
+Add to .vimrc file:
+
+    let &t_Co=256
     let g:FORMS_COLOR_TERM_KONSOLE = 1
 
-8.5 Linux Eterm & Vim~
+8.1.6 Eterm ~
 
 (Forms} works eterm (well, I hope it works, no access to ETerm so could not test).
 Add to .vimrc file: 
-    set t_Co=256
+
+    let &t_Co=256
     let g:FORMS_COLOR_TERM_ETERM = 1
 
-8.6 Linux GVim ~
+8.2 Linux GVim ~
 
 Some testing has been done on the Linux GVim platform and all of the
 demonstration forms seem to work as expected.
 
-8.7 Mac GVim ~
+8.3 Mac GVim ~
 
 No testing has been done on the Mac GVim configure. Feedback is welcome.
 
-8.8 Windows GVim ~
+8.4 Windows GVim ~
 
 No testing has been done on the Windows GVim configure. Feedback is welcome.
 
@@ -1033,6 +1058,9 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.6   - Fix: ~
+    Added support for 8 and 16 color terminals.
+    Works with non-unicode characters sets (there is some degradation).
 1.5   - Fix: ~
     Refactored code, Color utilities and Terminal code in separate files
     Refactored code, Highlighting values defined and generated

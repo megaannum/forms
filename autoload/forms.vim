@@ -5,8 +5,8 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 08/30/2012
-" Version:       1.5
+" Last Modified: 06/30/2012
+" Version:       1.6
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -383,24 +383,13 @@ else
 
   execute "hi BackgroundHi        cterm=NONE ctermbg=" . backgroundNumber
 
-"let g:forms_log_enabled = g:self#IS_TRUE
-"call forms#log("FRAME")
-"call forms#log("backgroundNumber=".backgroundNumber)
   let framefgNumber = forms#color#term#ConvertRGBTxt_2_Int(framefgColor)
-"call forms#log("framefgNumber=".framefgNumber)
   let framebgNumber = forms#color#term#ConvertRGBTxt_2_Int(framebgColor)
-"call forms#log("framebgNumber=".framebgNumber)
   execute "hi FrameHi             cterm=NONE ctermfg=".framefgNumber." ctermbg=" . framebgNumber
-"let g:forms_log_enabled = g:self#IS_FALSE
 
-"let g:forms_log_enabled = g:self#IS_TRUE
-"call forms#log("DROPSHADOW")
-"call forms#log("backgroundNumber=".backgroundNumber)
   let dropshadowfgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowfgColor)
   let dropshadowbgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowbgColor)
-"call forms#log("dropshadowfgNumber=".dropshadowfgNumber)
   execute "hi DropShadowHi        cterm=NONE ctermbg=".dropshadowbgNumber." ctermfg=" . dropshadowfgNumber
-"let g:forms_log_enabled = g:self#IS_FALSE
 
 
   let disableNumber = forms#color#term#ConvertRGBTxt_2_Int(disableColor)
@@ -6030,12 +6019,15 @@ function! forms#loadSliderPrototype()
         endif
       endif
 
-      if self.__resolution < 0
+      if self.__resolution < 1
         throw "Slider: resolution must 1, 2, 3 or 4: " . self.__resolution
       endif
       if self.__resolution > 4
         throw "Slider: resolution must 1, 2, 3 or 4: " . self.__resolution
       endif
+if &encoding != 'utf-8'
+let self.__resolution = 1
+endif
 
       return self
     endfunction
@@ -6400,7 +6392,11 @@ function! forms#loadHSliderPrototype()
         let size = self.__size
         let resolution = self.__resolution
 
-        let full = b:forms_FullB
+        if &encoding == 'utf-8'
+          let full = b:forms_FullB
+        else
+          let full = 'X'
+        endif
 " call forms#log("g:forms#HSlider.draw resolution=" .  resolution)
 
         " nos possible positions = resolution * (size-1) + 1
@@ -6412,9 +6408,9 @@ function! forms#loadHSliderPrototype()
             call forms#SetHCharsAt(' ', (size-1), line, column)
             call forms#SetCharAt(full, line, column+size-1)
           else
-            call forms#SetHCharsAt(' ', (pos-1), line, column)
+            call forms#SetHCharsAt(' ', pos, line, column)
             call forms#SetCharAt(full, line, column+pos)
-            call forms#SetHCharsAt(' ', (size-pos=1), line, column+pos+1)
+            call forms#SetHCharsAt(' ', (size-pos-1), line, column+pos+1)
           endif
 
         elseif resolution == 2
@@ -6425,27 +6421,18 @@ function! forms#loadHSliderPrototype()
           let offset = value * nosoffsets/(upper-lower+1)
           let p = (offset/el_per_cell) * el_per_cell
           let i = offset - p
-" call forms#log("g:forms#HSlider.draw nosoffsets=" .  nosoffsets)
-" call forms#log("g:forms#HSlider.draw value=" .  value)
-" call forms#log("g:forms#HSlider.draw offset=" .  offset)
-" call forms#log("g:forms#HSlider.draw p=" .  p)
-" call forms#log("g:forms#HSlider.draw i=" .  i)
           let pp = p / el_per_cell
-" call forms#log("g:forms#HSlider.draw pp=" .  pp)
 
           if i == 0
             if pp == 0
-" call forms#log("g:forms#HSlider.draw A")
               call forms#SetCharAt(full, line, column)
               call forms#SetHCharsAt(' ', (size-1), line, column+1)
 
             elseif pp == size-1
-" call forms#log("g:forms#HSlider.draw B")
               call forms#SetHCharsAt(' ', (size-1), line, column)
               call forms#SetCharAt(full, line, column+size-1)
 
             else
-" call forms#log("g:forms#HSlider.draw C")
               call forms#SetHCharsAt(' ', (pp), line, column)
               " call forms#SetCharAt(' ', line, column+pp-1)
               call forms#SetCharAt(full, line, column+pp)
@@ -6454,7 +6441,6 @@ function! forms#loadHSliderPrototype()
 
             endif
           else
-" call forms#log("g:forms#HSlider.draw D")
             if pp > 0
               call forms#SetHCharsAt(' ', (pp), line, column)
             endif
@@ -6744,7 +6730,11 @@ function! forms#loadVSliderPrototype()
         let size = self.__size
         let resolution = self.__resolution
 
-        let full = b:forms_FullB
+        if &encoding == 'utf-8'
+          let full = b:forms_FullB
+        else
+          let full = 'X'
+        endif
 " call forms#log("g:forms#VSlider.draw resolution=" .  resolution)
 
         " nos possible positions = resolution * (size-1) + 1
@@ -6756,9 +6746,9 @@ function! forms#loadVSliderPrototype()
             call forms#SetVCharsAt(' ', (size-1), line, column)
             call forms#SetCharAt(full, line+size-1, column)
           else
-            call forms#SetVCharsAt(' ', (pos-1), line, column)
+            call forms#SetVCharsAt(' ', pos, line, column)
             call forms#SetCharAt(full, line+pos, column)
-            call forms#SetVCharsAt(' ', (size-pos=1), line+pos+1, column)
+            call forms#SetVCharsAt(' ', (size-pos-1), line+pos+1, column)
           endif
 
         elseif resolution == 2
@@ -7164,7 +7154,6 @@ function! forms#loadBoxPrototype()
 
       if self.__status != g:IS_INVISIBLE
         let m = 1
-
         call forms#DrawBox(self.__mode, a.line, a.column, a.width, a.height)
 
 "  call forms#log("g:forms#Box.draw calling body")
@@ -7402,7 +7391,9 @@ function! forms#loadDropShadowPrototype()
         let hi = self.__highlight
 
 
+if &encoding == 'utf-8'
         call forms#DrawDropShadow(c, line, column, width-1, height-1)
+endif
 
         if c == 'ul'
           call GlyphHilight(self, hi, {
@@ -7585,7 +7576,9 @@ function! forms#loadFramePrototype()
         let hi = self.__highlight
 "call forms#log("g:forms#Frame.draw c=".c)
 
+if &encoding == 'utf-8'
         call forms#DrawFrame(c, line, column, width, height)
+endif
 
         call GlyphHilight(self, hi, {
                                        \ 'line': line,
@@ -14616,15 +14609,19 @@ function! forms#addBoxDrawingCharacterSet(name, dr, uh, dl, rv, ul, lh, ur, lv,)
 endfunction
 
 function! forms#LookupBoxDrawingCharacterSet(name)
-  if has_key(s:boxDrawingCharacterSets, a:name)
-    return s:boxDrawingCharacterSets[a:name]
-  else
-    call forms#log("LookupBoxDrawingCharacterSet: unknown box drawing character set: " . a:name)
-    if &encoding == 'utf-8'
-      return s:boxDrawingCharacterSets['light']
+  if &encoding == 'utf-8'
+    if has_key(s:boxDrawingCharacterSets, a:name)
+      return s:boxDrawingCharacterSets[a:name]
     else
-      return s:boxDrawingCharacterSets['default']
+      call forms#log("LookupBoxDrawingCharacterSet: unknown box drawing character set: " . a:name)
+      if &encoding == 'utf-8'
+        return s:boxDrawingCharacterSets['light']
+      else
+        return s:boxDrawingCharacterSets['default']
+      endif
     endif
+  else
+      return s:boxDrawingCharacterSets['default']
   endif
 endfunction
 
