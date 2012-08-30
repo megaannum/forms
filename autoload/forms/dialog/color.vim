@@ -92,15 +92,27 @@ function!  forms#dialog#color#Make(with_pallet)
 
   endfunction
   let slider2infoa = forms#newAction({ 'execute': function("CCSlider2InfoAction")})
+  
+  " the RGB text value was not a valid hex number, so reset the
+  " rgb editor from the contents of the r, g, b editors
+  function! CCResetRDBEditorFromOtherEditors(rgbeditor, reditor, geditor, beditor)
+    let rtxt = a:reditor.getText()
+    let gtxt = a:geditor.getText()
+    let btxt = a:beditor.getText()
+    let rn = str2nr(rtxt, 10)
+    let gn = str2nr(gtxt, 10)
+    let bn = str2nr(btxt, 10)
+    let rgbtxt = printf('%02x%02x%02x',rn,gn,bn)
+    call a:rgbeditor.setText(rgbtxt)
+  endfunction
 
   "........................................
   " Info RGB editor to others
   "........................................
   function! CCRGBEditor2OthersAction(...) dict
     let rgbtxt = "".a:1
-" call forms#log("CCRGBEditor2OthersAction.execute: rgbtxt=".rgbtxt)
     if len(rgbtxt) != 6
-" call forms#log("CCRGBEditor2OthersAction.execute: bad length=".len(rgbtxt))
+      call CCResetRDBEditorFromOtherEditors(self.rgbeditor, self.reditor, self.geditor, self.beditor)
       return
     endif
     let r = rgbtxt[0:1]
@@ -110,15 +122,15 @@ function!  forms#dialog#color#Make(with_pallet)
     let gn = str2nr(g, 16)
     let bn = str2nr(b, 16)
     if printf('%02x',rn) != r
-" call forms#log("CCRGBEditor2OthersAction.execute: bad r=".r)
+      call CCResetRDBEditorFromOtherEditors(self.rgbeditor, self.reditor, self.geditor, self.beditor)
       return
     endif
     if printf('%02x',gn) != g
-" call forms#log("CCRGBEditor2OthersAction.execute: bad g=".g)
+      call CCResetRDBEditorFromOtherEditors(self.rgbeditor, self.reditor, self.geditor, self.beditor)
       return
     endif
     if printf('%02x',bn) != b
-" call forms#log("CCRGBEditor2OthersAction.execute: bad b=".b)
+      call CCResetRDBEditorFromOtherEditors(self.rgbeditor, self.reditor, self.geditor, self.beditor)
       return
     endif
 
@@ -135,17 +147,14 @@ function!  forms#dialog#color#Make(with_pallet)
     try 
       call self.rhs.setRangeValue(rn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
     try 
       call self.ghs.setRangeValue(gn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
     try 
       call self.bhs.setRangeValue(bn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
 
     call self.reditor.setText(rn)
@@ -154,14 +163,40 @@ function!  forms#dialog#color#Make(with_pallet)
   endfunction
   let rgbeditor2others = forms#newAction({ 'execute': function("CCRGBEditor2OthersAction")})
 
+  " the number text value was not a valid number, so reset the
+  " n editor from the contents of the r, g, b editors
+  function! CCResetNEditorFromRGBEditors(rgbeditor, neditor)
+    let rgbtxt = a:rgbeditor.getText()
+    let rtxt = rgbtxt[0:1]
+    let gtxt = rgbtxt[2:3]
+    let btxt = rgbtxt[4:5]
+    let rn = str2nr(rtxt, 16)
+    let gn = str2nr(gtxt, 16)
+    let bn = str2nr(btxt, 16)
+    let n = forms#color#term#ConvertRGB_2_Int(rn,gn,bn)
+    call a:neditor.setText(n)
+  endfunction
+
   "........................................
   " Info N editor to others
   "........................................
   function! CCNEditor2OthersAction(...) dict
     let n = "".a:1
-" call forms#log("CCNEditor2OthersAction.execute: n=".n)
-    let rgbtxt = forms#color#term#ConvertInt_2_RGB(n)
-" call forms#log("CCNEditor2OthersAction.execute: rgbtxt=".rgbtxt)
+    let i = 0+n
+    if len(string(i)) != len(a:1) 
+      " not all of the argument is used to create number, so number
+      " editor value is bad
+      call CCResetNEditorFromRGBEditors(self.rgbeditor, self.neditor)
+      return
+    endif
+    try
+      let rgbtxt = forms#color#term#ConvertInt_2_RGB(n)
+    catch /.*/
+      " the number 'n' above could not be converted. reset the neditor
+      " with value from rgbeditor
+      call CCResetNEditorFromRGBEditors(self.rgbeditor, self.neditor)
+      return
+    endtry
 
     call self.rgbeditor.setText(rgbtxt)
 
@@ -182,17 +217,14 @@ function!  forms#dialog#color#Make(with_pallet)
     try 
       call self.rhs.setRangeValue(rn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
     try 
       call self.ghs.setRangeValue(gn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
     try 
       call self.bhs.setRangeValue(bn)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
     endtry
 
     call self.reditor.setText(rn)
@@ -213,12 +245,17 @@ function!  forms#dialog#color#Make(with_pallet)
 
   function! CCEditorAction(...) dict
     let value = a:1 + 0
-" call forms#log("CCEditorAction.execute: value=" . value)
     try 
       call self.hslider.setRangeValue(value)
     catch /.*/
-" call forms#log("CCEditorAction.execute: exception=" . v:exception)
+      let v = self.hslider.getRangeValue()
+      call self.editor.setText(string(v))
+      return
     endtry
+    if string(value) != a:1
+      call self.editor.setText(string(value))
+    endif
+    call self.slider2infoa.execute()
   endfunction
 
   "----
@@ -241,6 +278,7 @@ endif
   let rhsa = forms#newAction({ 'execute': function("CCSliderAction")})
   let rhsa.slider2infoa = slider2infoa
   let rea = forms#newAction({ 'execute': function("CCEditorAction")})
+  let rea.slider2infoa = slider2infoa
 
   let rlabel = forms#newLabel({'text': "R"})
   let rsp = forms#newVLine({ 'size': 3})
@@ -274,6 +312,7 @@ endif
                                   \ 'tag' : 'red_editor',
                                   \ 'on_selection_action' : rea,
                                   \ 'init_text': '0'})
+  let rea.editor = reditor
   function! reditor.purpose() dict
     return [
           \ "Edit the Red component value from 0 to 255."
@@ -297,6 +336,7 @@ endif
   let ghsa = forms#newAction({ 'execute': function("CCSliderAction")})
   let ghsa.slider2infoa = slider2infoa
   let gea = forms#newAction({ 'execute': function("CCEditorAction")})
+  let gea.slider2infoa = slider2infoa
 
   let glabel = forms#newLabel({'text': "G"})
   let gsp = forms#newVLine({ 'size': 3})
@@ -328,6 +368,7 @@ endif
                                   \ 'tag' : 'green_editor',
                                   \ 'on_selection_action' : gea,
                                   \ 'init_text': '0'})
+  let gea.editor = geditor
   function! geditor.purpose() dict
     return [
           \ "Edit the Green component value from 0 to 255."
@@ -351,6 +392,7 @@ endif
   let bhsa = forms#newAction({ 'execute': function("CCSliderAction")})
   let bhsa.slider2infoa = slider2infoa
   let bea = forms#newAction({ 'execute': function("CCEditorAction")})
+  let bea.slider2infoa = slider2infoa
 
   let blabel = forms#newLabel({'text': "B"})
   let bsp = forms#newVLine({ 'size': 3})
@@ -382,6 +424,7 @@ endif
                                   \ 'tag' : 'blue_editor',
                                   \ 'on_selection_action' : bea,
                                   \ 'init_text': '0'})
+  let bea.editor = beditor
   function! beditor.purpose() dict
     return [
           \ "Edit the Blue component value from 0 to 255."
@@ -420,6 +463,7 @@ endif
                                   \ 'tag' : 'number_editor',
                                   \ 'on_selection_action': neditor2others,
                                   \ 'init_text': '0'})
+  let neditor2others.neditor = neditor
   function! neditor.purpose() dict
     return [
           \ "Edit the Xterm 256 color number value from 0 to 255."
@@ -469,6 +513,7 @@ endif
                                   \ 'tag' : 'rgb_editor',
                                   \ 'on_selection_action': rgbeditor2others,
                                   \ 'init_text': '0'})
+  let rgbeditor2others.rgbeditor = rgbeditor
   function! rgbeditor.purpose() dict
     return [
           \ "Edit the RGB Hex number value from 000000 to ffffff.",

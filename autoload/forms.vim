@@ -5,7 +5,7 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 06/30/2012
+" Last Modified: 08/30/2012
 " Version:       1.6
 " Modifications:
 "  1.0 : initial public release.
@@ -3888,15 +3888,15 @@ function! forms#loadFixedLengthFieldPrototype()
     let g:forms#FixedLengthField.getText = function("FORMS_FIXED_LENGTH_FIELD_getText")
 
     function! FORMS_FIXED_LENGTH_FIELD_setText(text) dict
-" call forms#log("forms#FixedLengthField.setText TOP")
-      let slen = len(a:text)
+      let text = "".a:text
+      let slen = len(text)
       if self.__size < slen
-        throw "FixedLengthField: setText text length:" . a:text . " greater than size: " . self.__size
+        throw "FixedLengthField: setText text length:" . text . " greater than size: " . self.__size
       endif
 
-      if self.__text != a:text
+      if self.__text != text
         let self.__pos = slen
-        let self.__text = a:text
+        let self.__text = text
         if ! empty(self.__allocation)
           call forms#ViewerRedrawListAdd(self) 
         endif
@@ -3953,39 +3953,14 @@ function! forms#loadFixedLengthFieldPrototype()
     function! FORMS_FIXED_LENGTH_FIELD_handleChar(nr) dict
       let handled = 0
       if (self.__status == g:IS_ENABLED)
-        if self.__clearInitText
-          call self.__reset('')
-          let self.__clearInitText = g:self#IS_FALSE
-        endif
-
-if 0
-        let c = nr2char(a:nr)
-        if a:nr >= 32 && a:nr < 127
-          let txt = join(self.__txtbuf, '')
-          if self.__pos < strchars(txt)
-            let self.__txtbuf[self.__pos] = c
-            let self.__pos = self.__pos + 1
-            call forms#ViewerRedrawListAdd(self) 
-          else
-            call self.flash()
-          endif
-          return 1
-
-          " TODO Left and Right
-        elseif a:nr == "\<Del>" || a:nr == "\<BS>"
-          if self.__pos > 0
-            let self.__pos = self.__pos - 1
-            let self.__txtbuf[self.__pos] = ' '
-            call forms#ViewerRedrawListAdd(self) 
-          else
-            call self.flash()
-          endif
-          return 1
-        endif
-endif
 
         let c = nr2char(a:nr)
         if a:nr >= 32 && a:nr < 127
+          if self.__clearInitText
+            call self.__reset('')
+            let self.__clearInitText = g:self#IS_FALSE
+          endif
+
           let slen = strchars(self.__text)
           let size = self.__size
 
@@ -4016,6 +3991,11 @@ endif
           let handled = 1
 
         elseif a:nr == "\<Del>" || a:nr == "\<BS>"
+          if self.__clearInitText
+            call self.__reset('')
+            let self.__clearInitText = g:self#IS_FALSE
+          endif
+
           let slen = strchars(self.__text)
 
           if self.__pos == 0
@@ -4223,10 +4203,11 @@ function! forms#loadVariableLengthFieldPrototype()
 
     function! FORMS_VARIABLE_LENGTH_FIELD_setText(text) dict
 " call forms#log("forms#VariableLengthField.setText TOP")
-      if self.__text != a:text
-        let self.__pos = len(a:text)
+      let text = "".a:text
+      if self.__text != text
+        let self.__pos = len(text)
         let self.__win_start = 0
-        let self.__text = a:text
+        let self.__text = text
         if ! empty(self.__allocation)
           call forms#ViewerRedrawListAdd(self) 
         endif
@@ -4306,14 +4287,14 @@ function! forms#loadVariableLengthFieldPrototype()
 " call forms#log("g:forms#VariableLengthField.handleChar TOP")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
-        if self.__clearInitText
-          call self.__reset('')
-          let self.__clearInitText = g:self#IS_FALSE
-        endif
-  " call forms#log("g:forms#VariableLengthField.handleChar text=" .  self.__text)
 
         let c = nr2char(a:nr)
         if a:nr >= 32 && a:nr < 127
+          if self.__clearInitText
+            call self.__reset('')
+            let self.__clearInitText = g:self#IS_FALSE
+          endif
+
           let slen = strchars(self.__text)
 
           if self.__pos == 0
@@ -4337,6 +4318,11 @@ function! forms#loadVariableLengthFieldPrototype()
           call self.__on_selection_action.execute(self.__text)
 
         elseif a:nr == "\<Del>" || a:nr == "\<BS>"
+          if self.__clearInitText
+            call self.__reset('')
+            let self.__clearInitText = g:self#IS_FALSE
+          endif
+
           let slen = strchars(self.__text)
 
           if self.__pos == 0
