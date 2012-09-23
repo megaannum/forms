@@ -188,7 +188,7 @@ function! s:GetPartial_Int(n)
   endif
 endfunction
 
-function! forms#color#xterm#ConvertRGB_2_Int(rn, gn, bn)
+function! forms#color#xterm88#ConvertRGB_2_Int(rn, gn, bn)
 "let start = reltime()
   let rn = a:rn
   let gn = a:gn
@@ -262,13 +262,13 @@ endfunction
 "    nr : String or Number or xterm 88 value
 "           value must be 0 <= value <= 88
 " ------------------------------------------------------------ 
-function! forms#color#xterm#ConvertInt_2_RGB(nr)
+function! forms#color#xterm88#ConvertInt_2_RGB(nr)
   if (type(a:nr) == g:self#NUMBER_TYPE)
     return s:Int_2_RGB[a:nr]
   elseif (type(a:nr) == g:self#STRING_TYPE)
     return s:Int_2_RGB[a:nr]
   else
-    throw "forms#color#xterm#ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
+    throw "forms#color#xterm88#ConvertInt_2_RGB: Bad number: " . string(a:nsstr)
   endif
 endfunction
 

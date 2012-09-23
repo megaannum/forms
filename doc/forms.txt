@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 July 19
 
 Author:      Richard Emberson 
-Version:     1.6
+Version:     1.7
 Title:       Forms Library
 Homepage:    TODO
 
@@ -1058,6 +1058,26 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.7   - Fix: ~
+    Extended poldownlist example
+    Added <Leader>cc mapping for invoking ColorChooser to plugin
+    Changed function names in xterm88 to include "88" in names
+    Added map from color name to rgb values.
+    If log file in non-writeable directory, write to $HOME directory
+    Add logforce method which logs by-passing boolean guard
+    Added autoload action guard let g:forms_reload_highlights_on_colorscheme_event
+    Add function! g:ShouldLoadeHighlights() which loads
+    Checks if highlights should be loaded
+    Added foreground (light/dark) color variables
+    Added foreground color to some of the highlights
+    Added function allowing pattern to be directly used in defining highlight
+    Select list now starts display at it chosen postion, rather than always   
+        at 0.
+    Popdown list now uses Select list (rather than menu) and is some
+      500 to 1000 faster to build.
+    Background Glyph now takes optional bacground highlight
+    If its a read-only-file, then Forms converts it to read-file
+      and on Forms exit restores to read-only
 1.6   - Fix: ~
     Added support for 8 and 16 color terminals.
     Works with non-unicode characters sets (there is some degradation).

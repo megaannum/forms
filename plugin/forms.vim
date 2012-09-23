@@ -7,3 +7,5 @@ vmap <Leader>p :call forms#menu#MakePopUp('v')<CR>
 
 
 nmap <Leader>d :call forms#example#demo#Make()<CR>
+nmap <Leader>cc :call forms#dialog#colorchooser#Make()<CR>
+
