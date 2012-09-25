@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 08/30/2012
-" Version:       1.9
+" Version:       1.10
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -176,9 +176,9 @@ augroup forms
 augroup END
 
 function! g:ShouldLoadeHighlights()
-  if ! hlexists("ButtonHi")
+  if ! hlexists("ButtonFORMS_HL")
     call s:LoadeHighlights()
-  elseif synIDattr(synIDtrans(hlID("ButtonHi")), "bg") == -1
+  elseif synIDattr(synIDtrans(hlID("ButtonFORMS_HL")), "bg") == -1
     call s:LoadeHighlights()
   endif
 endfunction
@@ -302,7 +302,7 @@ if &background == 'light'
   let buttonflashColor = g:forms_hi_light_buttonflash
 
   " Frame
-  " derive FrameHi values from BackgroundHi values
+  " derive FrameFORMS_HL values from BackgroundFORMS_HL values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
   let frameTintAjust = g:forms_hi_light_frame_tint_adjust
   let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
@@ -312,7 +312,7 @@ if &background == 'light'
   let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
 
   " DropShadow
-  " derive DropShadowHi values from BackgroundHi values
+  " derive DropShadowFORMS_HL values from BackgroundFORMS_HL values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
   let dropshadowShadeAjust = g:forms_hi_light_dropshadow_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
@@ -338,7 +338,7 @@ else " &background == 'dark'
   let buttonflashColor = g:forms_hi_dark_buttonflash
 
   " Frame
-  " derive FrameHi values from BackgroundHi values
+  " derive FrameFORMS_HL values from BackgroundFORMS_HL values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
   let frameTintAjust = g:forms_hi_dark_frame_tint_adjust
   let [rt, gt, bt] = forms#color#util#TintRGB(frameTintAjust, r, g, b)
@@ -348,7 +348,7 @@ else " &background == 'dark'
   let framebgColor = printf('%02x%02x%02x',rs,gs,bs)
 
   " DropShadow
-  " derive DropShadowHi values from BackgroundHi values
+  " derive DropShadowFORMS_HL values from BackgroundFORMS_HL values
   let [r,g,b] = forms#color#util#ParseRGB(backgroundColor)
   let dropshadowShadeAjust = g:forms_hi_dark_dropshadow_shade_adjust
   let [rs, gs, bs] = forms#color#util#ShadeRGB(dropshadowShadeAjust, r, g, b)
@@ -365,79 +365,79 @@ endif " background
 
 if has("gui_running")
 
-  execute "hi ReverseHi           gui=reverse guibg=#" . backgroundColor . " guifg=#" . foregroundColor
-  execute "hi HotSpotHi           gui=NONE guibg=#" . hotspotColor
-  execute "hi ReverseHotSpotHi    gui=reverse guibg=#" . hotspotColor
-  execute "hi FlashHi             gui=NONE guibg=#" . flashColor
+  execute "hi ReverseFORMS_HI           gui=reverse guibg=#" . backgroundColor . " guifg=#" . foregroundColor
+  execute "hi HotSpotFORMS_HL           gui=NONE guibg=#" . hotspotColor
+  execute "hi ReverseHotSpotFORMS_HL    gui=reverse guibg=#" . hotspotColor
+  execute "hi FlashFORMS_HL             gui=NONE guibg=#" . flashColor
 
-  execute "hi ToggleSelectedHi    gui=NONE guibg=#" . toggleselectedColor
-  execute "hi SelectedHi          gui=bold guibg=#" . selectedColor
+  execute "hi ToggleSelectedFORMS_HL    gui=NONE guibg=#" . toggleselectedColor
+  execute "hi SelectedFORMS_HL          gui=bold guibg=#" . selectedColor
 
-  execute "hi ButtonHi            gui=NONE guibg=#" . buttonColor
-  execute "hi ButtonFlashHi       gui=NONE guibg=#" . buttonflashColor
+  execute "hi ButtonFORMS_HL            gui=NONE guibg=#" . buttonColor
+  execute "hi ButtonFlashFORMS_HL       gui=NONE guibg=#" . buttonflashColor
 
-  execute "hi BackgroundHi        gui=NONE guibg=#" . backgroundColor . " guifg=#" . foregroundColor
+  execute "hi BackgroundFORMS_HL        gui=NONE guibg=#" . backgroundColor . " guifg=#" . foregroundColor
 
-  execute "hi FrameHi             gui=NONE guifg=#".framefgColor." guibg=#" . framebgColor
-  execute "hi DropShadowHi        gui=NONE guibg=#".dropshadowbgColor." guifg=#" . dropshadowfgColor
+  execute "hi FrameFORMS_HL             gui=NONE guifg=#".framefgColor." guibg=#" . framebgColor
+  execute "hi DropShadowFORMS_HL        gui=NONE guibg=#".dropshadowbgColor." guifg=#" . dropshadowfgColor
 
-  execute "hi DisableHi           gui=NONE guibg=#" . disableColor
+  execute "hi DisableFORMS_HL           gui=NONE guibg=#" . disableColor
 
-  execute "hi MenuHi              gui=NONE guibg=#" . menuColor
-  execute "hi MenuMnemonicHi      gui=underline guibg=#" . menumnemonicColor
-  execute "hi MenuHotSpotHi       gui=NONE guibg=#" . menuhotspotColor
-  execute "hi MenuMnemonicHotSpotHi  gui=underline guibg=#" . menumnemonichotspotColor
+  execute "hi MenuFORMS_HL              gui=NONE guibg=#" . menuColor
+  execute "hi MenuMnemonicFORMS_HL      gui=underline guibg=#" . menumnemonicColor
+  execute "hi MenuHotSpotFORMS_HL       gui=NONE guibg=#" . menuhotspotColor
+  execute "hi MenuMnemonicHotSpotFORMS_HL  gui=underline guibg=#" . menumnemonichotspotColor
 
 else
   let backgroundNumber = forms#color#term#ConvertRGBTxt_2_Int(backgroundColor)
   let foregroundNumber = forms#color#term#ConvertRGBTxt_2_Int(foregroundColor)
 
-  execute "hi ReverseHi           cterm=reverse ctermbg=" . backgroundNumber . " ctermfg=" . foregroundNumber
+  execute "hi ReverseFORMS_HI           cterm=reverse ctermbg=" . backgroundNumber . " ctermfg=" . foregroundNumber
 
   let hotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(hotspotColor)
-  execute "hi HotSpotHi           cterm=NONE ctermbg=" . hotspotNumber
-  execute "hi ReverseHotSpotHi    cterm=reverse ctermbg=" . hotspotNumber
+  execute "hi HotSpotFORMS_HL           cterm=NONE ctermbg=" . hotspotNumber
+  execute "hi ReverseHotSpotFORMS_HL    cterm=reverse ctermbg=" . hotspotNumber
 
   let flashNumber = forms#color#term#ConvertRGBTxt_2_Int(flashColor)
-  execute "hi FlashHi             cterm=NONE ctermbg=" . flashNumber
+  execute "hi FlashFORMS_HL             cterm=NONE ctermbg=" . flashNumber
 
   let toggleselectedNumber = forms#color#term#ConvertRGBTxt_2_Int(toggleselectedColor)
-  execute "hi ToggleSelectedHi   cterm=bold ctermbg=" toggleselectedNumber
+  execute "hi ToggleSelectedFORMS_HL   cterm=bold ctermbg=" toggleselectedNumber
 
   let selectedNumber = forms#color#term#ConvertRGBTxt_2_Int(selectedColor)
-  execute "hi SelectedHi          cterm=bold ctermbg=" . selectedNumber
+  execute "hi SelectedFORMS_HL          cterm=bold ctermbg=" . selectedNumber
 
   let buttonNumber = forms#color#term#ConvertRGBTxt_2_Int(buttonColor)
-  execute "hi ButtonHi            cterm=NONE ctermbg=" . buttonNumber
+  execute "hi ButtonFORMS_HL            cterm=NONE ctermbg=" . buttonNumber
 
   let buttonflashNumber = forms#color#term#ConvertRGBTxt_2_Int(buttonflashColor)
-  execute "hi ButtonFlashHi       cterm=NONE ctermbg=" . buttonflashNumber
+  execute "hi ButtonFlashFORMS_HL       cterm=NONE ctermbg=" . buttonflashNumber
 
-  execute "hi BackgroundHi        cterm=NONE ctermbg=" . backgroundNumber . " ctermfg=" . foregroundNumber
+  execute "hi BackgroundFORMS_HL        cterm=NONE ctermbg=" . backgroundNumber . " ctermfg=" . foregroundNumber
 
   let framefgNumber = forms#color#term#ConvertRGBTxt_2_Int(framefgColor)
   let framebgNumber = forms#color#term#ConvertRGBTxt_2_Int(framebgColor)
-  execute "hi FrameHi             cterm=NONE ctermfg=".framefgNumber." ctermbg=" . framebgNumber
+  execute "hi FrameFORMS_HL             cterm=NONE ctermfg=".framefgNumber." ctermbg=" . framebgNumber
 
   let dropshadowfgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowfgColor)
   let dropshadowbgNumber = forms#color#term#ConvertRGBTxt_2_Int(dropshadowbgColor)
-  execute "hi DropShadowHi        cterm=NONE ctermbg=".dropshadowbgNumber." ctermfg=" . dropshadowfgNumber
+  execute "hi DropShadowFORMS_HL        cterm=NONE ctermbg=".dropshadowbgNumber." ctermfg=" . dropshadowfgNumber
 
 
   let disableNumber = forms#color#term#ConvertRGBTxt_2_Int(disableColor)
-  execute "hi DisableHi           cterm=NONE ctermbg=" . disableNumber
+  execute "hi DisableFORMS_HL           cterm=NONE ctermbg=" . disableNumber
 
   let menuNumber = forms#color#term#ConvertRGBTxt_2_Int(menuColor)
-  execute "hi MenuHi              cterm=None ctermbg=" . menuNumber
+  execute "hi MenuFORMS_HL              cterm=None ctermbg=" . menuNumber
 
   let menumnemonicNumber = forms#color#term#ConvertRGBTxt_2_Int(menumnemonicColor)
-  execute "hi MenuMnemonicHi      cterm=underline ctermbg=" . menumnemonicNumber
+  execute "hi MenuMnemonicFORMS_HL      cterm=underline ctermbg=" . menumnemonicNumber
 
   let menuhotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(menuhotspotColor)
-  execute "hi MenuHotSpotHi       cterm=None ctermbg=" . menuhotspotNumber
+  execute "hi MenuHotSpotFORMS_HL       cterm=None ctermbg=" . menuhotspotNumber
 
   let menumnemonichotspotNumber = forms#color#term#ConvertRGBTxt_2_Int(menumnemonichotspotColor)
-  execute "hi MenuMnemonicHotSpotHi  cterm=underline ctermbg=" . menumnemonichotspotNumber
+  execute "hi MenuMnemonicHotSpotFORMS_HL  cterm=underline ctermbg=" . menumnemonichotspotNumber
 endif
 
 endfunction " s:LoadeHighlights
@@ -483,7 +483,7 @@ function! Reverse(glyph, line, col)
   endif
 
   let lcstr = "\\%" . a:line . "l\\%" . a:col . "v"
-  let a:glyph.__reverseId = matchadd("ReverseHi", lcstr . ".*" . lcstr)
+  let a:glyph.__reverseId = matchadd("ReverseFORMS_HI", lcstr . ".*" . lcstr)
 " call forms#log("Reverse: BOTTOM")
 endfunction
 
@@ -524,7 +524,7 @@ function! ReverseHotSpot(line, col)
   endif
 
   let lcstr = "\\%" . a:line . "l\\%" . a:col . "v"
-  let s:reverseHotSpotId = matchadd("ReverseHotSpotHi", lcstr . ".*" . lcstr)
+  let s:reverseHotSpotId = matchadd("ReverseHotSpotFORMS_HL", lcstr . ".*" . lcstr)
 " call forms#log("ReverseHotSpot: BOTTOM")
 endfunction
 
@@ -565,7 +565,7 @@ function! HotSpot(line, col)
   endif
 
   let lcstr = "\\%" . a:line . "l\\%" . a:col . "v"
-  let s:hotSpotId = matchadd("HotSpotHi", lcstr . ".*" . lcstr)
+  let s:hotSpotId = matchadd("HotSpotFORMS_HL", lcstr . ".*" . lcstr)
 " call forms#log("HotSpot: BOTTOM")
 endfunction
 
@@ -586,7 +586,7 @@ function! HotRegion(allocation)
   endif
 
   let pattern = GetMatchRange(a:allocation)
-  let s:hotSpotId = matchadd("HotSpotHi", pattern)
+  let s:hotSpotId = matchadd("HotSpotFORMS_HL", pattern)
 " call forms#log("HotRegion: BOTTOM")
 endfunction
 
@@ -604,7 +604,7 @@ function! Flash(line, start, end)
 
   let startstr = "\\%" . a:line . "l\\%" . a:start . "v"
   let endstr = "\\%" . a:line . "l\\%" . a:end . "v"
-  let l:flashId = matchadd("FlashHi", startstr . ".*" . endstr)
+  let l:flashId = matchadd("FlashFORMS_HL", startstr . ".*" . endstr)
   redraw
   sleep 200m
   call matchdelete(l:flashId)
@@ -619,7 +619,7 @@ endfunction
 " ------------------------------------------------------------ 
 function! FlashRegion(allocation)
   let pattern = GetMatchRange(a:allocation)
-  let l:flashId = matchadd("FlashHi", pattern)
+  let l:flashId = matchadd("FlashFORMS_HL", pattern)
   redraw
   sleep 200m
   call matchdelete(l:flashId)
@@ -735,7 +735,7 @@ endfunction
 " ------------------------------------------------------------ 
 function! GetSelectionId(allocation)
   let pattern = GetMatchRange(a:allocation)
-  return matchadd("SelectedHi", pattern)
+  return matchadd("SelectedFORMS_HL", pattern)
 endfunction
 
 " ------------------------------------------------------------ 
@@ -762,7 +762,7 @@ endfunction
 function! ButtonFlashHi(allocation)
 " call forms#log("ButtonFlashHi: TOP")
   let pattern = GetMatchRange(a:allocation)
-  let l:buttonflashId = matchadd("ButtonFlashHi", pattern)
+  let l:buttonflashId = matchadd("ButtonFlashFORMS_HL", pattern)
   redraw
   sleep 200m
   call matchdelete(l:buttonflashId)
@@ -782,7 +782,7 @@ function! ButtonGroupAddHi(buttongroup, allocation)
   call ButtonGroupDeleteHi(a:buttongroup)
 
   let pattern = GetMatchRange(a:allocation)
-  let a:buttongroup.__selectId = matchadd("ToggleSelectedHi", pattern)
+  let a:buttongroup.__selectId = matchadd("ToggleSelectedFORMS_HL", pattern)
 endfunction
 
 " ------------------------------------------------------------ 
@@ -2881,7 +2881,7 @@ function! forms#loadHLine()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#HLine.draw = function("FORMS_HLINE_draw")
@@ -2932,7 +2932,7 @@ function! forms#loadVLine()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -3029,7 +3029,7 @@ function! forms#loadAreaPrototype()
         call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -3139,7 +3139,7 @@ function! forms#loadHSpace()
         call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -3188,7 +3188,7 @@ function! forms#loadVSpace()
         call g:forms_Util.drawRect(box, self.__char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#VSpace.draw = function("FORMS_VSPACE_draw")
@@ -3260,7 +3260,7 @@ function! forms#loadLabelPrototype()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif
     endfunction
     let g:forms#Label.draw = function("FORMS_LABEL_draw")
@@ -3336,7 +3336,7 @@ function! forms#loadVLabelPrototype()
         endwhile
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#VLabel.draw = function("FORMS_VLABEL_draw")
@@ -3444,7 +3444,7 @@ function! forms#loadTextPrototype()
         endwhile
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -3566,7 +3566,7 @@ function! forms#loadCheckBoxPrototype()
         call forms#SetStringAt(str, line, column)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -3849,7 +3849,7 @@ function! forms#loadRadioButtonPrototype()
         call forms#SetStringAt(str, line, column)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -4144,7 +4144,7 @@ function! forms#loadFixedLengthFieldPrototype()
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#FixedLengthField.draw = function("FORMS_FIXED_LENGTH_FIELD_draw")
@@ -4489,7 +4489,7 @@ function! forms#loadVariableLengthFieldPrototype()
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -4989,7 +4989,7 @@ function! forms#loadTextEditorPrototype()
         endwhile
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#TextEditor.draw = function("FORMS_TEXT_EDITOR_draw")
@@ -5151,7 +5151,7 @@ function! forms#loadTextBlockPrototype()
         endfor
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -5732,7 +5732,7 @@ endif
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#SelectList.draw = function("FORMS_SELECT_LIST_draw")
@@ -6005,7 +6005,7 @@ function! forms#loadPopDownListPrototype()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#PopDownList.draw = function("FORMS_POP_DOWN_LIST_draw")
@@ -6730,7 +6730,7 @@ function! forms#loadHSliderPrototype()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#HSlider.draw = function("FORMS_HSLIDER_draw")
@@ -7076,7 +7076,7 @@ function! forms#loadVSliderPrototype()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#VSlider.draw  = function("FORMS_VSLIDER_draw")
@@ -7274,7 +7274,7 @@ function! forms#loadBoxPrototype()
                             \ })
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -7398,7 +7398,7 @@ function! forms#loadBorderPrototype()
                             \ })
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -7430,7 +7430,7 @@ endfunction
 "                 'll' (lower left)
 "                 'lr' (lower right) (default)
 "   highlight  : optional name of highlight group to use.
-"                   (default "DropShadowHi")
+"                   (default "DropShadowFORMS_HL")
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
   if exists("g:forms#DropShadow")
@@ -7441,7 +7441,7 @@ function! forms#loadDropShadowPrototype()
   if !exists("g:forms#DropShadow")
     let g:forms#DropShadow = forms#loadMonoPrototype().clone('forms#DropShadow')
     let g:forms#DropShadow.__corner = 'lr'
-    let g:forms#DropShadow.__highlight = 'DropShadowHi'
+    let g:forms#DropShadow.__highlight = 'DropShadowFORMS_HL'
 
     function! FORMS_DROP_SHADOW_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
@@ -7464,7 +7464,7 @@ function! forms#loadDropShadowPrototype()
       let oldCorner = self.__corner
 
       let self.__corner = 'lr'
-      let self.__highlight = 'DropShadowHi'
+      let self.__highlight = 'DropShadowFORMS_HL'
 
       call call(g:forms#Mono.reinit, [a:attrs], self)
 
@@ -7577,7 +7577,7 @@ endif
                             \ })
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -7609,7 +7609,7 @@ endfunction
 "                 'll' (lower left)
 "                 'lr' (lower right) (default)
 "   highlight  : optional name of highlight group to use.
-"                   (default "FrameHi")
+"                   (default "FrameFORMS_HL")
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
   if exists("g:forms#Frame")
@@ -7621,7 +7621,7 @@ function! forms#loadFramePrototype()
     let g:forms#Frame = forms#loadMonoPrototype().clone('forms#Frame')
     let g:forms#Frame.__corner = 'lr'
     let g:forms#Frame.__set = 'outset'
-    let g:forms#Frame.__highlight = 'FrameHi'
+    let g:forms#Frame.__highlight = 'FrameFORMS_HL'
 
     function! FORMS_FRAME_init(attrs) dict
       call call(g:forms#Mono.init, [a:attrs], self)
@@ -7646,7 +7646,7 @@ function! forms#loadFramePrototype()
 
       let self.__corner = 'lr'
       let self.__set = 'outset'
-      let self.__highlight = 'FrameHi'
+      let self.__highlight = 'FrameFORMS_HL'
 
       call call(g:forms#Mono.reinit, [a:attrs], self)
 
@@ -7724,7 +7724,7 @@ endif
                             \ })
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -7751,7 +7751,7 @@ endfunction
 "
 " attributes
 "   char     : character to use to draw border (default ' ')
-"   group    : highligh group (default: "BackgroundHi")
+"   group    : highligh group (default: "BackgroundFORMS_HL")
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
   if exists("g:forms#Background")
@@ -7762,7 +7762,7 @@ function! forms#loadBackgroundPrototype()
   if !exists("g:forms#Background")
     let g:forms#Background = forms#loadMonoPrototype().clone('forms#Background')
     let g:forms#Background.__char = ' '
-    let g:forms#Background.__group = "BackgroundHi"
+    let g:forms#Background.__group = "BackgroundFORMS_HL"
 
     function! FORMS_BACKGROUND_init(attrs) dict
 "call forms#log("forms#Background.init TOP")
@@ -7835,7 +7835,7 @@ function! forms#loadBackgroundPrototype()
         call self.__body.draw(a)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -7908,7 +7908,7 @@ function! forms#loadMinWidthPrototype()
         call self.__body.draw(a)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#MinWidth.draw  = function("FORMS_MIN_WIDTH_draw")
@@ -7980,7 +7980,7 @@ function! forms#loadMinHeightPrototype()
         call self.__body.draw(a)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#MinHeight.draw  = function("FORMS_MIN_HEIGHT_draw")
@@ -8060,7 +8060,7 @@ function! forms#loadMinSizePrototype()
         call self.__body.draw(a)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -8163,7 +8163,7 @@ function! forms#loadHAlignPrototype()
                                \ }, alignment, char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#HAlign.draw  = function("FORMS_HALIGN_draw")
@@ -8267,7 +8267,7 @@ function! forms#loadVAlignPrototype()
 
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#VAlign.draw  = function("FORMS_VALIGN_draw")
@@ -8403,7 +8403,7 @@ function! forms#loadHVAlignPrototype()
                                \ char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
 " call forms#log("g:forms#HVAlign.draw BOTTOM ")
@@ -8554,11 +8554,11 @@ function! forms#loadButtonPrototype()
       if self.__status != g:IS_INVISIBLE
         call self.__body.draw(a)
         if self.__highlight
-          call GlyphHilight(self, "ButtonHi", a)
+          call GlyphHilight(self, "ButtonFORMS_HL", a)
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -8758,7 +8758,7 @@ function! forms#loadToggleButtonPrototype()
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#ToggleButton.draw  = function("FORMS_TOGGLE_BUTTON_draw")
@@ -8966,7 +8966,7 @@ echo "ERROR g:forms#Viewer.handleEvent Top Viewer is NOT FORM")
         " call ViewerHilight(self, a)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -10458,7 +10458,7 @@ function! forms#loadHPolyPrototype()
       endif
 
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#HPoly.draw  = function("FORMS_HPOLY_draw")
@@ -10694,7 +10694,7 @@ function! forms#loadVPolyPrototype()
         endwhile
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#VPoly.draw  = function("FORMS_VPOLY_draw")
@@ -10884,7 +10884,7 @@ function! forms#loadDeckPrototype()
                                 \ char)
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#Deck.draw  = function("FORMS_DECK_draw")
@@ -11031,7 +11031,7 @@ function! forms#loadFixedLayout()
         endwhile
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 " call forms#log("FixedLayout.draw: BOTTOM")
     endfunction
@@ -11353,7 +11353,7 @@ function! forms#loadMenuBar()
 
           let child = self.__children[pos]
           let a = child.__allocation
-          call GlyphHilight(child, "MenuHotSpotHi", a)
+          call GlyphHilight(child, "MenuHotSpotFORMS_HL", a)
           call self.highlightMnemonicHotSpot(pos)
         endif
       endif
@@ -11579,7 +11579,7 @@ function! forms#loadMenuBar()
       for [pos, mindex] in values(mnemonics)
         if pos == a:pos
           let a = child.__allocation
-          call GlyphHilight(child, "MenuMnemonicHi", {
+          call GlyphHilight(child, "MenuMnemonicFORMS_HL", {
                                       \ 'line': a.line,
                                       \ 'column': a.column+mindex,
                                       \ 'width': 1,
@@ -11597,7 +11597,7 @@ function! forms#loadMenuBar()
       for [pos, mindex] in values(mnemonics)
         if pos == a:pos
           let a = child.__allocation
-          call AugmentGlyphHilight(child, "MenuMnemonicHotSpotHi", {
+          call AugmentGlyphHilight(child, "MenuMnemonicHotSpotFORMS_HL", {
                                       \ 'line': a.line,
                                       \ 'column': a.column+mindex,
                                       \ 'width': 1,
@@ -11624,7 +11624,7 @@ function! forms#loadMenuBar()
         let str = repeat(' ', width)
         call forms#SetStringAt(str, line, column)
 
-        call GlyphHilight(self, "MenuHi", a)
+        call GlyphHilight(self, "MenuFORMS_HL", a)
 "call forms#log("g:forms#MenuBar.draw: line('$')=" .  line('$'))
 
         " TODO must delete action functions
@@ -11638,7 +11638,7 @@ function! forms#loadMenuBar()
 " call forms#log("g:forms#MenuBar.draw: pos=" .  pos . ", mindex=" . mindex)
           let child = children[pos]
           let a = child.__allocation
-          call GlyphHilight(child, "MenuMnemonicHi", {
+          call GlyphHilight(child, "MenuMnemonicFORMS_HL", {
                                         \ 'line': a.line,
                                         \ 'column': a.column+mindex,
                                         \ 'width': 1,
@@ -11647,7 +11647,7 @@ function! forms#loadMenuBar()
         endfor
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
 
     endfunction
@@ -12304,7 +12304,7 @@ function! forms#loadMenuPrototype()
           let a = child.__allocation
 "call forms#log("g:forms#Menu.hotspot pos=" . pos)
 "call forms#log("g:forms#Menu.hotspot a=" . string(a))
-          call GlyphHilight(child, "MenuHotSpotHi", a)
+          call GlyphHilight(child, "MenuHotSpotFORMS_HL", a)
           call self.highlightMnemonicHotSpot(pos)
         endif
       endif
@@ -12643,7 +12643,7 @@ function! forms#loadMenuPrototype()
         for [pos, mindex] in pairs
           if pos == a:pos
             let a = child.__allocation
-            call GlyphHilight(child, "MenuMnemonicHi", {
+            call GlyphHilight(child, "MenuMnemonicFORMS_HL", {
                                         \ 'line': a.line,
                                         \ 'column': a.column+mindex+left_offset,
                                         \ 'width': 1,
@@ -12665,7 +12665,7 @@ function! forms#loadMenuPrototype()
         for [pos, mindex] in pairs
           if pos == a:pos
             let a = child.__allocation
-            call AugmentGlyphHilight(child, "MenuMnemonicHotSpotHi", {
+            call AugmentGlyphHilight(child, "MenuMnemonicHotSpotFORMS_HL", {
                                         \ 'line': a.line,
                                         \ 'column': a.column+mindex+left_offset,
                                         \ 'width': 1,
@@ -12701,7 +12701,7 @@ function! forms#loadMenuPrototype()
         endwhile
 
         " highlight menu allocation
-        call GlyphHilight(self, "MenuHi", a)
+        call GlyphHilight(self, "MenuFORMS_HL", a)
 
         " TODO must delete action functions
         let p = g:forms#Menu._prototype
@@ -12731,7 +12731,7 @@ function! forms#loadMenuPrototype()
             let child = children[pos]
             if pos >= win_start && pos < endcnt
               let a = child.__allocation
-              call GlyphHilight(child, "MenuMnemonicHi", {
+              call GlyphHilight(child, "MenuMnemonicFORMS_HL", {
                                           \ 'line': a.line,
                                           \ 'column': a.column+mindex+left_offset,
                                           \ 'width': 1,
@@ -12745,7 +12745,7 @@ function! forms#loadMenuPrototype()
         endfor
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#Menu.draw  = function("FORMS_MENU_draw")
@@ -13430,7 +13430,7 @@ function! forms#loadGridPrototype()
         endif
       endif
       if self.__status == g:IS_DISABLED
-        call AugmentGlyphHilight(self, "DisableHi", a)
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
     let g:forms#Grid.draw  = function("FORMS_GRID_draw")
