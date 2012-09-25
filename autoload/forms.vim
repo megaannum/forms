@@ -5,8 +5,8 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 08/30/2012
-" Version:       1.10
+" Last Modified: 09/25/2012
+" Version:       1.11
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -5943,10 +5943,12 @@ function! forms#loadPopDownListPrototype()
         let slist.__pos = pos
         call slist.adjustWinStart()
 
-        let [idx, sid] = slist.__selections[0]
-        if idx != pos
-          call ClearSelectionId(sid)
-          let slist.__selections = [[pos, -1]]
+        if ! empty(slist.__selections)
+          let [idx, sid] = slist.__selections[0]
+          if idx != pos
+            call ClearSelectionId(sid)
+            let slist.__selections = [[pos, -1]]
+          endif
         endif
 
         call self.__on_selection_action.execute(pos)

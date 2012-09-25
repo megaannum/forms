@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 July 19
 
 Author:      Richard Emberson 
-Version:     1.10
+Version:     1.11
 Title:       Forms Library
 Homepage:    TODO
 
@@ -1058,6 +1058,9 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.11   - Fix: ~
+    Added guard to make sure popdown list's select list has select list
+      prior to accessing it.
 1.10   - Fix: ~
     Changed highlight group names from *Hi to *FORMS_HL
 1.9   - Fix: ~
