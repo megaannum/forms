@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 08/30/2012
-" Version:       1.8
+" Version:       1.9
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -5413,7 +5413,10 @@ endif
             call self.flash()
           else
             let self.__pos += 1
-           call forms#ViewerRedrawListAdd(self) 
+            if self.__mode == 'mandatory_on_move_single'
+              call self.handleSelection()
+            endif
+            call forms#ViewerRedrawListAdd(self) 
           endif
           let handled = 1
 
@@ -5453,6 +5456,7 @@ endif
           let handled = 1
 
         elseif c == "\<CR>" || c == "\<Space>"
+"call forms#logforce("g:forms#SelectList.handleChar: <CR>")
           call self.handleSelection() 
           let handled = 1
         endif
@@ -5701,8 +5705,6 @@ endif
             let [idx, sid] = selections[0]
             call ClearSelectionId(sid)
 
-            " seems to work with pos, needed for colorschemer
-            let idx = pos
             if idx >= min_idx && idx < max_idx
               let sid = GetSelectionId({
                                       \ 'line': a.line+idx-win_start,
@@ -5931,6 +5933,28 @@ function! forms#loadPopDownListPrototype()
       return handled
     endfunction
     let g:forms#PopDownList.handleChar = function("FORMS_POP_DOWN_LIST_handleChar")
+
+    function! FORMS_POP_DOWN_LIST_setSelectionPos(pos) dict
+      let pos = a:pos
+      let nchoices = len(self.__choices)
+      if pos >= 0 && pos <= nchoices-1 && pos != self.__pos
+        let self.__pos = pos
+        let slist = self.__slist
+        let slist.__pos = pos
+        call slist.adjustWinStart()
+
+        let [idx, sid] = slist.__selections[0]
+        if idx != pos
+          call ClearSelectionId(sid)
+          let slist.__selections = [[pos, -1]]
+        endif
+
+        call self.__on_selection_action.execute(pos)
+        call forms#ViewerRedrawListAdd(self)
+
+      endif
+    endfunction
+    let g:forms#PopDownList.setSelectionPos = function("FORMS_POP_DOWN_LIST_setSelectionPos")
 
     function! FORMS_POP_DOWN_LIST_handleSelection() dict
       let pos = self.__pos
