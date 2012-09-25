@@ -5,8 +5,8 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 09/20/2012
-" Version:       1.7
+" Last Modified: 08/30/2012
+" Version:       1.8
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -636,54 +636,56 @@ endfunction
 "    allocation : allocation of highlight
 " ------------------------------------------------------------ 
 function! GlyphHilight(glyph, highlight, allocation)
-" call forms#log("GlyphHilight: TOP")
   call GlyphDeleteHi(a:glyph)
 
-  let pattern = GetMatchRange(a:allocation)
-"call forms#log("GlyphHilight: pattern=" . pattern)
-  let a:glyph.__matchId = matchadd(a:highlight, pattern)
-" call forms#log("GlyphHilight: BOTTOM")
+  if hlexists(a:highlight)
+    let pattern = GetMatchRange(a:allocation)
+    let a:glyph.__matchId = matchadd(a:highlight, pattern)
+  endif
 endfunction
 
 function! GlyphHilightPattern(glyph, highlight, pattern)
   call GlyphDeleteHi(a:glyph)
-  let a:glyph.__matchId = matchadd(a:highlight, pattern)
+  if hlexists(a:highlight)
+    let a:glyph.__matchId = matchadd(a:highlight, pattern)
+  endif
 endfunction
 
 function! GlyphHilightPriority(glyph, highlight, allocation, priority)
   call GlyphDeleteHi(a:glyph)
 
-  let pattern = GetMatchRange(a:allocation)
-  let a:glyph.__matchId = matchadd(a:highlight, pattern, a:priority)
+  if hlexists(a:highlight)
+    let pattern = GetMatchRange(a:allocation)
+    let a:glyph.__matchId = matchadd(a:highlight, pattern, a:priority)
+  endif
 endfunction
 
 function! AugmentGlyphHilight(glyph, highlight, allocation)
-" call forms#log("AugmentGlyphHilight: TOP")
-
-  let pattern = GetMatchRange(a:allocation)
-"call forms#log("AugmentGlyphHilight: pattern=" . pattern)
-
-  if ! has_key(a:glyph, '__matchId')
-    let a:glyph.__matchId = matchadd(a:highlight, pattern)
-  elseif type(a:glyph.__matchId) == g:self#LIST_TYPE
-    call add(a:glyph.__matchId, matchadd(a:highlight, pattern))
-  else
-    let matchId = a:glyph.__matchId
-    unlet a:glyph.__matchId
-    let a:glyph.__matchId = [matchId, matchadd(a:highlight, pattern)]
+  if hlexists(a:highlight)
+    let pattern = GetMatchRange(a:allocation)
+    if ! has_key(a:glyph, '__matchId')
+      let a:glyph.__matchId = matchadd(a:highlight, pattern)
+    elseif type(a:glyph.__matchId) == g:self#LIST_TYPE
+      call add(a:glyph.__matchId, matchadd(a:highlight, pattern))
+    else
+      let matchId = a:glyph.__matchId
+      unlet a:glyph.__matchId
+      let a:glyph.__matchId = [matchId, matchadd(a:highlight, pattern)]
+    endif
   endif
-" call forms#log("GlyphHilight: BOTTOM")
 endfunction
 
 function! AugmentGlyphHilightPattern(glyph, highlight, pattern)
-  if ! has_key(a:glyph, '__matchId')
-    let a:glyph.__matchId = matchadd(a:highlight, a:pattern)
-  elseif type(a:glyph.__matchId) == g:self#LIST_TYPE
-    call add(a:glyph.__matchId, matchadd(a:highlight, a:pattern))
-  else
-    let matchId = a:glyph.__matchId
-    unlet a:glyph.__matchId
-    let a:glyph.__matchId = [matchId, matchadd(a:highlight, a:pattern)]
+  if hlexists(a:highlight)
+    if ! has_key(a:glyph, '__matchId')
+      let a:glyph.__matchId = matchadd(a:highlight, a:pattern)
+    elseif type(a:glyph.__matchId) == g:self#LIST_TYPE
+      call add(a:glyph.__matchId, matchadd(a:highlight, a:pattern))
+    else
+      let matchId = a:glyph.__matchId
+      unlet a:glyph.__matchId
+      let a:glyph.__matchId = [matchId, matchadd(a:highlight, a:pattern)]
+    endif
   endif
 endfunction
 
@@ -5277,7 +5279,6 @@ endif
     function! FORMS_SELECT_LIST_hotspot() dict
       if (self.__status == g:IS_ENABLED)
         let pos = self.__pos
-        "let size = self.__size
         let win_start = self.__win_start
         let a = self.__allocation
         let line = a.line
@@ -5392,8 +5393,9 @@ endif
       if (self.__status == g:IS_ENABLED)
         let size = self.__size
 
-" call forms#log("g:forms#SelectList.handleChar: nr=". a:nr)
         let c = nr2char(a:nr)
+"call forms#logforce("g:forms#SelectList.handleChar: nr=". a:nr)
+"call forms#logforce("g:forms#SelectList.handleChar: c=". c)
         if a:nr == "\<Up>" || a:nr == "\<ScrollWheelUp>"
           if self.__pos == 0
             call self.flash()
@@ -5404,7 +5406,6 @@ endif
             endif
            call forms#ViewerRedrawListAdd(self) 
           endif
-" call forms#log("g:forms#SelectList.handleChar Up pos=" .  self.__pos)
           let handled = 1
 
         elseif a:nr == "\<Down>" || a:nr == "\<ScrollWheelDown>"
@@ -5414,13 +5415,12 @@ endif
             let self.__pos += 1
            call forms#ViewerRedrawListAdd(self) 
           endif
-" call forms#log("g:forms#SelectList.handleChar Down pos=" .  self.__pos)
           let handled = 1
 
         elseif a:nr == "\<PageDown>" || 
             \ a:nr == "\<S-ScrollWheelDown>" ||
             \ a:nr == "\<C-ScrollWheelDown>"
-let nchoices = len(self.__choices)
+          let nchoices = len(self.__choices)
           if self.__pos == nchoices - 1
             call self.flash()
           else
@@ -5468,6 +5468,7 @@ let nchoices = len(self.__choices)
     let g:forms#SelectList.handleChar = function("FORMS_SELECT_LIST_handleChar")
 
     function! FORMS_SELECT_LIST_adjustWinStart() dict
+"call forms#logforce("g:forms#SelectList.adjustWinStart TOP")
       let needs_redraw = g:self#IS_FALSE
       let size = self.__size
       let pos = self.__pos
@@ -5484,18 +5485,20 @@ let nchoices = len(self.__choices)
           endwhile
         endif
       endif
+"call forms#logforce("g:forms#SelectList.adjustWinStart BOTTOM")
       return needs_redraw
     endfunction
     let g:forms#SelectList.adjustWinStart = function("FORMS_SELECT_LIST_adjustWinStart")
 
     function! FORMS_SELECT_LIST_handleSelection() dict
+"call forms#logforce("g:forms#SelectList.handleSelection TOP")
       let selections = self.__selections
       let pos = self.__pos
       let win_start = self.__win_start
       let slen = len(selections)
 
       if slen == 0 " first time
-" call forms#log("g:forms#SelectList.handleSelection first time")
+"call forms#logforce("g:forms#SelectList.handleSelection first time")
         let a = self.__allocation
         let sid = GetSelectionId({
                                 \ 'line': a.line+pos-win_start,
@@ -5512,22 +5515,22 @@ let nchoices = len(self.__choices)
 
       else
         if self.__mode == 'single'
-" call forms#log("g:forms#SelectList.handleSelection single")
+"call forms#logforce("g:forms#SelectList.handleSelection single")
           let i = -1
           if slen > 0
             let [idx, sid] = selections[0]
-" call forms#log("g:forms#SelectList.handleSelection single: idx=" .idx)
-" call forms#log("g:forms#SelectList.handleSelection single: sid=" .sid)
+"call forms#logforce("g:forms#SelectList.handleSelection single: idx=" .idx)
+"call forms#logforce("g:forms#SelectList.handleSelection single: sid=" .sid)
             call ClearSelectionId(sid)
             let i = idx
             let self.__selections = []
-" call forms#log("g:forms#SelectList.handleSelection single: BEFORE")
+"call forms#logforce("g:forms#SelectList.handleSelection single: BEFORE")
             call self.__on_deselection_action.execute(i)
 
           endif
 
-" call forms#log("g:forms#SelectList.handleSelection pos=". pos)
-" call forms#log("g:forms#SelectList.handleSelection i=". i)
+"call forms#logforce("g:forms#SelectList.handleSelection pos=". pos)
+"call forms#logforce("g:forms#SelectList.handleSelection i=". i)
           if i != pos
             let a = self.__allocation
             let sid = GetSelectionId({
@@ -5541,7 +5544,7 @@ let nchoices = len(self.__choices)
           endif
 
         elseif self.__mode == 'mandatory_single' || self.__mode == 'mandatory_on_move_single'
-" call forms#log("g:forms#SelectList.handleSelection mandatory_single")
+"call forms#log("g:forms#SelectList.handleSelection mandatory_single")
           let [idx, sid] = selections[0]
           if idx != pos
             call ClearSelectionId(sid)
@@ -5625,11 +5628,12 @@ let nchoices = len(self.__choices)
 
         endif
       endif
+"call forms#logforce("g:forms#SelectList.handleSelection BOTTOM")
     endfunction
     let g:forms#SelectList.handleSelection = function("FORMS_SELECT_LIST_handleSelection")
 
     function! FORMS_SELECT_LIST_draw(allocation) dict
-" call forms#log("g:forms#SelectList.draw" .  string(a:allocation))
+"call forms#logforce("g:forms#SelectList.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
 
@@ -5684,7 +5688,7 @@ let nchoices = len(self.__choices)
               call forms#SetStringAt(blankStr, line+cnt, column+tlen)
             endif
           endif
-
+          
           let cnt += 1
         endwhile
 
@@ -5693,8 +5697,12 @@ let nchoices = len(self.__choices)
 
         if slen > 0
           if mode == 'single' || mode == 'mandatory_single' || mode == 'mandatory_on_move_single'
+"call forms#logforce("g:forms#SelectList.draw: single")
             let [idx, sid] = selections[0]
             call ClearSelectionId(sid)
+
+            " seems to work with pos, needed for colorschemer
+            let idx = pos
             if idx >= min_idx && idx < max_idx
               let sid = GetSelectionId({
                                       \ 'line': a.line+idx-win_start,
@@ -9562,7 +9570,7 @@ function! forms#loadFormPrototype()
 
         " get winline after nowrap is set
         let s:form_winline = winline()
-        
+
         if s:form_save_readonly
           set noreadonly
         endif
@@ -9574,7 +9582,7 @@ function! forms#loadFormPrototype()
         let undof = tempname()
         " let undof = undofile("xx")
         execute "wundo " . undof
-
+        
 if 0
         " change tabs to spaces
         execute "g/	/s// /g"
@@ -14074,6 +14082,43 @@ endfunction
 "-------------------------------------------------------------------------------
 
 "---------------------------------------------------------------------------
+" Latin (non-UTF-8) Arrow Drawing Characters: {{{2
+"-------------------------------------------------------------------------------
+if !exists("b:forms_lwarrow") | let b:forms_lwarrow = '<' | endif
+if !exists("b:forms_uwarrow") | let b:forms_uwarrow = '^' | endif
+if !exists("b:forms_rwarrow") | let b:forms_rwarrow = '>' | endif
+if !exists("b:forms_dwarrow") | let b:forms_dwarrow = 'v' | endif
+
+"---------------------------------------------------------------------------
+" UTF-8 Arrow Characters: {{{2
+"-------------------------------------------------------------------------------
+
+  " '←' 8592 2190 &larr; LEFTWARDS ARROW  (present in WGL4 and in Symbol font)
+  let b:forms_LWArrow = '←'
+  " '↑' 8593 2191 &uarr; UPWARDS ARROW   (present in WGL4 and in Symbol font)
+  let b:forms_UWArrow = '↑'
+  " '→' 8594 2192 &rarr; RIGHTWARDS ARROW (present in WGL4 and in Symbol font)
+  let b:forms_RWArrow = '→'
+  " '↓' 8595 2193 &darr; DOWNWARDS ARROW  (present in WGL4 and in Symbol font)
+  let b:forms_DWArrow = '↓'
+
+" ------------------------------------------------------------ 
+" forms#LookupArrowDrawingCharacterSet: {{{2
+"  Return List of arrow characters: 
+"    [ LeftWard, UpWard, RightWard, DownWard ]
+"    either ASCII or UTF-8.
+"  parameters: NONE
+" ------------------------------------------------------------ 
+function! forms#LookupArrowDrawingCharacterSet()
+  return (&encoding == 'utf-8')
+    \ ? [ b:forms_LWArrow, b:forms_UWArrow, b:forms_RWArrow, b:forms_DWArrow ]
+    \ : [ b:forms_lwarrow, b:forms_uwarrow, b:forms_rwarrow, b:forms_dwarrow ]
+  endif
+endfunction
+
+
+
+"---------------------------------------------------------------------------
 " Latin (non-UTF-8) Box Drawing Characters: {{{2
 "-------------------------------------------------------------------------------
 if !exists("b:forms_vert") | let b:forms_vert = '|' | endif
@@ -14087,12 +14132,11 @@ if !exists("b:forms_u")    | let b:forms_u   = '+'  | endif
 if !exists("b:forms_l")    | let b:forms_l   = '+'  | endif
 if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
 
-" format for box drawing char set: dr  uh  dl  rv  ul  lh  ur  lv
 
+" format for box drawing char set: dr  uh  dl  rv  ul  lh  ur  lv
 "---------------------------------------------------------------------------
 " UTF-8 Box Drawing Characters: {{{2
 "-------------------------------------------------------------------------------
-" if !exists("b:forms_BoxDrawingCharacters") 
 
   " '─' 9472 2500 BOX DRAWINGS LIGHT HORIZONTAL (present in WGL4)
   let b:forms_BDLightHorizontal = '─'
@@ -14367,10 +14411,8 @@ if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
   " '╿' 9599 257F BOX DRAWINGS HEAVY UP AND LIGHT DOWN        
   let b:forms_BDHeavyUpAndLightDown = '╿'
 
-  let b:forms_BoxDrawingCharacters = 1
-" endif
 
-" if !exists("b:forms_BlockCharacters") 
+
 
   " '▀' 9600 2580 UPPER HALF BLOCK (present in WGL4)
   let b:forms_UpperHalfB = '▀'
@@ -14443,10 +14485,8 @@ if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
   " '▟' 9631 259F QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT 
   let b:forms_QuadrantUpperRightAndLowerLeftAndLowerRight = '▟'
 
-  let b:forms_BlockCharacters = 1
-" endif
 
-" if !exists("b:forms_GeometricShapes") 
+
 
   " '◢' 9698 25E2  BLACK LOWER RIGHT TRIANGLE
   let b:forms_GSBlackLowerRightTriangle = '◢'
@@ -14456,9 +14496,6 @@ if !exists("b:forms_r")    | let b:forms_r   = '+'  | endif
   let b:forms_GSBlackUpperLeftTriangle = '◤'
   " '◥' 9701 25E5  BLACK UPPER RIGHT TRIANGLE  
   let b:forms_GSBlackUpperRightTriangle = '◥'
-
-  let b:forms_GeometricShapes = 1
-" endif
 
 "---------------------------------------------------------------------------
 " Map of Box Drawing Character Sets: {{{2
