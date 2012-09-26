@@ -5,8 +5,8 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 09/25/2012
-" Version:       1.11
+" Last Modified: 09/30/2012
+" Version:       1.12
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -15694,8 +15694,9 @@ endfunction
 function! forms#SetStringAt(str, line, column)
   let s = a:str
   let slen = strchars(s)
+" call forms#logforce("forms#SetStringAt: slen=".slen)
   if slen == 1
-    call forms#SetCharAt(s[0], a:line, a:column)
+    call forms#SetCharAt(s, a:line, a:column)
 
   elseif slen > 1
     let slen2 = strlen(s)
