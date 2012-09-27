@@ -102,6 +102,11 @@ function! forms#example#demo#Make()
   call add(children, g)
   call add(children, vspace)
 
+  let FN = function("forms#dialog#directorybrowser#Make")
+  let g = s:MakeExample('DirectoryBrowser', FN)
+  call add(children, g)
+  call add(children, vspace)
+
   let FN = function("forms#dialog#colorchooser#Make")
   let g = s:MakeExample('ColorChooser', FN)
   call add(children, g)
@@ -110,7 +115,12 @@ function! forms#example#demo#Make()
   let FN = function("forms#dialog#palletdesigner#Make")
   let g = s:MakeExample('PalletDesigner', FN)
   call add(children, g)
-  call add(children, vspace)
+
+
+  let hpoly3 = forms#newHPoly({'children': children,
+                                    \ 'alignment': 'C' })
+
+  let children = []
 
   let FN = function("forms#menu#MakeMenu")
   let g = s:MakeExample('MenuBar', FN, 'n')
@@ -120,11 +130,7 @@ function! forms#example#demo#Make()
   let FN = function("forms#menu#MakePopUp")
   let g = s:MakeExample('PopUp', FN, 'n')
   call add(children, g)
-
-  let hpoly3 = forms#newHPoly({'children': children,
-                                    \ 'alignment': 'C' })
-
-  let children = []
+  call add(children, vspace)
 
   let FN = function("forms#example#boxchars#Make")
   let g = s:MakeExample('BoxChars', FN)
@@ -149,17 +155,17 @@ function! forms#example#demo#Make()
   let FN = function("forms#example#fixedlayout#Make")
   let g = s:MakeExample('FixedLayout', FN)
   call add(children, g)
-  call add(children, vspace)
 
-  let FN = function("forms#example#foureditors#Make")
-  let g = s:MakeExample('FourEditors', FN)
-  call add(children, g)
-  call add(children, vspace)
 
   let hpoly4 = forms#newHPoly({'children': children,
                                     \ 'alignment': 'C' })
 
   let children = []
+
+  let FN = function("forms#example#foureditors#Make")
+  let g = s:MakeExample('FourEditors', FN)
+  call add(children, g)
+  call add(children, vspace)
 
   let FN = function("forms#example#texteditor#Make")
   let g = s:MakeExample('TextEditor', FN)

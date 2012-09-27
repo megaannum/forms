@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 09/30/2012
-" Version:       1.12
+" Version:       1.13
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -4441,18 +4441,28 @@ function! forms#loadVariableLengthFieldPrototype()
 
         endif
 
-        let size = self.__size
-        if self.__pos > self.__win_start + size
-          let self.__win_start += 1
-        elseif self.__win_start > 0 && self.__pos < self.__win_start + size
-          let self.__win_start -= 1
-        endif
+        call self.adjustWinStart()
 
       endif
       return handled
 
     endfunction
     let g:forms#VariableLengthField.handleChar = function("FORMS_VARIABLE_LENGTH_FIELD_handleChar")
+
+    function! FORMS_VARIABLE_LENGTH_FIELD_adjustWinStart() dict
+      let size = self.__size
+      let pos = self.__pos
+      if pos > self.__win_start + size
+        while pos > self.__win_start + size
+          let self.__win_start += 1
+        endwhile
+      elseif self.__win_start > 0 && self.__pos < self.__win_start + size
+        while self.__win_start > 0 && self.__pos < self.__win_start + size
+          let self.__win_start -= 1
+        endwhile
+      endif
+    endfunction
+    let g:forms#VariableLengthField.adjustWinStart = function("FORMS_VARIABLE_LENGTH_FIELD_adjustWinStart")
 
     function! FORMS_VARIABLE_LENGTH_FIELD_draw(allocation) dict
 " call forms#log("g:forms#VariableLengthField.draw" .  string(a:allocation))
@@ -9068,7 +9078,9 @@ echo "ERROR g:forms#Viewer.handleEvent Top Viewer is NOT FORM")
                 if len(flist) == 1
                   if focus.handleEvent(event)
                     for w in forms#ViewerRedrawListCopyAndClear() 
-                      call w.redraw()
+                      if ! empty(w)
+                        call w.redraw()
+                      endif
                     endfor
                     call focus.hotspot()
 
@@ -9092,7 +9104,9 @@ echo "ERROR g:forms#Viewer.handleEvent Top Viewer is NOT FORM")
                 if len(flist) == 1
                   if focus.handleEvent(event)
                     for w in forms#ViewerRedrawListCopyAndClear() 
-                      call w.redraw()
+                      if ! empty(w)
+                        call w.redraw()
+                      endif
                     endfor
                     call focus.hotspot()
 
@@ -9243,10 +9257,11 @@ endif
               endif
 
             elseif type == 'Exit'
-              if forms#ViewerStackDepth() > 1
+              if self.isKindOf("forms#Form")
+                return event
+              elseif forms#ViewerStackDepth() > 1
                 break
               else
-" call forms#log("g:forms#Viewer.run return Exit event=" . string(event))
                 return event
               endif
 
@@ -9300,17 +9315,19 @@ endif
 
 
             elseif type == 'Command'
-              if forms#ViewerStackDepth() > 1
-" call forms#log("g:forms#Viewer.run return unGetChar Command event")
+              if self.isKindOf("forms#Form")
+                return event
+              elseif forms#ViewerStackDepth() > 1
                 call self.unGetChar(event)
                 break
               else
-" call forms#log("g:forms#Viewer.run return return Command event")
                 return event
               endif
 
             elseif type == 'Cancel'
-              if forms#ViewerStackDepth() > 1
+              if self.isKindOf("forms#Form")
+                return event
+              elseif forms#ViewerStackDepth() > 1
                 call self.unGetChar(event)
                 break
               else
@@ -9318,7 +9335,9 @@ endif
               endif
 
             elseif type == 'Submit'
-              if forms#ViewerStackDepth() > 1
+              if self.isKindOf("forms#Form")
+                return event
+              elseif forms#ViewerStackDepth() > 1
                 call self.unGetChar(event)
                 break
               else
@@ -9334,11 +9353,12 @@ endif
 
             else
               if exists('focus')
+" call forms#logforce("g:forms#Viewer.run call event=". string(event))
                 if focus.handleEvent(event)
                   for w in forms#ViewerRedrawListCopyAndClear() 
-" call forms#log("g:forms#Viewer.run call e redraw: w.tag=".w.getTag())
-" call forms#log("g:forms#Viewer.run call e redraw: w.kind=".w.getKind())
-                    call w.redraw()
+                    if ! empty(w)
+                      call w.redraw()
+                    endif
                   endfor
                   call focus.hotspot()
 
@@ -9369,7 +9389,9 @@ endif
             if exists('focus')
               if focus.handleChar(nr)
                 for w in forms#ViewerRedrawListCopyAndClear() 
-                  call w.redraw()
+                  if ! empty(w)
+                    call w.redraw()
+                  endif
                 endfor
                 call focus.hotspot()
 
@@ -9848,8 +9870,9 @@ endif
 
           try 
             let p = g:forms#Form._prototype
+" call forms#logforce("g:forms#Form before form.run")
             let rval = call(p.run, [], self)
-" call forms#log("g:forms#Form after rval=".string(rval))
+" call forms#logforce("g:forms#Form after form.run rval=".string(rval))
             let results = {}
             if rval.type == 'Exit'
               " nothing
@@ -9865,8 +9888,9 @@ endif
             elseif rval.type == 'Cancel'
               " nothing
             elseif rval.type == 'Submit'
+" call forms#logforce("g:forms#Form.run Submit")
               call self.generateResults(self.__body, results)
-" call forms#log("g:forms#Form.run results=" . string(results))
+" call forms#logforce("g:forms#Form.run results=" . string(results))
               return results
             else
               throw "Form.run: Bad rval object: " . string(rval)
