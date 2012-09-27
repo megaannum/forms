@@ -144,7 +144,8 @@ function! forms#menu#MakeFileMenu()
 " call forms#log("forms#menu#MakeFileMenu TOP")
 
   function! BrowserAction(title, cmd) 
-    let f = forms#dialog#filebrowser#Make(a:title) 
+    let dict = { 'title' : a:title }
+    let f = forms#dialog#filebrowser#Make(dict) 
     call forms#log("forms#menu#MakeFileMenu.BrowserAction f=".f)
     if f != ''
       let f = substitute(f, ' ', '\\ ', "g")

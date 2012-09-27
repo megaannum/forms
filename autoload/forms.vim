@@ -10279,8 +10279,9 @@ endfunction
 "   are displayed based upon the alignment.
 "
 " attributes
-"   alignment : float align 0-1 or 'T' 'C' 'B'
-"   mode      : optional box drawing mode
+"   alignment  : float align 0-1 or 'T' 'C' 'B'
+"   mode       : optional box drawing mode
+"   alignments : optional List of [ postition, float align 0-1 or 'T' 'C' 'B' ]
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
   if exists("g:forms#HPoly")
@@ -10511,8 +10512,9 @@ endfunction
 "   are displayed based upon the alignment.
 "
 " attributes
-"   alignment : float align 0-1 or 'L' 'C' 'R'
-"   mode      : optional box drawing mode
+"   alignment  : float align 0-1 or 'L' 'C' 'R'
+"   mode       : optional box drawing mode
+"   alignments : optional List of [ postition, float align 0-1 or 'L' 'C' 'R' ]
 "---------------------------------------------------------------------------
 if g:self#IN_DEVELOPMENT_MODE
   if exists("g:forms#VPoly")
