@@ -5,8 +5,8 @@
 " File:          forms.vim
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
-" Last Modified: 09/30/2012
-" Version:       1.13
+" Last Modified: 10/5/2012
+" Version:       1.14
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -9810,6 +9810,63 @@ endif
           if l:nosLinesToSave > 0
             let l:savedLines = getline(l:lineStartOfFormBuffer,
                                    \ l:lineStartOfFormBuffer+l:nosLinesToSave)
+if 1 || s:form_save_readonly
+let ts = &tabstop
+let cnt = 0
+while cnt < l:nosLinesToSave
+  let line = l:savedLines[cnt]
+  let len = len(line)
+
+  if 0 && s:form_save_readonly
+    let pos = l:lineStartOfFormBuffer + cnt
+    execute pos
+    if len == 0
+      execute ":normal " . l:columnEndOfFormScreen . 'i '
+    else
+      execute ":normal 0D" . l:columnEndOfFormScreen . 'i '
+    endif
+  else
+    let pos = l:lineStartOfFormBuffer + cnt
+    execute pos
+    let ccnt = 0
+    let pchars = 0
+    while ccnt < len
+      let c = line[ccnt]
+      if c == "\<Tab>"
+        let nspaces = ts - (pchars % ts)
+" call forms#logforce("g:forms#Form cnt=".cnt.", ccnt=".ccnt.", nspaces=" . nspaces)
+        if ccnt == 0
+          execute ":normal X" . nspaces . 'i '
+        else
+          execute ":normal 0" .(pchars+1). " X" . nspaces . 'i '
+        endif
+        let pchars += nspaces
+      else
+        let pchars += 1
+      endif
+
+      let ccnt += 1
+    endwhile
+
+if 0
+    " note: not a couple of spaces but rather a single tab
+    let idx = stridx(line, '	')
+    if idx >= 0
+      let pos = l:lineStartOfFormBuffer + cnt
+      execute pos
+      if len == 0
+        execute ":normal " . l:columnEndOfFormScreen . 'i '
+      else
+        execute ":normal 0D" . l:columnEndOfFormScreen . 'i '
+      endif
+    endif
+endif
+
+  endif
+
+  let cnt += 1
+endwhile
+endif
           endif
 
           " Add new lines (if needed)

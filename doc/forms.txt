@@ -1,7 +1,7 @@
-*forms.txt*          For Vim version 7.3              Last change: 2012 July 19
+*forms.txt*          For Vim version 7.3              Last change: 2012 Oct  9
 
 Author:      Richard Emberson 
-Version:     1.13
+Version:     1.14
 Title:       Forms Library
 Homepage:    TODO
 
@@ -1058,6 +1058,8 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.14   - Fix: ~
+    Fixed both Tab and read-only page display.
 1.13   - Fix: ~
     Added a directory brower dialog.
     Fixed file browser dialog so that it returned the correct result.
