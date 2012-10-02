@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 10/5/2012
-" Version:       1.14
+" Version:       1.15
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -9827,18 +9827,19 @@ while cnt < l:nosLinesToSave
     endif
   else
     let pos = l:lineStartOfFormBuffer + cnt
-    execute pos
+"call forms#logforce("g:forms#Form pos=".pos)
+    execute ":normal " . pos . "G"
     let ccnt = 0
     let pchars = 0
     while ccnt < len
       let c = line[ccnt]
       if c == "\<Tab>"
         let nspaces = ts - (pchars % ts)
-" call forms#logforce("g:forms#Form cnt=".cnt.", ccnt=".ccnt.", nspaces=" . nspaces)
+"call forms#logforce("g:forms#Form cnt=".cnt.", ccnt=".ccnt.", pchars=".pchars.", nspaces=" . nspaces)
         if ccnt == 0
-          execute ":normal X" . nspaces . 'i '
+          execute ":normal 0x" . nspaces . 'i '
         else
-          execute ":normal 0" .(pchars+1). " X" . nspaces . 'i '
+          execute ":normal 0" .(pchars). " x" . nspaces . 'i '
         endif
         let pchars += nspaces
       else
