@@ -54,8 +54,8 @@ function!  forms#dialog#confirm#Make(textlines, choices, def)
   endfor
 
   let char = (&encoding == 'utf-8') 
-                      \ ?  b:forms_BDLightHorizontal 
-                      \ : b:forms_horz
+                      \ ?  g:forms_BDLightHorizontal 
+                      \ : g:forms_horz
   let hline = forms#newHLine({'char': char})
 
   let children = []

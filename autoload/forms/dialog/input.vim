@@ -59,8 +59,8 @@ function!  forms#dialog#input#Make(textlines, ...)
 
   let box = forms#newBox({ 'body': vfield} )
   let char = (&encoding == 'utf-8') 
-                      \ ?  b:forms_BDLightHorizontal 
-                      \ : b:forms_horz
+                      \ ?  g:forms_BDLightHorizontal 
+                      \ : g:forms_horz
   let hline = forms#newHLine({'char': char})
 
   let oklabel = forms#newLabel({'text': "Ok"})
