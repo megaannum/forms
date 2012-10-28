@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 2012
-" Version:       1.16
+" Version:       1.17
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -64,7 +64,7 @@ let s:keepcpo = &cpo
 set cpo&vim
 
 function! forms#version()
-  return '1.16'
+  return '1.17'
 endfunction
 
 " ++++++++++++++++++++++++++++++++++++++++++++
@@ -9941,8 +9941,13 @@ endif
             elseif rval.type == 'ReSize'
               let run_viewer = g:self#IS_TRUE
             elseif rval.type == 'Command'
-              if forms#ViewerStackDepth() > 1
+              if forms#ViewerStackDepth() > 0
+                let event = {
+                      \ 'type': 'Command',
+                      \ 'command': rval.command
+                      \ }
                 call self.unGetChar(event)
+                break
               else
                 let command = rval.command
               endif
