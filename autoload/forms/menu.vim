@@ -70,10 +70,9 @@ endif
 "     fname : file name to be escaped
 " ------------------------------------------------------------ 
 function! s:FnameEscape(fname)
-  if exists('*fnameescape')
-  return fnameescape(a:fname)
-  endif
-  return escape(a:fname, " \t\n*?[{`$\\%#'\"|!<")
+  return exists('*fnameescape')
+          \ ? fnameescape(a:fname)
+          \ : escape(a:fname, " \t\n*?[{`$\\%#'\"|!<")
 endfunc
 
 

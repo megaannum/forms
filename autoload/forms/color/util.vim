@@ -40,7 +40,7 @@
 function! forms#color#util#ParseRGB(rgb, ...)
 "call forms#log("ParseRGB: TOP rgb=". string(a:rgb) . " a:0=" . a:0)
 "let start = reltime()
-  let needs_extra_args = g:self#IS_FALSE
+  let needs_extra_args = 0
 
   if type(a:rgb) == g:self#STRING_TYPE
     " remove hash
@@ -49,7 +49,7 @@ function! forms#color#util#ParseRGB(rgb, ...)
     if len(rgb) == 2
       let rs = rgb
       let rn = str2nr(rs, 16)
-      let needs_extra_args = g:self#IS_TRUE
+      let needs_extra_args = 1
 
     elseif len(rgb) == 6
       let rs = rgb[0:1]
@@ -107,17 +107,17 @@ function! forms#color#util#ParseRGB(rgb, ...)
 
   elseif type(a:rgb) == g:self#NUMBER_TYPE
     let rn = a:rgb
-    let needs_extra_args = g:self#IS_TRUE
+    let needs_extra_args = 1
 
   elseif type(a:rgb) == g:self#FLOAT_TYPE
     let rn = float2nr(a:rgb)
-    let needs_extra_args = g:self#IS_TRUE
+    let needs_extra_args = 1
 
   else
     throw "forms#color#util.ParseRGB Bad rgb type: " . string(a:rgb)
   endif
 
-  if needs_extra_args == g:self#IS_TRUE
+  if needs_extra_args == 1
     if a:0 != 2
       throw "forms#color#util.ParseRGB requires 2 additional arugments: a:0=".  a:0)
     endif

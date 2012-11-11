@@ -279,6 +279,20 @@ function! forms#example#demo#Make()
   let hpoly8 = forms#newHPoly({'children': children,
                                     \ 'alignment': 'C' })
 
+  let children = []
+
+  let FN = function("forms#example#dotvimviewer#Make")
+  let g = s:MakeExample('VimHomeViewer', FN)
+  call add(children, g)
+  call add(children, vspace)
+
+  let FN = function("forms#example#runtimepathviewer#Make")
+  let g = s:MakeExample('RuntimePathViewer', FN)
+  call add(children, g)
+  call add(children, vspace)
+
+  let hpoly9 = forms#newHPoly({'children': children,
+                                    \ 'alignment': 'C' })
 
   let hspace = forms#newHSpace({'size': 1})
   let vpoly = forms#newVPoly({ 'children': [
@@ -299,7 +313,9 @@ function! forms#example#demo#Make()
                                     \ hspace, 
                                     \ hpoly7, 
                                     \ hspace, 
-                                    \ hpoly8], 
+                                    \ hpoly8, 
+                                    \ hspace, 
+                                    \ hpoly9], 
                                     \ 'alignment': 'C' })
 
   let b = forms#newBorder({ 'body': vpoly })

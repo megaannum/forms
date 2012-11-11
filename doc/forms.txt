@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 Oct  9
 
 Author:      Richard Emberson 
-Version:     1.17
+Version:     1.18
 Title:       Forms Library
 Homepage:    TODO
 
@@ -1058,6 +1058,9 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.18   - Fix: ~
+    Added ForestViewer (muilti-hierarchical node viewer).
+    Replaced IS_TRUE/IS_FALSE with 1/0.
 1.17   - Fix: ~
     Form Command event not executing properly.
 1.16   - Fix: ~
