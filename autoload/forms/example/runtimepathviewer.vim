@@ -61,7 +61,7 @@ function! forms#example#runtimepathviewer#Make()
   let forest.hasSubPathInfo = function("Has_sub_path_info")
 
   function! Path_to_string(path) dict
-    return join(a:path, '/')
+    return '/' . join(a:path, '/')
   endfunction
   let forest.pathToString = function("Path_to_string")
 

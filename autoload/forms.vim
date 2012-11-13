@@ -4955,7 +4955,7 @@ function! forms#loadTextEditorPrototype()
         let x_win_start = self.__x_win_start
         let y_win_start = self.__y_win_start
         let txtlns = self.__textlines
-        let xlen = strchars(txtlns[y_pos])
+        let xlen = empty(txtlns) ? 0 : strchars(txtlns[y_pos])
         let ylen = len(txtlns)
 
 "  call forms#log("g:forms#TextEditor.draw x_pos=" .  x_pos)
@@ -11491,17 +11491,18 @@ endfunction
 "   And, lines that wrap, are truncated.
 "
 " attributes:
-"    delete     : Should form be deleted on exit. Default true (1).
-"    x_screen   : Place form a x (column) screen (window) position.
-"                   Takes precedence over halignment value.
-"    y_screen   : Place form a y (line) screen (window) position.
-"                   Takes precedence over valignment value.
-"    halignment : Horizontally align form in window.
-"                   float align 0-1 or 'L' 'C' 'R' (default 'L')
-"                   default is 'C'
-"    valignment : Vertically align form in window.
-"                   float align 0-1 or 'T' 'C' 'B' (default 'T')
-"                   default is 'C'
+"    delete      : Should form be deleted on exit. Default true (1).
+"    open_in_tab : Open Form in tab Default false (0).
+"    x_screen    : Place form a x (column) screen (window) position.
+"                    Takes precedence over halignment value.
+"    y_screen    : Place form a y (line) screen (window) position.
+"                    Takes precedence over valignment value.
+"    halignment  : Horizontally align form in window.
+"                    float align 0-1 or 'L' 'C' 'R' (default 'L')
+"                    default is 'C'
+"    valignment  : Vertically align form in window.
+"                    float align 0-1 or 'T' 'C' 'B' (default 'T')
+"                    default is 'C'
 "---------------------------------------------------------------------------
 
 let s:form_save_readonly=&readonly
@@ -11530,6 +11531,7 @@ function! forms#loadFormPrototype()
   if !exists("g:forms#Form")
     let g:forms#Form = forms#loadViewerPrototype().clone('forms#Form')
     let g:forms#Form.__delete = 1
+    let g:forms#Form.__open_in_tab = 0
     let g:forms#Form.__x_screen = -1
     let g:forms#Form.__y_screen = -1
     let g:forms#Form.__halignment = 'C'
@@ -11553,6 +11555,7 @@ function! forms#loadFormPrototype()
       let oldVAlignment = self.__valignment
 
       let self.__delete = 1
+      let self.__open_in_tab = 0
       let self.__x_screen = -1
       let self.__y_screen = -1
       let self.__halignment = 'C'
@@ -11581,6 +11584,10 @@ function! forms#loadFormPrototype()
 "call forms#log("g:forms#Form.run TOP")
 
       call g:ShouldLoadeHighlights()
+
+      if self.__open_in_tab
+        tabe
+      endif
 
       "==============================================
       " Capture environment
@@ -12096,6 +12103,10 @@ endif
 
 "call setpos('.', save_cursor)
           call winrestview(save_view)
+        endif
+
+        if self.__open_in_tab
+          quit!
         endif
 
       endtry
