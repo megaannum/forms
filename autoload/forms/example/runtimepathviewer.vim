@@ -15,9 +15,9 @@ function! forms#example#runtimepathviewer#Make()
 
   let trees = []
   let paths = s:GetVimRuntimePaths()
-call forms#log("paths=". string(paths))
+" call forms#log("paths=". string(paths))
   for path in paths
-call forms#log("path=". path)
+" call forms#log("path=". path)
     let pathlist = split(path, '/')
     let node = forms#CreateNode()
     call node.init(pathlist, 0)
@@ -30,9 +30,9 @@ call forms#log("path=". path)
   " returns list of [name, isleaf] pairs
   function! Generate_sub_path_info(path) dict
     let l:path = '/' . join(a:path, '/')
-call forms#log("Generate_sub_path_info path=". string(l:path))
+" call forms#log("Generate_sub_path_info path=". string(l:path))
     let files = split(globpath(l:path, "*"), "\n")
-call forms#log("Generate_sub_path_info files=". string(files))
+" call forms#log("Generate_sub_path_info files=". string(files))
     let rval = []
     for file in files
       let isleaf = !isdirectory(file)
@@ -46,9 +46,9 @@ call forms#log("Generate_sub_path_info files=". string(files))
 
   function! Has_sub_path_info(path) dict
     let l:path = '/' . join(a:path, '/')
-call forms#log("Has_sub_path_info path=". string(l:path))
+" call forms#log("Has_sub_path_info path=". string(l:path))
     let files = split(globpath(l:path, "*"), "\n")
-call forms#log("Has_sub_path_info files=". string(files))
+" call forms#log("Has_sub_path_info files=". string(files))
     let rval = 0
     for file in files
       if isdirectory(file)
@@ -66,35 +66,89 @@ call forms#log("Has_sub_path_info files=". string(files))
   let forest.pathToString = function("Path_to_string")
 
 
-  function! OnOpenAction(node) dict
+  function! ForestOnOpenAction(tree, node) dict
     call forms#log("OPEN: ". a:node.name)
+    call self.nv.setNode(a:tree, a:node, 1)
   endfunction
-  let ooa = forms#newAction({ 'execute': function("OnOpenAction")})
+  let fooa = forms#newAction({ 'execute': function("ForestOnOpenAction")})
 
-  function! OnCloseAction(node) dict
+  function! ForestOnCloseAction(tree, node) dict
     call forms#log("CLOSE: ". a:node.name)
+    let [found, parent_node] = a:node.getParent(a:tree)
+    if found
+      call self.nv.setNode(a:tree, parent_node, 1)
+    else
+      " no parent, must be at top
+      call self.nv.setNode(a:tree, a:node, 1)
+    endif
   endfunction
-  let oca = forms#newAction({ 'execute': function("OnCloseAction")})
+  let foca = forms#newAction({ 'execute': function("ForestOnCloseAction")})
 
-  function! OnSelectionAction(node) dict
+  function! ForestOnSelectionAction(tree, node) dict
     call forms#log("SELECT: ". a:node.name)
   endfunction
-  let osa = forms#newAction({ 'execute': function("OnSelectionAction")})
+  let fosa = forms#newAction({ 'execute': function("ForestOnSelectionAction")})
 
   for tree in trees
     call forest.addTree(tree)
   endfor
 
-  let attrs = { 'width': 50,
-              \ 'height': 15,
+  let height = 20 
+  let attrs = { 'width': 30,
+              \ 'height': height,
               \ 'forest': forest,
-              \ 'on_open_action': ooa,
-              \ 'on_close_action': oca,
-              \ 'on_selection_action': osa
+              \ 'content_order': 'non-leaf-only',
+              \ 'on_open_action': fooa,
+              \ 'on_close_action': foca,
+              \ 'on_selection_action': fosa
               \ }
-  let tv = forms#newForestViewer(attrs)
+  let fv = forms#newForestViewer(attrs)
+  let fvbox = forms#newBox({ 'body': fv } )
 
-  let bg = forms#newBackground({ 'body': tv} )
+
+
+  function! NodeOnOpenAction(tree, node) dict
+call forms#log("NODE OPEN: ". a:node.name)
+    call self.fv.setNode(a:tree, a:node)
+  endfunction
+  let nooa = forms#newAction({ 'execute': function("NodeOnOpenAction")})
+
+  function! NodeOnCloseAction(tree, node) dict
+call forms#log("NODE CLOSE: ". a:node.name)
+   call self.fv.setNode(a:tree, a:node)
+  endfunction
+  let noca = forms#newAction({ 'execute': function("NodeOnCloseAction")})
+
+  function! NodeOnSelectionAction(tree, node) dict
+call forms#log("NODE SELECT: ". a:node.name)
+  endfunction
+  let nosa = forms#newAction({ 'execute': function("NodeOnSelectionAction")})
+
+  let attrs = { 'width': 30,
+              \ 'height': height,
+              \ 'node': node,
+              \ 'tree': tree,
+              \ 'top_node_full_name': 0,
+              \ 'on_open_action': nooa,
+              \ 'on_close_action': noca,
+              \ 'on_selection_action': nosa
+              \ }
+  let nv = forms#newNodeViewer(attrs)
+  let nvbox = forms#newBox({ 'body': nv } )
+
+
+  let fooa.nv = nv
+  let foca.nv = nv
+  let fosa.nv = nv
+
+  let nooa.fv = fv
+  let noca.fv = fv
+  let nosa.fv = fv
+
+
+  let hpoly = forms#newHPoly({ 'children': [fvbox, nvbox] })
+
+  let bg = forms#newBackground({ 'body': hpoly} )
 
   let form = forms#newForm({'body': bg })
   call form.run()

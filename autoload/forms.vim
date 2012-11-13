@@ -59,12 +59,12 @@
 if &cp || ( exists("g:loaded_forms") && ! g:self#IN_DEVELOPMENT_MODE )
   finish
 endif
-let g:loaded_forms = 'v1.8'
+let g:loaded_forms = 'v1.19'
 let s:keepcpo = &cpo
 set cpo&vim
 
 function! forms#version()
-  return '1.18'
+  return '1.19'
 endfunction
 
 " ++++++++++++++++++++++++++++++++++++++++++++
@@ -5797,6 +5797,7 @@ endfunction
 
 " does parent_path contain child_path
 "  len(child_path) >= len(parent_path) and len2 elements equal
+"  return 0 or number of matching nodes
 function! s:contains(parent_path, child_path)
   let parent_len = len(a:parent_path)
   let child_len = len(a:child_path)
@@ -5810,7 +5811,7 @@ function! s:contains(parent_path, child_path)
       endif
       let cnt += 1
     endwhile
-    return 1
+    return cnt
   endif
 endfunction
 
@@ -5880,7 +5881,7 @@ endfunction
 let s:Forest.changed = function("FORMS_FOREST_changed")
 
 function! FORMS_FOREST_add_tree(tree, ...) dict
-call forms#log("FORMS_FOREST_add_tree TOP")
+" call forms#log("FORMS_FOREST_add_tree TOP")
   if type(a:tree) == g:self#DICTIONARY_TYPE
     let a:tree.forest = self
     let self.trees[a:tree.node.name] = a:tree
@@ -5901,7 +5902,7 @@ let s:Forest.addTree = function("FORMS_FOREST_add_tree")
 
 " return [display, node]
 function! FORMS_FOREST_draw() dict
-call forms#log("FORMS_FOREST_draw TOP")
+" call forms#log("FORMS_FOREST_draw TOP")
   let l:content = []
 
   let keys = self.match_case_sort
@@ -5916,14 +5917,14 @@ call forms#log("FORMS_FOREST_draw TOP")
   for key in keys
     let tree = self.trees[key]
     let l:content += tree.draw()
-call forms#log("FORMS_FOREST_draw tree.max_content_len=". tree.max_content_len)
+" call forms#log("FORMS_FOREST_draw tree.max_content_len=". tree.max_content_len)
     if tree.max_content_len > self.max_content_len
       let self.max_content_len = tree.max_content_len
     endif
   endfor
-call forms#log("FORMS_FOREST_draw self.max_content_len=". self.max_content_len)
+" call forms#log("FORMS_FOREST_draw self.max_content_len=". self.max_content_len)
 
-call forms#log("FORMS_FOREST_draw BOTTOM")
+" call forms#log("FORMS_FOREST_draw BOTTOM")
   let self.content = l:content
   return l:content
 endfunction
@@ -5948,7 +5949,7 @@ let s:Tree.node = {}
 let s:Tree.current_path = []
 
 function! FORMS_TREE_draw() dict
-call forms#log("FORMS_TREE_draw TOP")
+" call forms#log("FORMS_TREE_draw TOP")
   if self.changed
     let content = []
     call self.node.update(self)
@@ -5959,31 +5960,72 @@ call forms#log("FORMS_TREE_draw TOP")
     let self.content = content
   endif
 "call forms#log("FORMS_TREE_draw content=". string(self.content))
-call forms#log("FORMS_TREE_draw BOTTOM")
+" call forms#log("FORMS_TREE_draw BOTTOM")
   return self.content
 endfunction
 let s:Tree.draw = function("FORMS_TREE_draw")
 
+" return [0, errmsg] or [1, node]
+function! FORMS_TREE_lookup_child(path) dict
+" call forms#log("FORMS_TREE_lookup_child TOP")
+  let nos_matching_nodes = s:contains(self.node.path, a:path)
+" call forms#log("FORMS_TREE_lookup_child nos_matching_nodes=". nos_matching_nodes)
+  if nos_matching_nodes == 0
+    return [0, "Tree with path '". string(self.node.path) ."' does not contain path '" . string(a:path) ."'"]
+  endif
+
+  let child_path = a:path[nos_matching_nodes : ]
+" call forms#log("FORMS_TREE_lookup_child child_path=". string(child_path))
+  let cplen = len(child_path)
+" call forms#log("FORMS_TREE_lookup_child cplen=". cplen)
+
+  let node = self.node
+  let cnt = 0
+  while cnt < cplen
+    let p = node.path + [ child_path[cnt] ]
+" call forms#log("FORMS_TREE_lookup_child p=". string(p))
+    let [found, child] = node.lookupChild(self, p)
+    if found
+      let node = child
+    else
+      return [0, child]
+    endif
+
+    let cnt += 1
+  endwhile
+
+" call forms#log("FORMS_TREE_lookup_child node.name=". node.name)
+  return [1, node]
+
+endfunction
+let s:Tree.lookupChild = function("FORMS_TREE_lookup_child")
+
+" return node at path which is toggled
 function! FORMS_TREE_toggle(path) dict
-call forms#log("FORMS_TREE_toggle TOP")
-  if ! s:contains(self.node.path, a:path)
+" call forms#log("FORMS_TREE_toggle TOP")
+  if s:contains(self.node.path, a:path) == 0
     throw "Tree with path '". string(self.node.path) ."' does not contain path '" . string(a:path) ."'"
   endif
   
-  call self.node.toggle(self, a:path)
+  let node = self.node.toggle(self, a:path)
   let self.changed = 1
+" call forms#log("FORMS_TREE_toggle BOTTOM node.name=". node.name)
+  return node
 endfunction
 let s:Tree.toggle = function("FORMS_TREE_toggle")
 
 function! FORMS_TREE_goto(path) dict
-call forms#log("FORMS_TREE_goto TOP path=". string(a:path))
+" call forms#log("FORMS_TREE_goto TOP path=". string(a:path))
   if self.current_path != a:path
 
-    call self.node.toggle(self, a:path)
-    call self.node.open(self, a:path)
+    let node = self.node.toggle(self, a:path)
+    call node.open(self, a:path)
+    " call self.node.open(self, a:path)
 
     let self.current_path = a:path
     let self.changed = 1
+
+    return node
   endif
 endfunction
 let s:Tree.goto = function("FORMS_TREE_goto")
@@ -6009,7 +6051,7 @@ let s:Node.is_open = 0
 let s:Node.children = -1
 
 function! FORMS_NODE_init(path, isleaf) dict
-call forms#log("FORMS_NODE_init TOP")
+" call forms#log("FORMS_NODE_init TOP")
 " call forms#log("FORMS_NODE_init path=". string(a:path))
 " call forms#log("FORMS_NODE_init isleaf=". a:isleaf)
   let self.name = a:path[len(a:path)-1]
@@ -6021,9 +6063,9 @@ endfunction
 let s:Node.init = function("FORMS_NODE_init")
 
 function! FORMS_NODE_update(tree) dict
-call forms#log("FORMS_NODE_update path=". string(self.path))
+" call forms#log("FORMS_NODE_update path=". string(self.path))
   let subPathInfo = a:tree.forest.generateSubPathInfo(self.path)
-call forms#log("FORMS_NODE_update subPathInfo=". string(subPathInfo))
+" call forms#log("FORMS_NODE_update subPathInfo=". string(subPathInfo))
 
   let nosSubPathNames = len(subPathInfo)
   " Get child names
@@ -6086,7 +6128,7 @@ call forms#log("FORMS_NODE_update subPathInfo=". string(subPathInfo))
   endif
 
   " let self.is_open = 1
-call forms#log("FORMS_NODE_update BOTTOM")
+" call forms#log("FORMS_NODE_update BOTTOM")
 endfunction
 let s:Node.update = function("FORMS_NODE_update")
 
@@ -6112,34 +6154,28 @@ function! FORMS_NODE_lookup_child(tree, path) dict
 endfunction
 let s:Node.lookupChild = function("FORMS_NODE_lookup_child")
 
+" return [0, _] if no parent, [1, parent_node]
+function! FORMS_NODE_get_parent(tree) dict
+  let nplen = len(self.path)
+  let parent_path = self.path[ : (nplen-2)]
+  let [found, parent_node] = a:tree.lookupChild(parent_path)
+  if found
+    return [1, parent_node]
+  else
+    return [0, {}]
+  endif
+endfunction
+let s:Node.getParent = function("FORMS_NODE_get_parent")
+
 function! FORMS_NODE_toggle(tree, path) dict
-call forms#log("FORMS_NODE_toggle TOP")
+" call forms#log("FORMS_NODE_toggle TOP")
   if self.path == a:path
     let self.is_open = !self.is_open
     if self.is_open
       call self.update(a:tree)
     endif
 
-    " call actions
-    if type(self.children) == g:self#NUMBER_TYPE
-      if self.children
-        " non leaf
-        if self.is_open
-          call a:tree.forest.on_open_action.execute(self)
-        else
-          call a:tree.forest.on_close_action.execute(self)
-        endif
-      else
-        " leaf
-        call a:tree.forest.on_selection_action.execute(self)
-      endif
-    else
-      if self.is_open
-        call a:tree.forest.on_open_action.execute(self)
-      else
-        call a:tree.forest.on_close_action.execute(self)
-      endif
-    endif
+    return self
 
   else
     if ! self.is_open
@@ -6148,17 +6184,18 @@ call forms#log("FORMS_NODE_toggle TOP")
     let [found, child] = self.lookupChild(a:tree, a:path)
     if found
       let self.is_open = 1
-      call child.toggle(a:tree, a:path)
+      return child.toggle(a:tree, a:path)
     else
-      call forms#log(child)
+      " call forms#log(child)
+      throw child
     endif
   endif
-call forms#log("FORMS_NODE_toggle BOTTOM")
+" call forms#log("FORMS_NODE_toggle BOTTOM")
 endfunction
 let s:Node.toggle = function("FORMS_NODE_toggle")
 
 function! FORMS_NODE_open(tree, path) dict
-call forms#log("FORMS_NODE_open TOP")
+" call forms#log("FORMS_NODE_open TOP")
 
   if self.path == a:path
     call self.update(a:tree)
@@ -6171,7 +6208,7 @@ call forms#log("FORMS_NODE_open TOP")
     endif
   endif
 
-call forms#log("FORMS_NODE_open BOTTOM")
+" call forms#log("FORMS_NODE_open BOTTOM")
 endfunction
 let s:Node.open = function("FORMS_NODE_open")
 
@@ -6202,14 +6239,14 @@ function! FORMS_NODE_draw(tree, content, depth) dict
   else
     let l:display .= self.name
   endif
-call forms#log("FORMS_NODE_draw display='". l:display ."'")
+" call forms#log("FORMS_NODE_draw display='". l:display ."'")
   let dlen = len(l:display)
-call forms#log("FORMS_NODE_draw dlen=". dlen)
+" call forms#log("FORMS_NODE_draw dlen=". dlen)
   if dlen > a:tree.max_content_len
     let a:tree.max_content_len = dlen
   endif
 
-call forms#log("FORMS_NODE_draw a:tree.max_content_len=". a:tree.max_content_len)
+" call forms#log("FORMS_NODE_draw a:tree.max_content_len=". a:tree.max_content_len)
   let l:line  = [l:display, self]
   call add(a:content, l:line)
 
@@ -6303,10 +6340,13 @@ endfunction
 "                       'leaf-first'
 "   pos      : optional: position of an initially selected item 
 "   on_open_action       : Action called when non-leaf node is opened
+"                           parameters: tree, node
 "                           default: noop action
 "   on_close_action      : Action called when non-leaf node is closed
+"                           parameters: tree, node
 "                           default: noop action
 "   on_selection_action  : Action called when leaf node is selected
+"                           parameters: tree, node
 "                           default: noop action
 "
 "---------------------------------------------------------------------------
@@ -6332,8 +6372,8 @@ function! forms#loadForestViewerPrototype()
     let g:forms#ForestViewer.__offset = 0
     let g:forms#ForestViewer.__win_start = 0
 
-    function! FORMS_TREE_VIEWER_init(attrs) dict
-call forms#log("g:forms#ForestViewer.init ")
+    function! FORMS_FOREST_VIEWER_init(attrs) dict
+" call forms#log("g:forms#ForestViewer.init ")
       call call(g:forms#Leaf.init, [a:attrs], self)
 
       if self.__content_order != 'non-leaf-first'
@@ -6349,9 +6389,9 @@ call forms#log("g:forms#ForestViewer.init ")
       let self.__forest.match_case_sort = self.__match_case_sort
       let self.__forest.sort_direction = self.__sort_direction
       let self.__forest.content_order = self.__content_order
-      let self.__forest.on_open_action = self.__on_open_action
-      let self.__forest.on_close_action = self.__on_close_action
-      let self.__forest.on_selection_action = self.__on_selection_action
+      " let self.__forest.on_open_action = self.__on_open_action
+      " let self.__forest.on_close_action = self.__on_close_action
+      " let self.__forest.on_selection_action = self.__on_selection_action
 
       if self.__width <= 0
         throw "ForestViewer: width must be positive: ". self.__width 
@@ -6362,13 +6402,14 @@ call forms#log("g:forms#ForestViewer.init ")
 
       return self
     endfunction
-    let g:forms#ForestViewer.init = function("FORMS_TREE_VIEWER_init")
+    let g:forms#ForestViewer.init = function("FORMS_FOREST_VIEWER_init")
 
-    function! FORMS_TREE_VIEWER_reinit(attrs) dict
-call forms#log("g:forms#ForestViewer.reinit TOP")
+    function! FORMS_FOREST_VIEWER_reinit(attrs) dict
+" call forms#log("g:forms#ForestViewer.reinit TOP")
       let oldWidth = self.__width
       let oldHeight = self.__height
 
+      let self.__forest = {}
       let self.__pos = 0
       let self.__offset = 0
       let self.__width = 0
@@ -6390,14 +6431,14 @@ call forms#log("g:forms#ForestViewer.reinit TOP")
         call forms#PrependUniqueInput({'type': 'ReSize'})
       endif
     endfunction
-    let g:forms#ForestViewer.reinit = function("FORMS_TREE_VIEWER_reinit")
+    let g:forms#ForestViewer.reinit = function("FORMS_FOREST_VIEWER_reinit")
 
-    function! FORMS_TREE_VIEWER_canFocus() dict
+    function! FORMS_FOREST_VIEWER_canFocus() dict
       return (self.__status == g:IS_ENABLED)
     endfunction
-    let g:forms#ForestViewer.canFocus = function("FORMS_TREE_VIEWER_canFocus")
+    let g:forms#ForestViewer.canFocus = function("FORMS_FOREST_VIEWER_canFocus")
 
-    function! FORMS_TREE_VIEWER_hotspot() dict
+    function! FORMS_FOREST_VIEWER_hotspot() dict
 " call forms#log("g:forms#ForestViewer.hotspot TOP")
       if (self.__status == g:IS_ENABLED)
         let a = self.__allocation
@@ -6483,48 +6524,91 @@ else
 endif
       endif
     endfunction
-    let g:forms#ForestViewer.hotspot = function("FORMS_TREE_VIEWER_hotspot")
+    let g:forms#ForestViewer.hotspot = function("FORMS_FOREST_VIEWER_hotspot")
 
-    function! FORMS_TREE_VIEWER_flash() dict
-call forms#log("g:forms#ForestViewer.flash TOP")
+    function! FORMS_FOREST_VIEWER_flash() dict
+" call forms#log("g:forms#ForestViewer.flash TOP")
       if (self.__status == g:IS_ENABLED)
         call FlashRegion(self.__allocation)
       endif
     endfunction
-    let g:forms#ForestViewer.flash = function("FORMS_TREE_VIEWER_flash")
+    let g:forms#ForestViewer.flash = function("FORMS_FOREST_VIEWER_flash")
 
-    function! FORMS_TREE_VIEWER_addResults(results) dict
-call forms#log("g:forms#ForestViewer.addResults TOP")
+    function! FORMS_FOREST_VIEWER_addResults(results) dict
+" call forms#log("g:forms#ForestViewer.addResults TOP")
       " TOOD select none/one/multi nodes
     endfunction
-    let g:forms#ForestViewer.addResults = function("FORMS_TREE_VIEWER_addResults")
+    let g:forms#ForestViewer.addResults = function("FORMS_FOREST_VIEWER_addResults")
 
-    function! FORMS_TREE_VIEWER_requestedSize() dict
-call forms#log("g:forms#ForestViewer.requestedSize TOP")
+    function! FORMS_FOREST_VIEWER_requestedSize() dict
+" call forms#log("g:forms#ForestViewer.requestedSize TOP")
       if (self.__status == g:IS_INVISIBLE) 
         return [0,0]
       else
         return [self.__width, self.__height]
       endif
     endfunction
-    let g:forms#ForestViewer.requestedSize = function("FORMS_TREE_VIEWER_requestedSize")
+    let g:forms#ForestViewer.requestedSize = function("FORMS_FOREST_VIEWER_requestedSize")
 
-    function! FORMS_TREE_VIEWER_set_match_case_sort(n) dict
+    function! FORMS_FOREST_VIEWER_set_match_case_sort(n) dict
       let self.__match_case_sort = a:n
       let self.__forest.match_case_sort = self.__match_case_sort
       call self.__forest.changed()
     endfunction
-    let g:forms#ForestViewer.setMatchCaseSort = function("FORMS_TREE_VIEWER_set_match_case_sort")
+    let g:forms#ForestViewer.setMatchCaseSort = function("FORMS_FOREST_VIEWER_set_match_case_sort")
 
-    function! FORMS_TREE_VIEWER_set_sort_direction(n) dict
+    function! FORMS_FOREST_VIEWER_set_sort_direction(n) dict
       let self.__sort_direction = a:n
       let self.__forest.match_case_sort = self.__sort_direction
       call self.__forest.changed()
     endfunction
-    let g:forms#ForestViewer.setSortDirection = function("FORMS_TREE_VIEWER_set_sort_direction")
+    let g:forms#ForestViewer.setSortDirection = function("FORMS_FOREST_VIEWER_set_sort_direction")
 
-    function! FORMS_TREE_VIEWER_handleEvent(event) dict
-call forms#log("g:forms#ForestViewer.handleEvent TOP")
+    function! FORMS_FOREST_VIEWER_set_node(tree, node) dict
+" call forms#logforce("g:forms#ForestViewer.setNode TOP")
+      let tree = a:tree
+      let node = a:node
+      " TODO check that tree is member of trees
+
+if 0
+      if tree.current_path == path
+" call forms#logforce("g:forms#ForestViewer.setNode path EQUALS toggle")
+        let node = tree.toggle(path)
+      else
+" call forms#logforce("g:forms#ForestViewer.setNode path NOT EQUALS goto")
+        let node = tree.goto(path)
+      endif
+endif
+
+      let path = node.path
+
+      " find pos of new tree/node
+      let cnt = 0
+      let found = 0
+      let content = self.__forest.draw()
+      for [d, n] in content
+        if n.path == path
+          let found = 1
+          break
+        endif
+        let cnt += 1
+      endfor
+
+      if found
+        let self.__pos = cnt
+        call self.adjustWinStart()
+        call forms#ViewerRedrawListAdd(self)
+      else
+" call forms#logforce("g:forms#ForestViewer.setNode NODE PATH NOT FOUND")
+      endif
+
+" call forms#logforce("g:forms#ForestViewer.setNode BOTTOM")
+    endfunction
+    let g:forms#ForestViewer.setNode = function("FORMS_FOREST_VIEWER_set_node")
+
+    function! FORMS_FOREST_VIEWER_handleEvent(event) dict
+" call forms#log("g:forms#ForestViewer.handleEvent TOP")
+      let handled = 0
       if (self.__status == g:IS_ENABLED)
         let type = a:event.type
         if type == 'Select'
@@ -6532,10 +6616,14 @@ call forms#log("g:forms#ForestViewer.handleEvent TOP")
           let line = a:event.line
           let diff = line - a.line
           let pos = self.__win_start + diff
-          let self.__pos = pos
-          call self.handleSelection()
-          call forms#ViewerRedrawListAdd(self) 
-          return 1
+
+          let content = self.__forest.content
+          if pos < len(content)
+            let self.__pos = pos
+            call self.handleSelection()
+            call forms#ViewerRedrawListAdd(self) 
+          endif
+          let handled = 1
 if 0
         elseif type == 'SelectDobule'
           let a = self.__allocation
@@ -6546,20 +6634,22 @@ if 0
             call self.handleSelectionDouble()
             call forms#ViewerRedrawListAdd(self) 
           endif
+          let handled = 1
 endif
         endif
       endif
-      return 0
+" call forms#log("g:forms#ForestViewer.handleEvent BOTTOM handled=". handled)
+      return handled
     endfunction
-    let g:forms#ForestViewer.handleEvent = function("FORMS_TREE_VIEWER_handleEvent")
+    let g:forms#ForestViewer.handleEvent = function("FORMS_FOREST_VIEWER_handleEvent")
 
-    function! FORMS_TREE_VIEWER_handleChar(nr) dict
-call forms#log("g:forms#ForestViewer.handleChar TOP")
+    function! FORMS_FOREST_VIEWER_handleChar(nr) dict
+" call forms#log("g:forms#ForestViewer.handleChar TOP")
       let handled = 0
       if (self.__status == g:IS_ENABLED)
         let c = nr2char(a:nr)
-call forms#logforce("g:forms#ForestViewer.handleChar: nr=". a:nr)
-call forms#logforce("g:forms#ForestViewer.handleChar: c=". c)
+" call forms#logforce("g:forms#ForestViewer.handleChar: nr=". a:nr)
+" call forms#logforce("g:forms#ForestViewer.handleChar: c=". c)
         if a:nr == "\<Up>" || a:nr == "\<ScrollWheelUp>"
           if self.__pos == 0
             call self.flash()
@@ -6690,7 +6780,7 @@ call forms#logforce("g:forms#ForestViewer.handleChar: c=". c)
           let handled = 1
 
         elseif c == "\<CR>" || c == "\<Space>"
-call forms#logforce("g:forms#ForestViewer.handleChar: <CR>")
+" call forms#logforce("g:forms#ForestViewer.handleChar: <CR>")
           call self.handleSelection() 
           call forms#ViewerRedrawListAdd(self)
           let handled = 1
@@ -6702,12 +6792,12 @@ call forms#logforce("g:forms#ForestViewer.handleChar: <CR>")
         endif
       endif
 
-call forms#logforce("g:forms#ForestViewer.handleChar: BOTTOM handled=". handled)
+" call forms#logforce("g:forms#ForestViewer.handleChar: BOTTOM handled=". handled)
       return handled
     endfunction
-    let g:forms#ForestViewer.handleChar = function("FORMS_TREE_VIEWER_handleChar")
+    let g:forms#ForestViewer.handleChar = function("FORMS_FOREST_VIEWER_handleChar")
 
-    function! FORMS_TREE_VIEWER_adjustWinStart() dict
+    function! FORMS_FOREST_VIEWER_adjustWinStart() dict
       let needs_redraw = 0
       let height = self.__height
       let pos = self.__pos
@@ -6726,47 +6816,80 @@ call forms#logforce("g:forms#ForestViewer.handleChar: BOTTOM handled=". handled)
 
       return needs_redraw
     endfunction
-    let g:forms#ForestViewer.adjustWinStart = function("FORMS_TREE_VIEWER_adjustWinStart")
+    let g:forms#ForestViewer.adjustWinStart = function("FORMS_FOREST_VIEWER_adjustWinStart")
 
-    function! FORMS_TREE_VIEWER_handleSelection() dict
-call forms#logforce("g:forms#ForestViewer.handleSelection TOP")
+    function! FORMS_FOREST_VIEWER_handleSelection() dict
+" call forms#logforce("g:forms#ForestViewer.handleSelection TOP")
       let pos = self.__pos
       let content = self.__forest.content
       let trees = self.__forest.trees 
       let [display, node] = content[pos]
       let path = node.path
-call forms#logforce("g:forms#ForestViewer.handleSelection pos=". pos)
-call forms#logforce("g:forms#ForestViewer.handleSelection display=". display)
-call forms#logforce("g:forms#ForestViewer.handleSelection path=". string(path))
+" call forms#logforce("g:forms#ForestViewer.handleSelection pos=". pos)
+" call forms#logforce("g:forms#ForestViewer.handleSelection display=". display)
+" call forms#logforce("g:forms#ForestViewer.handleSelection path=". string(path))
 
       " path should include the top path of one of the trees
+      let max_m = -1
       for key in keys(trees)
         let t = trees[key]
         let top_path = t.node.path
 " call forms#logforce("g:forms#ForestViewer.handleSelection top_path=". string(top_path))
-        if s:contains(top_path, path)
+        let m = s:contains(top_path, path)
+        if m != 0 && m > max_m
+          let max_m = m
           let tree = t
-          break
         endif
       endfor
 
       if ! exists("tree")
-" call forms#logforce("g:forms#ForestViewer.handleSelection FAILED TO FIND TREE")
+        throw "Could not find tree with path: " . string(path)
       endif
+
+" call forms#logforce("g:forms#ForestViewer.handleSelection tree.current_path=". string(tree.current_path))
+" call forms#logforce("g:forms#ForestViewer.handleSelection path=". string(path))
 
       if tree.current_path == path
-call forms#logforce("g:forms#ForestViewer.handleSelection path EQUALS toggle")
-        call tree.toggle(path)
+" call forms#logforce("g:forms#ForestViewer.handleSelection path EQUALS toggle")
+        let node = tree.toggle(path)
       else
-call forms#logforce("g:forms#ForestViewer.handleSelection path NOT EQUALS goto")
-        call tree.goto(path)
+" call forms#logforce("g:forms#ForestViewer.handleSelection path NOT EQUALS goto")
+        let node = tree.goto(path)
       endif
 
-    endfunction
-    let g:forms#ForestViewer.handleSelection = function("FORMS_TREE_VIEWER_handleSelection")
+      call self.doAction(tree, node)
 
-    function! FORMS_TREE_VIEWER_draw(allocation) dict
-call forms#log("g:forms#ForestViewer.draw TOP")
+    endfunction
+    let g:forms#ForestViewer.handleSelection = function("FORMS_FOREST_VIEWER_handleSelection")
+
+    function! FORMS_FOREST_VIEWER_do_action(tree, node) dict
+      let tree = a:tree
+      let node = a:node
+      " XXXXXXXXXXXXXXXXXXXXXXXXX
+      if type(node.children) == g:self#NUMBER_TYPE
+        if node.children
+          " non leaf
+          if node.is_open
+            call self.__on_open_action.execute(tree, node)
+          else
+            call self.__on_close_action.execute(tree, node)
+          endif
+        else
+          " leaf
+          call self.__on_selection_action.execute(tree, node)
+        endif
+      else
+        if node.is_open
+          call self.__on_open_action.execute(tree, node)
+        else
+          call self.__on_close_action.execute(tree, node)
+        endif
+      endif
+    endfunction
+    let g:forms#ForestViewer.doAction = function("FORMS_FOREST_VIEWER_do_action")
+
+    function! FORMS_FOREST_VIEWER_draw(allocation) dict
+" call forms#log("g:forms#ForestViewer.draw TOP")
       let self.__allocation = a:allocation
       let a = a:allocation
 
@@ -6783,18 +6906,18 @@ call forms#log("g:forms#ForestViewer.draw TOP")
         let max_content_len = self.__forest.max_content_len
         let clen = len(content)
 
-call forms#log("g:forms#ForestViewer.draw height=". height)
-call forms#log("g:forms#ForestViewer.draw clen=". clen)
-call forms#log("g:forms#ForestViewer.draw pos=". pos)
-call forms#log("g:forms#ForestViewer.draw offset=". offset)
-call forms#log("g:forms#ForestViewer.draw win_start=". win_start)
-call forms#log("g:forms#ForestViewer.draw max_content_len=". max_content_len)
+" call forms#log("g:forms#ForestViewer.draw height=". height)
+" call forms#log("g:forms#ForestViewer.draw clen=". clen)
+" call forms#log("g:forms#ForestViewer.draw pos=". pos)
+" call forms#log("g:forms#ForestViewer.draw offset=". offset)
+" call forms#log("g:forms#ForestViewer.draw win_start=". win_start)
+" call forms#log("g:forms#ForestViewer.draw max_content_len=". max_content_len)
         let xlen = clen-win_start
-call forms#log("g:forms#ForestViewer.draw xlen=". xlen)
+" call forms#log("g:forms#ForestViewer.draw xlen=". xlen)
 
         " let nc = clen >= height ? height : clen
         let nc = xlen >= height ? height : xlen
-call forms#log("g:forms#ForestViewer.draw nc=". nc)
+" call forms#log("g:forms#ForestViewer.draw nc=". nc)
 if offset == 0
         let cnt = 0
         while cnt < nc
@@ -6813,7 +6936,7 @@ if offset == 0
 
           let cnt += 1
         endwhile
-call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
+" call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
 
         if height > xlen
           let ws = repeat(' ', width)
@@ -6822,7 +6945,7 @@ call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
             let cnt += 1
           endwhile
         endif
-call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
+" call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
 
 else
         let cnt = 0
@@ -6846,7 +6969,7 @@ else
 
           let cnt += 1
         endwhile
-call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
+" call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
 
         if height > xlen
           let ws = repeat(' ', width)
@@ -6855,7 +6978,7 @@ call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
             let cnt += 1
           endwhile
         endif
-call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
+" call forms#log("g:forms#ForestViewer.draw cnt=". cnt)
 endif
 
       endif
@@ -6863,15 +6986,15 @@ endif
         call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
       endif                     
     endfunction
-    let g:forms#ForestViewer.draw = function("FORMS_TREE_VIEWER_draw")
+    let g:forms#ForestViewer.draw = function("FORMS_FOREST_VIEWER_draw")
 
-    function! FORMS_TREE_VIEWER_usage() dict
+    function! FORMS_FOREST_VIEWER_usage() dict
       return [
            \ "A ForestViewer is a multi-line editor a fixed display",
            \ "  click."
            \ ]
     endfunction
-    let g:forms#ForestViewer.usage = function("FORMS_TREE_VIEWER_usage")
+    let g:forms#ForestViewer.usage = function("FORMS_FOREST_VIEWER_usage")
 
   endif
 
@@ -6879,6 +7002,801 @@ endif
 endfunction
 function! forms#newForestViewer(attrs)
   return forms#loadForestViewerPrototype().clone().init(a:attrs)
+endfunction
+
+"---------------------------------------------------------------------------
+" NodeViewer <- Leaf: {{{2
+"---------------------------------------------------------------------------
+" Node data viewer
+"
+" attributes
+"   width    : Number: Width of Glyph
+"   height   : Number: Height of Glyph
+"   top_node_full_name  : Number: 1 (default) top node draws full name
+"                           0 top node only gives last path name
+"   match_case_sort   : Number: sort 1 match case (default), 0 ignore case
+"   sort_direction    : Number: sort 0 as sorted (default), 1 reverse sort
+"   content_order     : String: display order of nodes
+"                       'non-leaf-first' (default), 
+"                       'mixed' or 
+"                       'leaf-first'
+"   pos      : optional: position of an initially selected item 
+"   on_open_action       : Action called when non-leaf node is opened
+"                           parameters: tree, node
+"                           default: noop action
+"   on_close_action      : Action called when non-leaf node is closed
+"                           parameters: tree, node
+"                           default: noop action
+"   on_selection_action  : Action called when leaf node is selected
+"                           parameters: tree, node
+"                           default: noop action
+"
+"---------------------------------------------------------------------------
+if g:self#IN_DEVELOPMENT_MODE
+  if exists("g:forms#NodeViewer")
+    unlet g:forms#NodeViewer
+  endif
+endif
+function! forms#loadNodeViewerPrototype()
+  if !exists("g:forms#NodeViewer")
+    let g:forms#NodeViewer = forms#loadLeafPrototype().clone('forms#NodeViewer')
+    let g:forms#NodeViewer.__tree = {}
+    let g:forms#NodeViewer.__node = {}
+    let g:forms#NodeViewer.__width = 0
+    let g:forms#NodeViewer.__height = 0
+    let g:forms#NodeViewer.__top_node_full_name = 1
+    let g:forms#NodeViewer.__match_case_sort = 0
+    let g:forms#NodeViewer.__sort_direction = 0
+    let g:forms#NodeViewer.__content_order = 'non-leaf-first'
+    let g:forms#NodeViewer.__on_open_action = g:forms_Util.emptyAction()
+    let g:forms#NodeViewer.__on_close_action = g:forms_Util.emptyAction()
+    let g:forms#NodeViewer.__on_selection_action = g:forms_Util.emptyAction()
+    let g:forms#NodeViewer.__pos = 0
+    let g:forms#NodeViewer.__offset = 0
+    let g:forms#NodeViewer.__win_start = 0
+    let g:forms#NodeViewer.__changed = 0
+    let g:forms#NodeViewer.__max_content_len = -1
+    let g:forms#NodeViewer.__content = []
+
+    function! FORMS_NODE_VIEWER_init(attrs) dict
+" call forms#log("g:forms#NodeViewer.init ")
+      call call(g:forms#Leaf.init, [a:attrs], self)
+
+      if self.__content_order != 'non-leaf-first'
+            \ && self.__content_order != 'mixed'
+            \ && self.__content_order != 'leaf-first'
+        throw "NodeViewer: bad content_order: ". self.__content_order
+      endif
+      if self.__tree == {}
+        throw "NodeViewer: empty tree"
+      endif
+      if self.__node == {}
+        throw "NodeViewer: empty node"
+      endif
+      " TOOD make sure node belongs to tree
+
+      if self.__width <= 0
+        throw "NodeViewer: width must be positive: ". self.__width 
+      endif
+      if self.__height <= 0
+        throw "NodeViewer: height must be positive: ". self.__height 
+      endif
+
+      return self
+    endfunction
+    let g:forms#NodeViewer.init = function("FORMS_NODE_VIEWER_init")
+
+    function! FORMS_NODE_VIEWER_reinit(attrs) dict
+" call forms#log("g:forms#NodeViewer.reinit TOP")
+      let oldWidth = self.__width
+      let oldHeight = self.__height
+
+      let self.__tree = {}
+      let self.__node = {}
+      let self.__pos = 0
+      let self.__offset = 0
+      let self.__width = 0
+      let self.__height = 0
+      let self.__top_node_full_name = 1
+      let self.__match_case_sort = 0
+      let self.__sort_direction = 0
+      let self.__content_order = 'non-leaf-first'
+      let self.__on_open_action = g:forms_Util.emptyAction()
+      let self.__on_close_action = g:forms_Util.emptyAction()
+      let self.__on_selection_action = g:forms_Util.emptyAction()
+      let self.__win_start = 0
+      let self.__changed = 0
+      let self.__max_content_len = -1
+
+      call call(g:forms#Leaf.reinit, [a:attrs], self)
+
+      if oldWidth != self.__width
+        call forms#PrependUniqueInput({'type': 'ReSize'})
+      elseif oldHeight != self.__height
+        call forms#PrependUniqueInput({'type': 'ReSize'})
+      endif
+    endfunction
+    let g:forms#NodeViewer.reinit = function("FORMS_NODE_VIEWER_reinit")
+
+    function! FORMS_NODE_VIEWER_canFocus() dict
+      return (self.__status == g:IS_ENABLED)
+    endfunction
+    let g:forms#NodeViewer.canFocus = function("FORMS_NODE_VIEWER_canFocus")
+
+    function! FORMS_NODE_VIEWER_hotspot() dict
+" call forms#log("g:forms#NodeViewer.hotspot TOP")
+      if (self.__status == g:IS_ENABLED)
+        let a = self.__allocation
+        let line = a.line
+        let column = a.column
+        let width = a.width
+        let pos = self.__pos
+        let offset = self.__offset
+        let win_start = self.__win_start
+        let content = self.__content
+" call forms#log("g:forms#NodeViewer.hotspot pos=". pos)
+" call forms#log("g:forms#NodeViewer.hotspot content=". string(content))
+
+if offset == 0
+        let text = content[pos][0]
+        let tlen = len(text)
+        let cnt = 0
+        while cnt < tlen
+          let c = text[cnt]
+" call forms#log("g:forms#NodeViewer.hotspot cnt=". cnt .", c='". c ."'")
+          if c != ' '
+            if c != '-' && c != '+'
+              let cnt -= 2
+            endif
+            break
+          endif
+            
+          let cnt += 1
+        endwhile
+
+        call HotSpot(line+pos-win_start, column+cnt)
+else
+" call forms#log("g:forms#NodeViewer.hotspot offset=". offset)
+        let text = content[pos][0]
+        let tlen = len(text) - offset
+
+        if tlen <= 0
+          let cnt = 0
+        else
+          let cnt = offset
+          let not_space = 0
+          while cnt < tlen
+            let c = text[cnt]
+" call forms#log("g:forms#NodeViewer.hotspot cnt=". cnt .", c='". c ."'")
+            if c != ' '
+              let not_space = 1
+              break
+            endif
+
+            let cnt += 1
+          endwhile
+
+" call forms#log("g:forms#NodeViewer.hotspot not_space=". not_space)
+          if not_space
+            let c = text[cnt]
+            if c != '-' && c != '+'
+              let cnt -= 2
+            endif
+          else
+            " only space so far
+            while cnt < tlen
+              let c = text[cnt]
+              if c != ' '
+                if c != '-' && c != '+'
+                  let cnt -= 2
+                endif
+                break
+              endif
+            
+              let cnt += 1
+            endwhile
+          endif
+
+          let cnt -= offset
+          if cnt < 0
+            let cnt = 0
+          endif
+
+" call forms#log("g:forms#NodeViewer.hotspot cnt=". cnt)
+
+        endif
+
+
+        call HotSpot(line+pos-win_start, column+cnt)
+endif
+      endif
+    endfunction
+    let g:forms#NodeViewer.hotspot = function("FORMS_NODE_VIEWER_hotspot")
+
+    function! FORMS_NODE_VIEWER_flash() dict
+" call forms#log("g:forms#NodeViewer.flash TOP")
+      if (self.__status == g:IS_ENABLED)
+        call FlashRegion(self.__allocation)
+      endif
+    endfunction
+    let g:forms#NodeViewer.flash = function("FORMS_NODE_VIEWER_flash")
+
+    function! FORMS_NODE_VIEWER_addResults(results) dict
+" call forms#log("g:forms#NodeViewer.addResults TOP")
+      " TOOD select none/one/multi nodes
+    endfunction
+    let g:forms#NodeViewer.addResults = function("FORMS_NODE_VIEWER_addResults")
+
+    function! FORMS_NODE_VIEWER_requestedSize() dict
+" call forms#log("g:forms#NodeViewer.requestedSize TOP")
+      if (self.__status == g:IS_INVISIBLE) 
+        return [0,0]
+      else
+        return [self.__width, self.__height]
+      endif
+    endfunction
+    let g:forms#NodeViewer.requestedSize = function("FORMS_NODE_VIEWER_requestedSize")
+
+    function! FORMS_NODE_VIEWER_set_match_case_sort(n) dict
+      let self.__match_case_sort = a:n
+      let self.__changed = 1
+    endfunction
+    let g:forms#NodeViewer.setMatchCaseSort = function("FORMS_NODE_VIEWER_set_match_case_sort")
+
+    function! FORMS_NODE_VIEWER_set_node(tree, node, is_slave) dict
+" call forms#log("g:forms#NodeViewer.set_node TOP")
+      let self.__tree = a:tree
+      let self.__node = a:node
+" call forms#log("g:forms#NodeViewer.set_node path=". string(a:node.path))
+
+      let self.__tree.current_path = a:node.path
+      let self.__pos = 0
+      let self.__changed = 1
+
+      if ! a:is_slave
+        call a:tree.toggle(a:node.path)
+        call a:node.update(a:tree)
+      endif
+
+      call forms#ViewerRedrawListAdd(self) 
+
+" call forms#log("g:forms#NodeViewer.set_node BOTTOM")
+    endfunction
+    let g:forms#NodeViewer.setNode = function("FORMS_NODE_VIEWER_set_node")
+
+    function! FORMS_NODE_VIEWER_set_sort_direction(n) dict
+      let self.__sort_direction = a:n
+      let self.__changed = 1
+    endfunction
+    let g:forms#NodeViewer.setSortDirection = function("FORMS_NODE_VIEWER_set_sort_direction")
+
+    function! FORMS_NODE_VIEWER_handleEvent(event) dict
+" call forms#log("g:forms#NodeViewer.handleEvent TOP")
+      let handled = 0
+      if (self.__status == g:IS_ENABLED)
+        let type = a:event.type
+        if type == 'Select'
+          let a = self.__allocation
+          let content = self.__content
+          let line = a:event.line
+          let diff = line - a.line
+          let pos = self.__win_start + diff
+          if pos < len(content)
+            let self.__pos = pos
+            call self.handleSelection()
+            call forms#ViewerRedrawListAdd(self) 
+          endif
+          let handled = 1
+if 0
+        elseif type == 'SelectDobule'
+          let a = self.__allocation
+          let line = a:event.line
+          let diff = line - a.line
+          let pos = self.__win_start + diff
+          if pos == self.__pos
+            call self.handleSelectionDouble()
+            call forms#ViewerRedrawListAdd(self) 
+          endif
+          let handled = 1
+endif
+        endif
+      endif
+" call forms#log("g:forms#NodeViewer.handleEvent BOTTOM")
+      return handled
+    endfunction
+    let g:forms#NodeViewer.handleEvent = function("FORMS_NODE_VIEWER_handleEvent")
+
+    function! FORMS_NODE_VIEWER_handleChar(nr) dict
+" call forms#log("g:forms#NodeViewer.handleChar TOP")
+      let handled = 0
+      if (self.__status == g:IS_ENABLED)
+        let c = nr2char(a:nr)
+" call forms#logforce("g:forms#NodeViewer.handleChar: nr=". a:nr)
+" call forms#logforce("g:forms#NodeViewer.handleChar: c=". c)
+        if a:nr == "\<Up>" || a:nr == "\<ScrollWheelUp>"
+          if self.__pos == 0
+            call self.flash()
+          else
+            let self.__pos -= 1
+           " call forms#ViewerRedrawListAdd(self) 
+          endif
+          let handled = 1
+
+        elseif a:nr == "\<Left>" || a:nr == "\<ScrollWheelLeft>" 
+          if self.__offset == 0
+            call self.flash()
+          else
+            let self.__offset -= 1
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<S-Left>" || a:nr == "\<S-ScrollWheelLeft>"
+          if self.__offset == 0
+            call self.flash()
+          else
+            let a = self.__allocation
+            let width = a.width
+            let d = width/4
+            let self.__offset -= d
+            if self.__offset < 0
+              let self.__offset = 0
+            endif
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<C-Left>" || a:nr == "\<C-ScrollWheelLeft>"
+          if self.__offset == 0
+            call self.flash()
+          else
+            let a = self.__allocation
+            let width = a.width
+            let d = width/2
+            let self.__offset -= d
+            if self.__offset < 0
+              let self.__offset = 0
+            endif
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<Right>" || a:nr == "\<ScrollWheelRight>" 
+          let max_content_len = self.__max_content_len
+          if self.__offset == max_content_len - 1
+            call self.flash()
+          else
+            let self.__offset += 1
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<S-Right>" || a:nr == "\<S-ScrollWheelRight>"
+          let max_content_len = self.__max_content_len
+          if self.__offset == max_content_len - 1
+            call self.flash()
+          else
+            let a = self.__allocation
+            let width = a.width
+            let d = width/4
+            let self.__offset += d
+            if self.__offset >= max_content_len - 1
+              let self.__offset = max_content_len - 1
+            endif
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<C-Right>" || a:nr == "\<C-ScrollWheelRight>"
+          let max_content_len = self.__max_content_len
+          if self.__offset == max_content_len - 1
+            call self.flash()
+          else
+            let a = self.__allocation
+            let width = a.width
+            let d = width/2
+            let self.__offset += d
+            if self.__offset >= max_content_len - 1
+              let self.__offset = max_content_len - 1
+            endif
+          endif
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<Down>" || a:nr == "\<ScrollWheelDown>"
+          let content = self.__content
+" return [display, node]
+          if self.__pos == len(content) - 1
+            call self.flash()
+          else
+            let self.__pos += 1
+            " call forms#ViewerRedrawListAdd(self) 
+          endif
+          let handled = 1
+
+        elseif a:nr == "\<PageDown>" || 
+            \ a:nr == "\<S-ScrollWheelDown>" ||
+            \ a:nr == "\<C-ScrollWheelDown>"
+          let content = self.__content
+          let nchoices = len(content)
+          if self.__pos == nchoices - 1
+            call self.flash()
+          else
+            let self.__pos += self.__height
+            if self.__pos >= nchoices
+              let self.__pos = nchoices - 1
+            endif
+          endif
+          let handled = 1
+
+        elseif a:nr == "\<PageUp>" ||
+            \ a:nr == "\<S-ScrollWheelUp>" ||
+            \ a:nr == "\<C-ScrollWheelUp>"
+          if self.__pos == 0
+            call self.flash()
+          else
+            let self.__pos -= self.__height
+            if self.__pos < 0
+              let self.__pos = 0
+            endif
+          endif
+          let handled = 1
+
+        elseif c == "\<CR>" || c == "\<Space>"
+" call forms#logforce("g:forms#NodeViewer.handleChar: <CR>")
+          call self.handleSelection() 
+          call forms#ViewerRedrawListAdd(self)
+          let handled = 1
+
+        elseif a:nr == "\<Del>" || a:nr == "\<BS>"
+" call forms#logforce("g:forms#NodeViewer.handleChar: <BS>")
+          let tree = self.__tree
+          let node = self.__node
+" call forms#logforce("g:forms#NodeViewer.handleChar: node.path=". string(node.path))
+          let tplen = len(tree.node.path)
+          let nplen = len(node.path)
+          if nplen > tplen
+            let parent_path = node.path[ : (nplen-2)]
+" call forms#logforce("g:forms#NodeViewer.handleChar: parent_path=". string(parent_path))
+            if parent_path == tree.node.path
+" call forms#logforce("g:forms#NodeViewer.handleChar: goto top")
+              call self.setNode(tree, tree.node, 0)
+              let node = tree.node
+              " call forms#ViewerRedrawListAdd(self) 
+            else
+              let [found, parent_node] = tree.lookupChild(parent_path)
+" call forms#logforce("g:forms#NodeViewer.handleChar: lookupChild found=". found)
+              if found
+" call forms#logforce("g:forms#NodeViewer.handleChar: parent_node.path=". string(parent_node.path))
+                call self.setNode(tree, parent_node, 0)
+                let node = tree.toggle(parent_path)
+                " call forms#ViewerRedrawListAdd(self) 
+              else
+                call forms#log(parent_node)
+              endif
+            endif
+          endif
+
+          call self.doAction(tree, node)
+
+          let handled = 1
+
+        endif
+
+        let needs_redraw = self.adjustWinStart()
+        if needs_redraw
+          call forms#ViewerRedrawListAdd(self)
+        endif
+      endif
+
+" call forms#logforce("g:forms#NodeViewer.handleChar: BOTTOM handled=". handled)
+      return handled
+    endfunction
+    let g:forms#NodeViewer.handleChar = function("FORMS_NODE_VIEWER_handleChar")
+
+    function! FORMS_NODE_VIEWER_adjustWinStart() dict
+      let needs_redraw = 0
+      let height = self.__height
+      let pos = self.__pos
+
+      if pos >= self.__win_start + height
+        while pos >= self.__win_start + height
+          let self.__win_start += 1
+          let needs_redraw = 1
+        endwhile
+      elseif self.__win_start > 0 && pos < self.__win_start
+        while self.__win_start > 0 && pos < self.__win_start
+          let self.__win_start -= 1
+          let needs_redraw = 1
+        endwhile
+      endif
+
+      return needs_redraw
+    endfunction
+    let g:forms#NodeViewer.adjustWinStart = function("FORMS_NODE_VIEWER_adjustWinStart")
+
+    function! FORMS_NODE_VIEWER_handleSelection() dict
+" call forms#logforce("g:forms#NodeViewer.handleSelection TOP")
+      let pos = self.__pos
+      let content = self.__content
+      let tree = self.__tree
+      let [display, node] = content[pos]
+      let path = node.path
+" call forms#logforce("g:forms#NodeViewer.handleSelection pos=". pos)
+" call forms#logforce("g:forms#NodeViewer.handleSelection display=". display)
+" call forms#logforce("g:forms#NodeViewer.handleSelection path=". string(path))
+" call forms#logforce("g:forms#NodeViewer.handleSelection tree.current_path=". string(tree.current_path))
+
+      if tree.current_path == path
+" call forms#logforce("g:forms#NodeViewer.handleSelection path EQUALS toggle")
+        call tree.toggle(path)
+      else
+" call forms#logforce("g:forms#NodeViewer.handleSelection path NOT EQUALS setNode")
+        " call tree.goto(path)
+        call self.setNode(tree, node, 0)
+      endif
+
+      call self.doAction(tree, node)
+
+    endfunction
+    let g:forms#NodeViewer.handleSelection = function("FORMS_NODE_VIEWER_handleSelection")
+
+    function! FORMS_NODE_VIEWER_do_action(tree, node) dict
+      " XXXXXXXXXXXXXXXXXXXXXXXXX
+      let tree = a:tree
+      let node = a:node
+      if type(node.children) == g:self#NUMBER_TYPE
+        if node.children
+          " non leaf
+          if node.is_open
+            call self.__on_open_action.execute(tree, node)
+          else
+            call self.__on_close_action.execute(tree, node)
+          endif
+        else
+          " leaf
+          call self.__on_selection_action.execute(tree, node)
+        endif
+      else
+        if node.is_open
+          call self.__on_open_action.execute(tree, node)
+        else
+          call self.__on_close_action.execute(tree, node)
+        endif
+      endif
+    endfunction
+    let g:forms#NodeViewer.doAction = function("FORMS_NODE_VIEWER_do_action")
+
+    function! FORMS_NODE_VIEWER_draw(allocation) dict
+" call forms#log("g:forms#NodeViewer.draw TOP")
+      let self.__allocation = a:allocation
+      let a = a:allocation
+
+      if self.__status != g:IS_INVISIBLE
+        let line = a.line
+        let column = a.column
+        let width = a.width
+        let height = a.height
+        let pos = self.__pos
+        let offset = self.__offset
+        let win_start = self.__win_start
+
+        let content = self.drawNode(self.__node, 1)
+        let max_content_len = self.__max_content_len
+        let clen = len(content)
+
+" call forms#log("g:forms#NodeViewer.draw height=". height)
+" call forms#log("g:forms#NodeViewer.draw clen=". clen)
+" call forms#log("g:forms#NodeViewer.draw pos=". pos)
+" call forms#log("g:forms#NodeViewer.draw offset=". offset)
+" call forms#log("g:forms#NodeViewer.draw win_start=". win_start)
+" call forms#log("g:forms#NodeViewer.draw max_content_len=". max_content_len)
+        let xlen = clen-win_start
+" call forms#log("g:forms#NodeViewer.draw xlen=". xlen)
+
+        " let nc = clen >= height ? height : clen
+        let nc = xlen >= height ? height : xlen
+" call forms#log("g:forms#NodeViewer.draw nc=". nc)
+if offset == 0
+        let cnt = 0
+        while cnt < nc
+          let [text, node] = content[cnt+win_start]
+          let tlen = len(text)
+          if tlen == width
+            call forms#SetStringAt(text, line+cnt, column)
+          elseif tlen < width
+            let diff = width - tlen
+            call forms#SetStringAt(text, line+cnt, column)
+            call forms#SetStringAt(repeat(' ', diff), line+cnt, column+tlen)
+          else
+            let text = strpart(text, 0, width)
+            call forms#SetStringAt(text, line+cnt, column)
+          endif
+
+          let cnt += 1
+        endwhile
+" call forms#log("g:forms#NodeViewer.draw cnt=". cnt)
+
+        if height > xlen
+          let ws = repeat(' ', width)
+          while cnt < height
+            call forms#SetStringAt(ws, line+cnt, column)
+            let cnt += 1
+          endwhile
+        endif
+" call forms#log("g:forms#NodeViewer.draw cnt=". cnt)
+
+else
+        let cnt = 0
+        while cnt < nc
+          let [text, node] = content[cnt+win_start]
+          let tlen = len(text) - offset
+          if tlen <= 0
+            call forms#SetStringAt(repeat(' ', width), line+cnt, column)
+          elseif tlen == width
+            let text = strpart(text, offset)
+            call forms#SetStringAt(text, line+cnt, column)
+          elseif tlen < width
+            let diff = width - tlen
+            let text = strpart(text, offset)
+            call forms#SetStringAt(text, line+cnt, column)
+            call forms#SetStringAt(repeat(' ', diff), line+cnt, column+tlen)
+          else
+            let text = strpart(text, offset, width)
+            call forms#SetStringAt(text, line+cnt, column)
+          endif
+
+          let cnt += 1
+        endwhile
+" call forms#log("g:forms#NodeViewer.draw cnt=". cnt)
+
+        if height > xlen
+          let ws = repeat(' ', width)
+          while cnt < height
+            call forms#SetStringAt(ws, line+cnt, column)
+            let cnt += 1
+          endwhile
+        endif
+" call forms#log("g:forms#NodeViewer.draw cnt=". cnt)
+endif
+
+        let self.__content = content
+      endif
+      if self.__status == g:IS_DISABLED
+        call AugmentGlyphHilight(self, "DisableFORMS_HL", a)
+      endif                     
+    endfunction
+    let g:forms#NodeViewer.draw = function("FORMS_NODE_VIEWER_draw")
+
+    function! FORMS_NODE_VIEWER_drawNode(node, toplevel) dict
+"call forms#log("FORMS_NODE_VIEWER_drawNode TOP")
+      let content = []
+      let tree = self.__tree
+      let node = a:node
+"call forms#log("FORMS_NODE_VIEWER_drawNode name=". node.name)
+      let children = node.children
+"call forms#log("FORMS_NODE_VIEWER_drawNode children=". string(children))
+
+      let l:display = a:toplevel ? '' : '  '
+
+      if type(children) == g:self#NUMBER_TYPE
+        if children
+          " non leaf
+          let l:display .= '+ '
+        else
+          " leaf
+          let l:display .= '  '
+        endif
+      else
+        if node.is_open
+          let l:display .= '- '
+        else
+          let l:display .= '+ '
+        endif
+      endif
+
+      if self.__top_node_full_name
+        let l:display .= tree.forest.pathToString(node.path)
+      else
+        let l:display .= node.name
+      endif
+
+"call forms#log("FORMS_NODE_VIEWER_drawNode display='". l:display ."'")
+      let dlen = len(l:display)
+"call forms#log("FORMS_NODE_VIEWER_drawNode dlen=". dlen)
+      if a:toplevel
+        let self.__max_content_len = dlen
+      endif
+
+"call forms#log("FORMS_NODE_VIEWER_drawNode max_content_len=". self.__max_content_len)
+      let l:line  = [l:display, node]
+      call add(content, l:line)
+
+      if a:toplevel
+        if type(children) == g:self#NUMBER_TYPE 
+          if children
+            call node.update(tree)
+          endif
+        endif
+
+        if type(children) == g:self#DICTIONARY_TYPE && node.is_open
+         
+          let keys = self.__match_case_sort
+                \ ? sort(keys(children), "s:MatchCaseSortCompare")
+                \ : sort(keys(children), "s:IgnoreCaseSortCompare")
+
+          if self.__sort_direction
+            call reverse(keys)
+          endif
+
+          if self.__content_order == 'non-leaf-first'
+            " non-leaf: Dictionary or Number == 1
+            for key in keys
+              let child = children[key]
+              if type(child.children) == g:self#DICTIONARY_TYPE || child.children == 1
+                let c = self.drawNode(child, 0)
+                call extend(content, c)
+              endif
+            endfor
+
+            " leaf: Number == 0
+            for key in keys
+              let child = children[key]
+              if type(child.children) == g:self#NUMBER_TYPE && child.children == 0
+                let c = self.drawNode(child, 0)
+                call extend(content, c)
+              endif
+            endfor
+
+          elseif a:tree.forest.content_order == 'leaf-first'
+            " leaf: Number == 0
+            for key in keys
+              let child = children[key]
+              if type(child.children) == g:self#NUMBER_TYPE && child.children == 0
+                let c = self.drawNode(child, 0)
+                call extend(content, c)
+              endif
+            endfor
+
+            " non-leaf: Dictionary or Number == 1
+            for key in keys
+              let child = children[key]
+              if type(child.children) == g:self#DICTIONARY_TYPE || child.children == 1
+                let c = self.drawNode(child, 0)
+                call extend(content, c)
+              endif
+            endfor
+
+          else " 'mixed'
+            for key in keys
+              let child = children[key]
+              let c = self.drawNode(child, 0)
+              call extend(content, c)
+            endfor
+          endif
+
+        endif
+      endif
+
+"call forms#log("FORMS_NODE_VIEWER_drawNode BOTTOM name=". node.name)
+      return content
+    endfunction
+    let g:forms#NodeViewer.drawNode = function("FORMS_NODE_VIEWER_drawNode")
+
+    function! FORMS_NODE_VIEWER_usage() dict
+      return [
+           \ "A NodeViewer is a multi-line editor a fixed display",
+           \ "  click."
+           \ ]
+    endfunction
+    let g:forms#NodeViewer.usage = function("FORMS_NODE_VIEWER_usage")
+
+  endif
+
+  return g:forms#NodeViewer
+endfunction
+function! forms#newNodeViewer(attrs)
+  return forms#loadNodeViewerPrototype().clone().init(a:attrs)
 endfunction
 
 "---------------------------------------------------------------------------
@@ -10701,7 +11619,7 @@ function! forms#loadFormPrototype()
         " that supports box-drawing and block uft-8 characters
         if has("gui_running")
           let l:save_gui_font = &guifont
-          let &guifont = g:forms_gui_font
+          " let &guifont = g:forms_gui_font
         endif
 
 " let save_cursor = getpos(".")
