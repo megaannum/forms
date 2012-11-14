@@ -1,7 +1,7 @@
 *forms.txt*          For Vim version 7.3              Last change: 2012 Oct  9
 
 Author:      Richard Emberson 
-Version:     1.19
+Version:     1.20
 Title:       Forms Library
 Homepage:    TODO
 
@@ -618,6 +618,12 @@ designed to interact with the user (i.e., accept user input).
             Similar to Text but all lines must be the same length.
         SelectList ~
             A list of selections.
+        ForestViewer ~
+            View one or more Trees. A Tree is a hierarchy of Nodes.
+	    Can be used by itself or with a companion NodeViewer.
+        NodeViewer ~
+            View a given Node.
+	    Can be used by itself or with a companion ForestViewer.
         PopDownList ~
             A pop down list of selections in a menu.
         HSlider ~
@@ -1056,6 +1062,11 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.20   - Fix: ~
+    Forms Label checks that 'text' is String or Number.
+    Add 'hide' method to SelectList to clear selection item highlight.
+    Fixed 'Form too big' width message.
+    Removed Deck __textblock and simply space-out deck prior to each draw.
 1.19   - Fix: ~
     Added NodeViewer (node viewer).
     Added ForestViewer/NodeViewer demo.

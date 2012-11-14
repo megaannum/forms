@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 2012
-" Version:       1.18
+" Version:       1.20
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -59,12 +59,12 @@
 if &cp || ( exists("g:loaded_forms") && ! g:self#IN_DEVELOPMENT_MODE )
   finish
 endif
-let g:loaded_forms = 'v1.19'
+let g:loaded_forms = 'v1.20'
 let s:keepcpo = &cpo
 set cpo&vim
 
 function! forms#version()
-  return '1.19'
+  return '1.20'
 endfunction
 
 " ++++++++++++++++++++++++++++++++++++++++++++
@@ -3229,6 +3229,23 @@ function! forms#loadLabelPrototype()
     let g:forms#Label = forms#loadLeafPrototype().clone('forms#Label')
     let g:forms#Label.__text = ''
 
+    function! FORMS_LABEL_init(attrs) dict
+      call call(g:forms#Leaf.init, [a:attrs], self)
+
+      let text = self.__text
+      if type(text) == g:self#NUMBER_TYPE
+        unlet self.__text
+        let self.__text = "" . text
+      elseif type(text) == g:self#STRING_TYPE
+        " do nothing
+      else
+        throw "forms#loadLabelPrototype.init: text parameter must be String or Number: " . string(text)
+      endif
+
+      return self
+    endfunction
+    let g:forms#Label.init = function("FORMS_LABEL_init")
+
     function! FORMS_LABEL_reinit(attrs) dict
 " call forms#log("forms#Label.reinit TOP")
       let oldText = self.__text
@@ -5363,6 +5380,17 @@ endif
       endif
     endfunction
     let g:forms#SelectList.requestedSize = function("FORMS_SELECT_LIST_requestedSize")
+
+    function! FORMS_SELECT_LIST_hide() dict
+      call call(g:forms#Leaf.hide, [], self)
+
+      let selections = self.__selections
+      for selection in selections
+        let [idx, sid] = selection
+        call ClearSelectionId(sid)
+      endfor
+    endfunction
+    let g:forms#SelectList.hide = function("FORMS_SELECT_LIST_hide")
 
     function! FORMS_SELECT_LIST_selection() dict
       return self.__pos
@@ -11751,7 +11779,7 @@ endif
             endif
           endif
           if l:winWidth < formWidth || ! x_success
-            let textlines = "Form too big for current window width.\n  Window width=".l:winWidth."\n  Form width=" . formWidth."\nSuggest making window wider by ".(formHeight-l:winHeigth+1)." columns."
+            let textlines = "Form too big for current window width.\n  Window width=".l:winWidth."\n  Form width=" . formWidth."\nSuggest making window wider by ".(formWidth-l:winWidth+1)." columns."
 
             if s:handling_form_too_big_info == 1
               throw textlines
@@ -12909,6 +12937,7 @@ function! forms#loadDeckPrototype()
     let g:forms#Deck.getCard  = function("FORMS_DECK_getCard")
 
     function! FORMS_DECK_setCard(card) dict
+"call forms#logforce("g:forms#Deck.setCard card=". a:card)
       if a:card < 0 
         throw "Deck.setCard: card less than 0 " . card
       elseif a:card >= len(self.__children)
@@ -12920,10 +12949,6 @@ function! forms#loadDeckPrototype()
         call child.hide()
 
         let self.__card = a:card
-        if exists("self.__textblock")
-" call forms#log("g:forms#Deck.setCard add textblock")
-          call forms#ViewerRedrawListAdd(self.__textblock) 
-        endif
         call forms#ViewerRedrawListAdd(self) 
       endif
     endfunction
@@ -12951,7 +12976,7 @@ function! forms#loadDeckPrototype()
     let g:forms#Deck.requestedSize  = function("FORMS_DECK_requestedSize")
 
     function! FORMS_DECK_draw(allocation) dict
-" call forms#log("g:forms#Deck.draw" .  string(a:allocation))
+"call forms#logforce("g:forms#Deck.draw" .  string(a:allocation))
       let self.__allocation = a:allocation
       let a = a:allocation
 
@@ -12964,27 +12989,14 @@ function! forms#loadDeckPrototype()
         let valignment = self.__valignment
         let char = ''
 
-        " Must capture background in a TextBlock
-        " Why? 1) Cards have different sizes and 
-        " 2) So that when only the deck has changed (and a redraw()
-        " rather than a full top down draw is called) its background
-        " as well as itself can be put on the Viewer ReDraw list
-        if ! exists("self.__textblock")
-          let fulllines = getline(line, line+height-1)
-          let textblock = []
-          for fline in fulllines
-            " let pline = fline[column-1 : column+width-2]
-            " let pline = fline[column : column+width-2]
-            let pline = fline[column : column+width-1]
-" call forms#log("g:forms#Deck.draw pline=" . pline . "END")
-            call add(textblock, pline)
-          endfor
-          let attrs = { 
-                      \ 'textblock': textblock,
-                      \ 'allocation': copy(a:allocation)
-                      \ }
-          let self.__textblock = forms#newTextBlock(attrs)
-        endif
+
+        " clear the deck
+        let str = repeat(' ', width)
+        let cnt = 0
+        while cnt < height
+          call forms#SetStringAt(str, line+cnt, column)
+          let cnt += 1
+        endwhile
 
         let card = self.__card
 "   call forms#log("g:forms#Deck.draw card=" .  card)
