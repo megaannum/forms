@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 2012
-" Version:       1.20
+" Version:       1.21
 " Modifications:
 "  1.0 : initial public release.
 "

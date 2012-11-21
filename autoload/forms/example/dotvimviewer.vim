@@ -6,8 +6,6 @@ function! s:FnameEscape(fname)
 endfunc
 
 function! s:GetVimHome() 
-  return '/home/emberson/.vim/data/vimside'
-if 0
   if has("win32") || has("dos32") || has("dos16") || has("os2")
     if $HOME != '' 
       let fname = $HOME . "/_viminfo"
@@ -20,7 +18,6 @@ if 0
 
   let fname = s:FnameEscape(fname)
   return fname
-endif
 endfunction
 
 

@@ -1062,6 +1062,9 @@ and popup menus. The code is located in 'autoload/forms/menu.vim'.
 
 ==============================================================================
 12. Release notes                                      *forms-release-notes*
+1.21   - Fix: ~
+    Form demo now open in tab.
+    Fixed dotvimviewer demo to display '.vim' dir.
 1.20   - Fix: ~
     Forms Label checks that 'text' is String or Number.
     Add 'hide' method to SelectList to clear selection item highlight.

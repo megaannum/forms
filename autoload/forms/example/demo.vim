@@ -321,7 +321,11 @@ function! forms#example#demo#Make()
   let b = forms#newBorder({ 'body': vpoly })
   let b = forms#newBox({ 'body': b })
   let bg = forms#newBackground({ 'body': b} )
-  let form = forms#newForm({'body': bg })
+
+  let attrs = { 'open_in_tab': 1,
+                \ 'body': bg
+                \ }
+  let form = forms#newForm(attrs)
   call form.run()
 endfunction
 
