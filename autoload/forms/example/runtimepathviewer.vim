@@ -67,13 +67,13 @@ function! forms#example#runtimepathviewer#Make()
 
 
   function! ForestOnOpenAction(tree, node) dict
-    call forms#log("OPEN: ". a:node.name)
+"call forms#log("OPEN: ". a:node.name)
     call self.nv.setNode(a:tree, a:node, 1)
   endfunction
   let fooa = forms#newAction({ 'execute': function("ForestOnOpenAction")})
 
   function! ForestOnCloseAction(tree, node) dict
-    call forms#log("CLOSE: ". a:node.name)
+"call forms#log("CLOSE: ". a:node.name)
     let [found, parent_node] = a:node.getParent(a:tree)
     if found
       call self.nv.setNode(a:tree, parent_node, 1)
@@ -85,7 +85,7 @@ function! forms#example#runtimepathviewer#Make()
   let foca = forms#newAction({ 'execute': function("ForestOnCloseAction")})
 
   function! ForestOnSelectionAction(tree, node) dict
-    call forms#log("SELECT: ". a:node.name)
+"call forms#log("SELECT: ". a:node.name)
   endfunction
   let fosa = forms#newAction({ 'execute': function("ForestOnSelectionAction")})
 
@@ -108,19 +108,19 @@ function! forms#example#runtimepathviewer#Make()
 
 
   function! NodeOnOpenAction(tree, node) dict
-call forms#log("NODE OPEN: ". a:node.name)
+"call forms#log("NODE OPEN: ". a:node.name)
     call self.fv.setNode(a:tree, a:node)
   endfunction
   let nooa = forms#newAction({ 'execute': function("NodeOnOpenAction")})
 
   function! NodeOnCloseAction(tree, node) dict
-call forms#log("NODE CLOSE: ". a:node.name)
+"call forms#log("NODE CLOSE: ". a:node.name)
    call self.fv.setNode(a:tree, a:node)
   endfunction
   let noca = forms#newAction({ 'execute': function("NodeOnCloseAction")})
 
   function! NodeOnSelectionAction(tree, node) dict
-call forms#log("NODE SELECT: ". a:node.name)
+"call forms#log("NODE SELECT: ". a:node.name)
   endfunction
   let nosa = forms#newAction({ 'execute': function("NodeOnSelectionAction")})
 
