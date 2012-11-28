@@ -6,7 +6,7 @@
 " Summary:       Vim Form Library
 " Author:        Richard Emberson <richard.n.embersonATgmailDOTcom>
 " Last Modified: 2012
-" Version:       1.21
+" Version:       See: autoload/forms/version.vim
 " Modifications:
 "  1.0 : initial public release.
 "
@@ -59,12 +59,12 @@
 if &cp || ( exists("g:loaded_forms") && ! g:self#IN_DEVELOPMENT_MODE )
   finish
 endif
-let g:loaded_forms = 'v1.20'
+let g:loaded_forms = forms#version#Str()
 let s:keepcpo = &cpo
 set cpo&vim
 
 function! forms#version()
-  return '1.20'
+  return forms#version#Str()
 endfunction
 
 " ++++++++++++++++++++++++++++++++++++++++++++
@@ -2529,6 +2529,12 @@ function! forms#loadGlyphPrototype()
     endfunction
     let g:forms#Glyph.canFocus = function("FORMS_GLYPH_canFocus")
 
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_GLYPH_generateFocusList(flist) dict
+      throw "Glyph: must define in child: generateFocusList"
+    endfunction
+    let g:forms#Glyph.generateFocusList = function("FORMS_GLYPH_generateFocusList")
+
     " ------------------------------------------------------------ 
     " g:forms#Glyph.gainFocus: {{{3
     "   Notify glyph it has gained focus
@@ -2749,6 +2755,14 @@ function! forms#loadLeafPrototype()
       return g:LEAF_NODE
     endfunction
     let g:forms#Leaf.nodeType = function("FORMS_LEAF_nodeType")
+
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_LEAF_generateFocusList(flist) dict
+      if self.canFocus() 
+        call add(a:flist, self) 
+      endif
+    endfunction
+    let g:forms#Leaf.generateFocusList = function("FORMS_LEAF_generateFocusList")
 
   endif
 
@@ -9218,6 +9232,16 @@ function! forms#loadMonoPrototype()
     endfunction
     let g:forms#Mono.hide  = function("FORMS_MONO_hide")
 
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_MONO_generateFocusList(flist) dict
+      if self.canFocus() 
+        call add(a:flist, self) 
+      else
+        call self.__body.generateFocusList(a:flist)
+      endif
+    endfunction
+    let g:forms#Mono.generateFocusList = function("FORMS_MONO_generateFocusList")
+
     "-----------------------------------------------
     " mono methods
     "-----------------------------------------------
@@ -12336,6 +12360,18 @@ function! forms#loadPolyPrototype()
     endfunction
     let g:forms#Poly.hide  = function("FORMS_POLY_hide")
 
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_POLY_generateFocusList(flist) dict
+      if self.canFocus() 
+        call add(a:flist, self) 
+      else
+        for child in self.children()
+          call child.generateFocusList(a:flist)
+        endfor
+      endif
+    endfunction
+    let g:forms#Poly.generateFocusList = function("FORMS_POLY_generateFocusList")
+
     function! FORMS_POLY_setChildStatus(index, status) dict
       call self.__children[a:index].setStatus(a:status)
     endfunction
@@ -12902,6 +12938,14 @@ function! forms#loadDeckPrototype()
         throw "Deck.init: card greater than or equal to children count " . card
       endif
 
+if 0
+" XXXXXXXXXXXXXXXXX
+      let flist = []
+      call forms#GenerateFocusList(self, flist)
+      let self.__canFocus = ! empty(flist)
+call forms#log("g:forms#Deck.init canFocus=". self.__canFocus)
+endif
+
       return self
     endfunction
     let g:forms#Deck.init  = function("FORMS_DECK_init")
@@ -12927,6 +12971,18 @@ function! forms#loadDeckPrototype()
     endfunction
     let g:forms#Deck.reinit  = function("FORMS_DECK_reinit")
 
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_DECK_generateFocusList(flist) dict
+      if self.canFocus() 
+        call add(a:flist, self) 
+      else
+        let children = self.__children
+        let child = children[self.__card]
+        call child.generateFocusList(a:flist)
+      endif
+    endfunction
+    let g:forms#Deck.generateFocusList = function("FORMS_DECK_generateFocusList")
+
     "-----------------------------------------------
     " deck methods
     "-----------------------------------------------
@@ -12950,6 +13006,17 @@ function! forms#loadDeckPrototype()
 
         let self.__card = a:card
         call forms#ViewerRedrawListAdd(self) 
+
+        call forms#PrependUniqueInput({'type': 'ReFocus'})
+if 0
+" XXXXXXXXXXXXXXXXX
+        if self.__canFocus
+call forms#logforce("g:forms#Deck.setCard card=". a:card . ' SHOULD REFOCUS')
+          call forms#PrependUniqueInput({'type': 'ReFocus'})
+        else
+call forms#logforce("g:forms#Deck.setCard card=". a:card . ' SHOULD NOT REFOCUS')
+        endif
+endif
       endif
     endfunction
     let g:forms#Deck.setCard  = function("FORMS_DECK_setCard")
@@ -14988,6 +15055,20 @@ function! forms#loadGridPrototype()
     endfunction
     let g:forms#Grid.hide  = function("FORMS_GRID_hide")
 
+" XXXXXXXXXXXXXXXXX
+    function! FORMS_GRID_generateFocusList(flist) dict
+      if self.canFocus() 
+        call add(a:flist, self) 
+      else
+        for minor in self.major()
+          for child in minor
+            call child.generateFocusList(a:flist)
+          endfor
+        endfor
+      endif
+    endfunction
+    let g:forms#Grid.generateFocusList = function("FORMS_GRID_generateFocusList")
+
     function! FORMS_GRID_nodeType() dict
       return g:GRID_NODE
     endfunction
@@ -15801,6 +15882,16 @@ function! forms#GenerateFocusList(glyph, flist)
   let nodeType = a:glyph.nodeType()
   if nodeType == g:LEAF_NODE
     if a:glyph.canFocus() | call add(a:flist, a:glyph) | endif
+  else
+    call a:glyph.generateFocusList(a:flist)
+  endif
+
+
+if 0
+" XXXXXXXXXXXXXXXXX
+  let nodeType = a:glyph.nodeType()
+  if nodeType == g:LEAF_NODE
+    if a:glyph.canFocus() | call add(a:flist, a:glyph) | endif
   elseif nodeType == g:MONO_NODE
     if a:glyph.canFocus() 
       call add(a:flist, a:glyph) 
@@ -15828,6 +15919,7 @@ function! forms#GenerateFocusList(glyph, flist)
   else
     throw "Unknown glyph nodeType " . nodeType
   endif
+endif
 endfunction
 
 " ------------------------------------------------------------ 
