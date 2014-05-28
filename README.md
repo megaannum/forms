@@ -322,6 +322,11 @@ No testing has been done on the Windows GVim configure. Feedback is welcome.
 
 There is a Forms tutorial which can be accessed at [Forms tutorial](https://github.com/megaannum/forms/blob/master/tutorial/forms/Tutorial.md).
 
+## Related works
+
+[VFT - VIM Form Toolkit](http://www.vim.org/scripts/script.php?script_id=2160)
+[Vimform : Simple text-based forms for vim](http://www.vim.org/scripts/script.php?script_id=3051)
+
 ## Acknowledgements and thanks
 
 - Marc Weber: Initial release feedback identifying Vim 7.3 bug and
